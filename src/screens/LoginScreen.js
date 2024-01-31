@@ -1,9 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function CreateAccount() {
+export default function Login() {
   const navigation = useNavigation();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    // API endpoint for login
+    const apiUrl = 'http://192.168.1.9:80/laravel/api/login';
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+       
+        console.log('Login successful');
+        console.log('Access Token:', responseData.access_token);
+
+        
+        navigation.navigate('Home', {
+          accessToken: responseData.access_token,
+        });
+      } else {
+        console.log('Login failed:', responseData);
+
+       
+        if (response.status === 401) {
+          alert('Invalid email or password. Please try again.');
+        } else {
+          alert('Login failed. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('Error during login. Please try again.');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -18,8 +64,8 @@ export default function CreateAccount() {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.loginButton}>Login</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('CreateAccount')}>
+          <Text style={styles.loginButton}>Register</Text>
         </TouchableOpacity>
       </View>
 
@@ -27,27 +73,29 @@ export default function CreateAccount() {
       <View style={styles.formContainer}>
         <Text style={styles.instructionsText}>
           <Text style={{ fontWeight: 'bold', fontSize: 24, color: '#654321' }}>Welcome back to {'\n'}Yumster</Text>
-          
         </Text>
         <TextInput
           style={styles.input}
           placeholder="Email / Username"
           keyboardType="email-address"
           autoCapitalize="none"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
           secureTextEntry
           autoCapitalize="none"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
         <TouchableOpacity 
-        style={styles.createAccountButton} 
-        onPress={() => navigation.navigate("Home")}
+          style={styles.createAccountButton} 
+          onPress={handleLogin}
         >
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
-        
       </View>
     </View>
   );
@@ -118,5 +166,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-

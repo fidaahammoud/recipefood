@@ -7,6 +7,7 @@ import WelcomeScreen from "../screens/WelcomeScreen";
 import DetailsScreen from "../screens/DetailsScreen";
 import StartingScreen from "../screens/StartingScreen";
 import CreateAccountScreen from "../screens/CreateAccountScreen";
+import CompleteProfileScreen from "../screens/CompleteProfileScreen";
 import LoginScreen from "../screens/LoginScreen";
 
 const Stack = createNativeStackNavigator();
@@ -24,7 +25,8 @@ export default function AppNavigation() {
                 <Stack.Screen name="Welcome" component={WelcomeScreen} />
                 <Stack.Screen name="Starting" component={StartingScreen} />
                 <Stack.Screen name="CreateAccount" component={CreateAccountScreen} />
-                <Stack.Screen name="login" component={LoginScreen} />
+                <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Details" component={DetailsScreen} />
             </Stack.Navigator>
         </NavigationContainer>  
