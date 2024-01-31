@@ -1,34 +1,42 @@
-import { View, Text, ScrollView, SafeAreaView, Image, TextInput,TouchableOpacity } from "react-native";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
-    MagnifyingGlassIcon,
-    AdjustmentsHorizontalIcon,
-  } from "react-native-heroicons/outline";
+  View,
+  Text,
+  ScrollView,
+  SafeAreaView,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import {
+  MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon,
+} from "react-native-heroicons/outline";
 import { StatusBar } from "expo-status-bar";
-import {  widthPercentageToDP as wp,
-          heightPercentageToDP as hp,} from "react-native-responsive-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
-export default function HomeScreen(){
-   
-    return (
-
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <StatusBar style="dark" />
-          <SafeAreaView>
-          <ScrollView showsVerticalScrollIndicator={false}
-                      contentContainerStyle={{
-                      paddingBottom: 50,
-                      paddingTop: hp(1), 
-                      alignItems: 'center',
+export default function HomeScreen() {
+  return (
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <StatusBar style="dark" />
+      <SafeAreaView>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: 50,
+            paddingTop: hp(1),
+            alignItems: "center",
           }}
           className="space-y-6 pt-14"
-          >
-
-            {/* logo */}
+        >
+          {/* logo */}
           <View className="mx-4 flex-row justify-between items-center">
             <Image
               source={require("../../assets/images/logo.jpeg")}
@@ -52,7 +60,7 @@ export default function HomeScreen(){
           >
             <TouchableOpacity>
               {/* Sorting */}
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <AdjustmentsHorizontalIcon
                   size={hp(3)}
                   color={"black"}
@@ -65,7 +73,7 @@ export default function HomeScreen(){
             <View style={{ width: hp(3) }} />
             <TouchableOpacity>
               {/* Filtering */}
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <AdjustmentsHorizontalIcon
                   size={hp(3)}
                   color={"black"}
@@ -94,34 +102,61 @@ export default function HomeScreen(){
             />
           </View>
 
-            {/* Categories*/}
-            <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
-                <Text style={{ color: "#5B4444", fontSize: hp(2), fontStyle: "italic", fontWeight: 'bold' }}>Categories</Text>
-                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                    <TouchableOpacity>
-                        <Text style={{ color: "#5B4444", fontSize: hp(2), fontStyle: "italic", fontWeight: 'bold' }}>View All</Text>
-                    </TouchableOpacity>
-                </View>
+          {/* Categories*/}
+          <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
+            <Text
+              style={{
+                color: "#5B4444",
+                fontSize: hp(2),
+                fontStyle: "italic",
+                fontWeight: "bold",
+              }}
+            >
+              Categories
+            </Text>
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: "#5B4444",
+                    fontSize: hp(2),
+                    fontStyle: "italic",
+                    fontWeight: "bold",
+                  }}
+                >
+                  View All
+                </Text>
+              </TouchableOpacity>
             </View>
-           
-          {/* <View>
+          </View>
+
+          <View>
             <Categories />
-          </View> */}
-           
-            {/* Chefs */}
-          {/* <View style={{ paddingHorizontal: 15, marginTop: hp(2) }}>
-            <Text style={{ color: "#5B4444", fontSize: hp(2), fontStyle: "italic", fontWeight: "bold" }}>Chefs</Text>
+          </View>
+
+          {/* Chefs*/}
+          {/* <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
+            <View style={{ flex: 1 }}>
+              
+            </View>
+            <Text
+              style={{
+                color: "#5B4444",
+                fontSize: hp(2),
+                fontStyle: "italic",
+                fontWeight: "bold",
+              }}
+            >
+              Chefs
+            </Text>
+          </View>
+
+          <View>
+            <Chefs />
           </View> */}
 
-        {/* <View>
-            <Chefs/>
-        </View> */}
-
-        <View>
-            <LatestRecipes/>
-        </View>
-          </ScrollView>
-          </SafeAreaView>
-        </View>
-    ); 
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
 }
