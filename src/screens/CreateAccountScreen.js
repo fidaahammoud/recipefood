@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import { API_HOST } from "@env";
+
 export default function CreateAccount() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
@@ -9,15 +11,15 @@ export default function CreateAccount() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleCreateAccount = async () => {
-    // Validate password and confirmation match
     if (password !== confirmPassword) {
       alert('Password and Confirm Password do not match');
       return;
     }
 
-    // API endpoint
-    const apiUrl = 'http://192.168.1.9:80/laravel/api/register';
-
+    //const apiUrl = 'http://192.168.1.9:80/laravel/api/register';
+    const apiUrl = `${API_HOST}/register`;
+    console.log("apiUrl : "+apiUrl);
+    
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',

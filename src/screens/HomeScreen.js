@@ -1,162 +1,114 @@
-import React from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Image,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import {
-  MagnifyingGlassIcon,
-  AdjustmentsHorizontalIcon,
-} from "react-native-heroicons/outline";
-import { StatusBar } from "expo-status-bar";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import React from 'react';
+import { View, Image, TextInput, Text, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
-import { useNavigation } from "@react-navigation/native";
 
-export default function HomeScreen() {
+const HomeScreen = () => {
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      <StatusBar style="dark" />
-      <SafeAreaView>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: 50,
-            paddingTop: hp(1),
-            alignItems: "center",
-          }}
-          className="space-y-6 pt-14"
-        >
-          {/* logo */}
-          <View className="mx-4 flex-row justify-between items-center">
-            <Image
-              source={require("../../assets/images/logo.jpeg")}
-              style={{
-                width: hp(8),
-                height: hp(8),
-                resizeMode: "cover",
-              }}
-              className="rounded-full"
-            />
-          </View>
+    <View style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../../assets/images/logo.jpeg')} style={styles.logo} />
+      </View>
 
-          {/* Sorting and Filtering */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: 20,
-              marginBottom: hp(1),
-            }}
-          >
-            <TouchableOpacity>
-              {/* Sorting */}
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <AdjustmentsHorizontalIcon
-                  size={hp(3)}
-                  color={"black"}
-                  strokeWidth={2}
-                />
-                <Text style={{ marginLeft: 5 }}>Sort</Text>
-              </View>
-            </TouchableOpacity>
-            {/* Empty space to separate sorting and filtering icons */}
-            <View style={{ width: hp(3) }} />
-            <TouchableOpacity>
-              {/* Filtering */}
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <AdjustmentsHorizontalIcon
-                  size={hp(3)}
-                  color={"black"}
-                  strokeWidth={2}
-                />
-                <Text style={{ marginLeft: 5 }}>Filter</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          {/* Search Bar */}
-          <View className="mx-4 flex-row items-center border rounded-xl border-black p-[6px]">
-            <View className="bg-white rounded-full p-2">
-              <MagnifyingGlassIcon
-                size={hp(2.5)}
-                color={"gray"}
-                strokeWidth={3}
-              />
-            </View>
-            <TextInput
-              placeholder="Search Your Favorite Food"
-              placeholderTextColor={"gray"}
-              style={{
-                fontSize: hp(1.7),
-              }}
-              className="flex-1 text-base mb-1 pl-1 tracking-widest"
-            />
-          </View>
+      {/* filter and sorting */}
+      <View style={styles.iconsContainer}>
+        <Icon name="filter" size={30} color="black" onPress={() => console.log('Filter pressed')} />
+        <Icon name="sort" size={30} color="black" onPress={() => console.log('Sort pressed')} />
+      </View>
 
-          {/* Categories*/}
-          <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
-            <Text
-              style={{
-                color: "#5B4444",
-                fontSize: hp(2),
-                fontStyle: "italic",
-                fontWeight: "bold",
-              }}
-            >
-              Categories
-            </Text>
-            <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
-              <TouchableOpacity>
-                <Text
-                  style={{
-                    color: "#5B4444",
-                    fontSize: hp(2),
-                    fontStyle: "italic",
-                    fontWeight: "bold",
-                  }}
-                >
-                  View All
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search..."
+          style={styles.searchInput}
+        />
+      </View>
 
-          <View>
-            <Categories />
-          </View>
+      {/* Categories and Chefs container */}
+      <View style={styles.categoriesAndChefsContainer}>
+        {/* Categories */}
+        <View style={styles.categoriesContainer}>
+          <Text style={styles.boldText}>Categories</Text>
+          <Text onPress={() => console.log('View All Categories pressed')} style={styles.boldText}>View All</Text>
+        </View>
 
-          {/* Chefs*/}
-          {/* <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
-            <View style={{ flex: 1 }}>
-              
-            </View>
-            <Text
-              style={{
-                color: "#5B4444",
-                fontSize: hp(2),
-                fontStyle: "italic",
-                fontWeight: "bold",
-              }}
-            >
-              Chefs
-            </Text>
-          </View>
+        {/* Your Categories Component */}
+        <Categories />
+      </View>
 
-          <View>
-            <Chefs />
-          </View> */}
+      {/* Chefs */}
+      <View style={styles.chefsContainer}>
+        <View style={styles.categoriesContainer}>
+          <Text style={styles.boldText}>Chefs</Text>
+          <Text onPress={() => console.log('View All Chefs pressed')} style={styles.boldText}>View All</Text>
+        </View>
+        <Chefs />
+      </View>
 
-        </ScrollView>
-      </SafeAreaView>
+      {/* Latest Recipes */}
+      <View style={styles.latestRecipesContainer}>
+        <Text style={styles.boldText}>Latest Recipes</Text>
+        <LatestRecipes />
+      </View>
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  logoContainer: {
+    alignItems: 'center',
+  },
+  logo: {
+    width: 90,
+    height: 90,
+    borderRadius: 50,
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  searchContainer: {
+    marginTop: 16,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 8,
+    borderRadius: 5,
+  },
+  categoriesAndChefsContainer: {
+    marginTop: 30,
+    paddingBottom: 20,
+  },
+  categoriesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  boldText: {
+    color: 'brown',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  chefsContainer: {
+    marginTop: 10,
+  },
+  chefsText: {
+    color: 'brown',
+    fontWeight: 'bold',
+  },
+  latestRecipesContainer: {
+    marginTop: 20,
+  },
+});
+
+export default HomeScreen;

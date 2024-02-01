@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ImageBackground, TextInput, Button, View, StyleSheet, Image } from 'react-native';
 
+import { API_HOST } from "@env";
+
 const CompleteProfile = ({ route, navigation }) => {
   const { userId, accessToken } = route.params;
 
@@ -11,8 +13,9 @@ const CompleteProfile = ({ route, navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      const apiUrl = `http://192.168.1.9:80/laravel/api/completeProfile/${userId}`;
-
+     // const apiUrl = `http://192.168.1.9:80/laravel/api/completeProfile/${userId}`;
+      const apiUrl= `${API_HOST}/completeProfile/${userId}`;
+        
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
@@ -30,14 +33,12 @@ const CompleteProfile = ({ route, navigation }) => {
       const result = await response.text();
 
       if (response.ok) {
-        // Handle successful response
         console.log(result.message);
         console.log(result.user);
 
-        // Redirect to the home screen
-        navigation.navigate('Home'); // Replace 'Home' with the actual name of your home screen
+        
+        navigation.navigate('Home'); 
       } else {
-        // Handle error response
         console.error(result.error);
       }
     } catch (error) {
@@ -46,8 +47,7 @@ const CompleteProfile = ({ route, navigation }) => {
   };
 
   const handlePhotoUpload = () => {
-    // Implement photo upload logic here
-    // Set the selected photo using setPhoto
+   
   };
 
   return (

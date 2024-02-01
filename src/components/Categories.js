@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, ActivityIndicator } from 'react-native';
 
+import { API_HOST } from "@env";
+
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,7 +10,8 @@ const Categories = () => {
 
   useEffect(() => {
     // Fetch categories from the API
-    fetch('http://192.168.1.9:80/laravel/api/categories')
+    //fetch('http://192.168.1.9:80/laravel/api/categories')
+    fetch(`${API_HOST}/categories`)
       .then((response) => response.json())
       .then((data) => {
         setCategories(data.data);
@@ -51,9 +54,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   categoryImage: {
-    width: 80,
-    height: 80,
-   // borderRadius: 40,
+    width: 90,
+    height: 90,
   },
   categoryName: {
     marginTop: 5,

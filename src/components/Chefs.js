@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
 
+import { API_HOST } from "@env";
+
 const Chefs = () => {
   const [chefs, setChefs] = useState([]);
 
   useEffect(() => {
     // Fetch chefs from the API
-    fetch('http://192.168.1.9:80/laravel/api/users')
+    //fetch('http://192.168.1.9:80/laravel/api/users')
+    fetch(`${API_HOST}/users`)
       .then((response) => response.json())
       .then((data) => setChefs(data.data))
       .catch((error) => console.error('Error fetching chefs:', error));
@@ -29,12 +32,12 @@ const Chefs = () => {
 
 const styles = StyleSheet.create({
   chefContainer: {
-    marginRight: 10,
+    marginRight: 15,
     alignItems: 'center',
   },
   chefImage: {
-    width: 80, // Replace with hp(8) if you're using a library for responsive design
-    height: 80, // Replace with hp(8) if you're using a library for responsive design
+    width: 80,
+    height: 80, 
     borderRadius: 40,
   },
   chefName: {

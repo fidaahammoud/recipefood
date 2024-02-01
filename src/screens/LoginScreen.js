@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import { API_HOST } from "@env";
+
 export default function Login() {
   const navigation = useNavigation();
 
@@ -10,8 +12,8 @@ export default function Login() {
 
   const handleLogin = async () => {
     // API endpoint for login
-    const apiUrl = 'http://192.168.1.9:80/laravel/api/login';
-
+    //const apiUrl = 'http://192.168.1.9:80/laravel/api/login';
+    const apiUrl = `${API_HOST}/login`
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
