@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, TextInput, Text, StyleSheet } from 'react-native';
+import { View, Image, TextInput, Text, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
@@ -7,7 +7,7 @@ import LatestRecipes from "../components/LatestRecipes";
 
 const HomeScreen = () => {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Logo */}
       <View style={styles.logoContainer}>
         <Image source={require('../../assets/images/logo.jpeg')} style={styles.logo} />
@@ -53,7 +53,7 @@ const HomeScreen = () => {
         <Text style={styles.boldText}>Latest Recipes</Text>
         <LatestRecipes />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
