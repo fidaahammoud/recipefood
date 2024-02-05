@@ -10,7 +10,6 @@ const Categories = () => {
 
   useEffect(() => {
     // Fetch categories from the API
-    //fetch('http://192.168.1.9:80/laravel/api/categories')
     fetch(`${API_HOST}/categories`)
       .then((response) => response.json())
       .then((data) => {

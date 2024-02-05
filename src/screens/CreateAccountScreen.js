@@ -15,11 +15,8 @@ export default function CreateAccount() {
       alert('Password and Confirm Password do not match');
       return;
     }
-
-    //const apiUrl = 'http://192.168.1.9:80/laravel/api/register';
     const apiUrl = `${API_HOST}/register`;
-    console.log("apiUrl : "+apiUrl);
-    
+  
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',

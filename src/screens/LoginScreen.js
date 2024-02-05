@@ -11,8 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    // API endpoint for login
-    //const apiUrl = 'http://192.168.1.9:80/laravel/api/login';
+  
     const apiUrl = `${API_HOST}/login`
     try {
       const response = await fetch(apiUrl, {
@@ -29,11 +28,8 @@ export default function Login() {
       const responseData = await response.json();
 
       if (response.ok) {
-       
         console.log('Login successful');
         console.log('Access Token:', responseData.access_token);
-
-        
         navigation.navigate('Home', {
           accessToken: responseData.access_token,
         });

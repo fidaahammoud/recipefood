@@ -8,7 +8,6 @@ const Chefs = () => {
 
   useEffect(() => {
     // Fetch chefs from the API
-    //fetch('http://192.168.1.9:80/laravel/api/users')
     fetch(`${API_HOST}/users`)
       .then((response) => response.json())
       .then((data) => setChefs(data.data))

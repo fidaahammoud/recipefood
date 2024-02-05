@@ -10,6 +10,7 @@ import CreateAccountScreen from "../screens/CreateAccountScreen";
 import CompleteProfileScreen from "../screens/CompleteProfileScreen";
 import LoginScreen from "../screens/LoginScreen";
 
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
@@ -28,6 +29,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Details" component={DetailsScreen} />
+                
             </Stack.Navigator>
         </NavigationContainer>  
         

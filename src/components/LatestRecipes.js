@@ -6,7 +6,7 @@ const LatestRecipes = () => {
 
   useEffect(() => {
     // Fetch recipes data from the API
-    fetch('http://192.168.57.10:80/laravel/api/recipes')
+    fetch('http://192.168.56.10:80/laravel/api/recipes')
       .then((response) => response.json())
       .then((data) => {
         setRecipes(data.data);

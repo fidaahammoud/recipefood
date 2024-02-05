@@ -1,21 +1,69 @@
-import React, { useState } from 'react';
-import { ImageBackground, TextInput, Button, View, StyleSheet, Image } from 'react-native';
-
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Text,
+  ImageBackground,
+  TextInput,
+  Button,
+  View,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+import ImagePickerComponent from '../components/ImageHandling'; // Import the ImagePickerComponent
 import { API_HOST } from "@env";
 
 const CompleteProfile = ({ route, navigation }) => {
   const { userId, accessToken } = route.params;
-
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
-  const [photo, setPhoto] = useState(null);
+  const [storedImageUri, setStoredImageUri] = useState(null);
+  const imageUriRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setStoredImageUri(imageUriRef.current);
+  }, []);
+
+  const setImage = (uri) => {
+    imageUriRef.current = uri;
+    setStoredImageUri(uri);
+  };
+
+  const saveImageToDatabase = async (selectedImage) => {
+    try {
+      
+      const apiUrl = `${API_HOST}/image`;
+     
+      const formData = new FormData();
+      formData.append('image', {
+        uri: selectedImage.uri,
+        name: 'profile_image.jpg',
+        type: 'image/jpg',
+      });
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Error saving image:', errorData);
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
-     // const apiUrl = `http://192.168.1.9:80/laravel/api/completeProfile/${userId}`;
-      const apiUrl= `${API_HOST}/completeProfile/${userId}`;
-        
+      const apiUrl = `${API_HOST}/completeProfile/${userId}`;
+
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
@@ -30,14 +78,13 @@ const CompleteProfile = ({ route, navigation }) => {
         }),
       });
 
-      const result = await response.text();
+      const result = await response.json();
 
       if (response.ok) {
         console.log(result.message);
         console.log(result.user);
 
-        
-        navigation.navigate('Home'); 
+        navigation.navigate('Home');
       } else {
         console.error(result.error);
       }
@@ -46,16 +93,15 @@ const CompleteProfile = ({ route, navigation }) => {
     }
   };
 
-  const handlePhotoUpload = () => {
-   
-  };
-
   return (
     <ImageBackground
       source={require('../../assets/images/completeProfileBackground.jpg')}
       style={styles.backgroundImage}
     >
       <View style={styles.formContainer}>
+        {storedImageUri && (
+          <Image source={{ uri: storedImageUri }} style={styles.photoPreview} />
+        )}
         <TextInput
           style={styles.input}
           placeholder="Username"
@@ -76,15 +122,14 @@ const CompleteProfile = ({ route, navigation }) => {
           numberOfLines={4}
           onChangeText={setAboutMe}
         />
-        <View style={styles.photoContainer}>
-          {photo && <Image source={{ uri: photo }} style={styles.photoPreview} />}
-          <Button title="Upload a photo" onPress={handlePhotoUpload} />
-        </View>
+        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
         <Button title="Submit" onPress={handleSubmit} />
+        {loading && <ActivityIndicator size="small" color="#8B4513" />}
       </View>
     </ImageBackground>
   );
 };
+
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -115,14 +160,10 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
-  photoContainer: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
   photoPreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 10,
   },
 });
