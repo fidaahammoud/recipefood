@@ -33,8 +33,9 @@ const CompleteProfile = ({ route, navigation }) => {
   const saveImageToDatabase = async (selectedImage) => {
     try {
       
-      const apiUrl = `${API_HOST}/image`;
-     
+      const apiUrl = `${API_HOST}/image/${userId}`;
+      console.log('Access Token:', accessToken);
+
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
@@ -48,6 +49,7 @@ const CompleteProfile = ({ route, navigation }) => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -63,6 +65,7 @@ const CompleteProfile = ({ route, navigation }) => {
   const handleSubmit = async () => {
     try {
       const apiUrl = `${API_HOST}/completeProfile/${userId}`;
+      console.log('Access Token:', accessToken);
 
       const response = await fetch(apiUrl, {
         method: 'PUT',
