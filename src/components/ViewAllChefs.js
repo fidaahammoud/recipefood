@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
-
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
 
-const Chefs = () => {
+const BASE_URL = 'http://192.168.56.10:80/laravel';
+const ViewAllChefs = () => {
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
 
@@ -45,7 +44,7 @@ const Chefs = () => {
   }
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <ScrollView>
       {chefs.map((chef) => (
         <View key={chef.id} style={styles.chefContainer}>
           <Image
@@ -62,18 +61,21 @@ const Chefs = () => {
 
 const styles = StyleSheet.create({
   chefContainer: {
-    marginRight: 15,
     alignItems: 'center',
+    marginBottom: 20, 
+    marginBottom: 20,
   },
   chefImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   chefName: {
     marginTop: 5,
-    fontSize: 12,
+    fontSize: 16, 
+    fontWeight: 'bold', 
   },
 });
 
-export default Chefs;
+export default ViewAllChefs;

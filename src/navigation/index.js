@@ -9,7 +9,7 @@ import StartingScreen from "../screens/StartingScreen";
 import CreateAccountScreen from "../screens/CreateAccountScreen";
 import CompleteProfileScreen from "../screens/CompleteProfileScreen";
 import LoginScreen from "../screens/LoginScreen";
-
+import ViewAllChefsScreen from '../screens/ViewAllChefsScreen'; 
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +29,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Details" component={DetailsScreen} />
+                <Stack.Screen name="ViewAllChefs" component={ViewAllChefsScreen} />
                 
             </Stack.Navigator>
         </NavigationContainer>  

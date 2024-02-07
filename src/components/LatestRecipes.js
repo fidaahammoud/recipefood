@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet } from 'react-native';
+import { API_HOST } from "@env";
 
 const LatestRecipes = () => {
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
     // Fetch recipes data from the API
-    fetch('http://192.168.56.10:80/laravel/api/recipes')
+    fetch(`${API_HOST}/recipes?sort=created_at`)
       .then((response) => response.json())
       .then((data) => {
         setRecipes(data.data);
