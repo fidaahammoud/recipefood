@@ -9,7 +9,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import ImagePickerComponent from '../components/ImageHandling'; // Import the ImagePickerComponent
+import ImagePickerComponent from '../components/ImageHandling'; 
 import { API_HOST } from "@env";
 
 const CompleteProfile = ({ route, navigation }) => {
@@ -87,7 +87,7 @@ const CompleteProfile = ({ route, navigation }) => {
         console.log(result.message);
         console.log(result.user);
 
-        navigation.navigate('Home');
+        navigation.navigate('Home', { userId, accessToken });
       } else {
         console.error(result.error);
       }

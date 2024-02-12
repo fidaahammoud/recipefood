@@ -5,10 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
-import Footer from "../components/Footer"; // Import the Footer component
+import Footer from "../components/Footer"; 
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }) => {
+  console.log(route.params);
   const navigation = useNavigation();
+  const { userId, accessToken } = route.params;
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -62,7 +65,7 @@ const HomeScreen = () => {
       </ScrollView>
 
       {/* Footer */}
-      <Footer />
+      <Footer userId={userId} accessToken={accessToken} />
     </View>
   );
 };

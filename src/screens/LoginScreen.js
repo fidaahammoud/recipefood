@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 import { API_HOST } from "@env";
 
 export default function Login() {
   const navigation = useNavigation();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-  
-    const apiUrl = `${API_HOST}/login`
+    const apiUrl = `${API_HOST}/login`;
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -24,18 +21,19 @@ export default function Login() {
           password: password,
         }),
       });
-
+  
       const responseData = await response.json();
-
+  
       if (response.ok) {
         console.log('Login successful');
         console.log('Access Token:', responseData.access_token);
+        console.log('User ID:', responseData.user_id);
         navigation.navigate('Home', {
+          userId: responseData.user_id,
           accessToken: responseData.access_token,
         });
       } else {
         console.log('Login failed:', responseData);
-
        
         if (response.status === 401) {
           alert('Invalid email or password. Please try again.');

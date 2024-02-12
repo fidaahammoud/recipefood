@@ -1,15 +1,25 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
-const Footer = () => {
+const Footer = ({ userId, accessToken }) => {
+  const navigation = useNavigation();
+  
+  const handleUploadPress = () => {
+    navigation.navigate('AddRecipe', {
+      userId: userId,
+      accessToken: accessToken,
+    });
+  }; 
+
   return (
     <View style={styles.footer}>
       <TouchableOpacity style={styles.iconContainer}>
         <Icon name="home" size={30} color="black" />
         <Text>Home</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity style={styles.iconContainer} onPress={handleUploadPress}>
         <Icon name="upload" size={30} color="black" />
         <Text>Upload</Text>
       </TouchableOpacity>
