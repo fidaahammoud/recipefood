@@ -1,17 +1,20 @@
 import React from 'react';
 import { View, Image, TextInput, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useToken } from '../components/TokenProvider';
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
 import Footer from "../components/Footer"; 
 
-const HomeScreen = ({ route }) => {
-  console.log(route.params);
+const HomeScreen = () => {
   const navigation = useNavigation();
-  const { userId, accessToken } = route.params;
-
+  const { getToken } = useToken(); 
+  const accessToken = getToken(); 
+  const route = useRoute();
+  const { userId } = route.params;
+  
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -65,7 +68,7 @@ const HomeScreen = ({ route }) => {
       </ScrollView>
 
       {/* Footer */}
-      <Footer userId={userId} accessToken={accessToken} />
+      <Footer userId={userId} />
     </View>
   );
 };

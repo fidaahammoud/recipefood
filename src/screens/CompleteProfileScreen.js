@@ -1,25 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Text,
-  ImageBackground,
-  TextInput,
-  Button,
-  View,
-  StyleSheet,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useToken } from '../components/TokenProvider'; 
 import ImagePickerComponent from '../components/ImageHandling'; 
 import { API_HOST } from "@env";
 
-const CompleteProfile = ({ route, navigation }) => {
-  const { userId, accessToken } = route.params;
+const CompleteProfile = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [storedImageUri, setStoredImageUri] = useState(null);
   const imageUriRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  
+  // Retrieve user ID from route parameters
+  const { userId } = route.params;
+  
+  // Retrieve access token from token provider
+  const { getToken } = useToken(); // Use the useToken hook to access getToken function
+  const accessToken = getToken(); // Retrieve the access token using getToken function
 
   useEffect(() => {
     setStoredImageUri(imageUriRef.current);
@@ -32,7 +33,8 @@ const CompleteProfile = ({ route, navigation }) => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      
+      console.log('user id:', userId);
+
       const apiUrl = `${API_HOST}/image/${userId}`;
       console.log('Access Token:', accessToken);
 
@@ -66,7 +68,7 @@ const CompleteProfile = ({ route, navigation }) => {
     try {
       const apiUrl = `${API_HOST}/completeProfile/${userId}`;
       console.log('Access Token:', accessToken);
-
+  
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
@@ -80,14 +82,14 @@ const CompleteProfile = ({ route, navigation }) => {
           bio: aboutMe,
         }),
       });
-
+  
       const result = await response.json();
-
+  
       if (response.ok) {
         console.log(result.message);
         console.log(result.user);
-
-        navigation.navigate('Home', { userId, accessToken });
+  
+        navigation.navigate('Home', { userId: userId });
       } else {
         console.error(result.error);
       }
@@ -132,7 +134,6 @@ const CompleteProfile = ({ route, navigation }) => {
     </ImageBackground>
   );
 };
-
 
 const styles = StyleSheet.create({
   backgroundImage: {

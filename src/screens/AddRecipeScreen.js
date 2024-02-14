@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { useToken } from '../components/TokenProvider'; 
 import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling'; 
 
-const RecipeForm = ({ route, navigation }) => {
-  
-  const { userId, accessToken } = route.params;
+const RecipeForm = ({ route }) => {
+  const navigation = useNavigation();
+  const { getToken } = useToken(); // Use the useToken hook to access getToken function
+  const accessToken = getToken(); // Retrieve the access token using getToken function
+
+  // Retrieve userId and recipeId from route parameters
+  const { userId, recipeId } = route.params;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -20,6 +25,7 @@ const RecipeForm = ({ route, navigation }) => {
   const handleSave = async () => {
     try {
       // Prepare recipe data object
+      console.log("user id "+ userId);
       const recipeData = {
         title,
         description,
@@ -34,14 +40,13 @@ const RecipeForm = ({ route, navigation }) => {
       const response = await fetch(`${API_HOST}/recipes`, {
         method: 'POST',
         headers: {
-           Accept: 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`
         },
         body: JSON.stringify(recipeData)
       });
 
-      
       if (response.ok) {
         // Recipe creation successful, navigate to image upload screen
         const responseData = await response.json();
@@ -49,10 +54,10 @@ const RecipeForm = ({ route, navigation }) => {
 
         console.log(recipeId);
         console.log(' saving recipe:', responseData);
+        // Pass userId and recipeId when navigating to UploadRecipeImageScreen
         navigation.navigate('ImageUpload', {
-          userId,
-          accessToken,
-          recipeId: recipeId// Assuming the response contains the newly created recipe ID
+          userId: userId,
+          recipeId: recipeId
         });
         
       } else {
@@ -78,41 +83,6 @@ const RecipeForm = ({ route, navigation }) => {
       alert('Failed to save recipe. Please try again later.');
     }
   };
-  
-  
-
-  // const saveImageToDatabase = async (selectedImage) => {
-  //   try {
-      
-  //     const apiUrl = `${API_HOST}/image/${userId}/recipe`;
-  //     console.log('user id :', userId);
-  //     console.log('Access Token:', accessToken);
-
-  //     const formData = new FormData();
-  //     formData.append('image', {
-  //       uri: selectedImage.uri,
-  //       name: 'profile_image.jpg',
-  //       type: 'image/jpg',
-  //     });
-
-  //     const response = await fetch(apiUrl, {
-  //       method: 'POST',
-  //       body: formData,
-  //       headers: {
-  //         Accept: 'application/json',
-  //         'Content-Type': 'multipart/form-data',
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error('Error saving image:', errorData);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error during API call:', error);
-  //   }
-  // };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

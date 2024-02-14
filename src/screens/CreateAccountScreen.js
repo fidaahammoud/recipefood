@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import { useToken } from '../components/TokenProvider'; 
 import { API_HOST } from "@env";
 
 export default function CreateAccount() {
   const navigation = useNavigation();
+  const { saveToken } = useToken(); // Use the useToken hook to access saveToken function
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,8 +16,9 @@ export default function CreateAccount() {
       alert('Password and Confirm Password do not match');
       return;
     }
+
     const apiUrl = `${API_HOST}/register`;
-  
+
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -34,34 +36,28 @@ export default function CreateAccount() {
       const responseData = await response.text();
 
       try {
-        const data = JSON.parse(responseData);
+        const respData = JSON.parse(responseData);
 
         if (response.ok) {
-          // Registration successful
           console.log('Registration successful');
-          
-          if (data && data.data && data.data.id && data.access_token) {
-            console.log('User ID:', data.data.id);
-            console.log('Access Token:', data.access_token);
 
-            // Handle the successful registration, navigate to CompleteProfile
+          if (respData && respData.data && respData.data.id && respData.access_token) {
+            // Save the token using the saveToken function from useToken hook
+            saveToken(respData.access_token);
+
             navigation.navigate('CompleteProfile', {
-              userId: data.data.id,
-              accessToken: data.access_token,
+              userId: respData.data.id,
             });
           } else {
-            console.error('Unexpected response format:', data);
+            console.error('Unexpected response format:', respData);
             alert('Unexpected response format. Please try again.');
           }
         } else {
-          // Registration failed
-          console.log('Registration failed:', data);
+          console.log('Registration failed:', respData);
 
-          // Check if the email is not unique
-          if (response.status === 422 && data.errors && data.errors.email) {
+          if (response.status === 422 && respData.errors && respData.errors.email) {
             alert('The email has already been taken. Please use a different email.');
           } else {
-            // Handle other registration errors
             alert('Registration failed. Please try again.');
           }
         }
@@ -78,13 +74,10 @@ export default function CreateAccount() {
 
   return (
     <View style={styles.container}>
-      {/* Image */}
       <Image
         source={require('../../assets/images/createAccountImg.jpg')}
         style={styles.headerImage}
       />
-
-      {/* Top Container with Buttons */}
       <View style={styles.topContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>Back</Text>
@@ -93,8 +86,6 @@ export default function CreateAccount() {
           <Text style={styles.loginButton}>Login</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Form Section */}
       <View style={styles.formContainer}>
         <Text style={styles.instructionsText}>
           <Text style={{ fontWeight: 'bold', fontSize: 24, color: '#654321' }}>

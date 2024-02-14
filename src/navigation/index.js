@@ -12,11 +12,13 @@ import LoginScreen from "../screens/LoginScreen";
 import ViewAllChefsScreen from '../screens/ViewAllChefsScreen'; 
 import AddRecipeScreen from '../screens/AddRecipeScreen'; 
 import UploadRecipeImageScreen from '../screens/UploadRecipeImageScreen'; 
+import { TokenProvider } from '../components/TokenProvider';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
     return (
+        <TokenProvider>
         <NavigationContainer>
             <Stack.Navigator 
             initialRouteName="Welcome"
@@ -36,6 +38,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="ImageUpload" component={UploadRecipeImageScreen} />
             </Stack.Navigator>
         </NavigationContainer>  
+        </TokenProvider>
         
     );
   }
