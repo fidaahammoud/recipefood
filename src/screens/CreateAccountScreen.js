@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useToken } from '../components/TokenProvider'; 
+import { useAuth } from '../components/AuthProvider'; 
 import { API_HOST } from "@env";
 
 export default function CreateAccount() {
   const navigation = useNavigation();
-  const { saveToken } = useToken(); // Use the useToken hook to access saveToken function
+  const { saveAuthData } = useAuth(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -42,12 +42,11 @@ export default function CreateAccount() {
           console.log('Registration successful');
 
           if (respData && respData.data && respData.data.id && respData.access_token) {
-            // Save the token using the saveToken function from useToken hook
-            saveToken(respData.access_token);
+            // Save the token and user ID using the saveAuthData function from useAuth hook
+            saveAuthData(respData.access_token, respData.data.id);
+            console.log(respData.access_token+ " "+respData.data.id);
+            navigation.navigate('CompleteProfile');
 
-            navigation.navigate('CompleteProfile', {
-              userId: respData.data.id,
-            });
           } else {
             console.error('Unexpected response format:', respData);
             alert('Unexpected response format. Please try again.');
@@ -71,6 +70,7 @@ export default function CreateAccount() {
       alert('Error during registration. Please try again.');
     }
   };
+
 
   return (
     <View style={styles.container}>

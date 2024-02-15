@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, TextInput, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useToken } from '../components/TokenProvider';
+import { useAuth } from '../components/AuthProvider';
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
@@ -10,10 +10,9 @@ import Footer from "../components/Footer";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const { getToken } = useToken(); 
-  const accessToken = getToken(); 
-  const route = useRoute();
-  const { userId } = route.params;
+  const { getAuthData } = useAuth();
+  const { userId } = getAuthData();
+
   
   return (
     <View style={styles.container}>
@@ -68,7 +67,7 @@ const HomeScreen = () => {
       </ScrollView>
 
       {/* Footer */}
-      <Footer userId={userId} />
+      <Footer/>
     </View>
   );
 };

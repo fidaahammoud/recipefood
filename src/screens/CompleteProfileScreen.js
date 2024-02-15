@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useToken } from '../components/TokenProvider'; 
+import { useAuth } from '../components/AuthProvider'; // Import useAuth hook from AuthProvider
 import ImagePickerComponent from '../components/ImageHandling'; 
 import { API_HOST } from "@env";
 
 const CompleteProfile = () => {
   const navigation = useNavigation();
-  const route = useRoute();
+ 
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
@@ -16,11 +16,11 @@ const CompleteProfile = () => {
   const [loading, setLoading] = useState(false);
   
   // Retrieve user ID from route parameters
-  const { userId } = route.params;
   
-  // Retrieve access token from token provider
-  const { getToken } = useToken(); // Use the useToken hook to access getToken function
-  const accessToken = getToken(); // Retrieve the access token using getToken function
+  
+  // Retrieve access token and user ID from auth provider
+  const { getAuthData } = useAuth();
+  const { userId, token } = getAuthData();
 
   useEffect(() => {
     setStoredImageUri(imageUriRef.current);
@@ -36,7 +36,7 @@ const CompleteProfile = () => {
       console.log('user id:', userId);
 
       const apiUrl = `${API_HOST}/image/${userId}`;
-      console.log('Access Token:', accessToken);
+      console.log('Access Token:', token);
 
       const formData = new FormData();
       formData.append('image', {
@@ -51,7 +51,7 @@ const CompleteProfile = () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -67,14 +67,14 @@ const CompleteProfile = () => {
   const handleSubmit = async () => {
     try {
       const apiUrl = `${API_HOST}/completeProfile/${userId}`;
-      console.log('Access Token:', accessToken);
+      console.log('Access Token:', token);
   
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           username,
@@ -89,7 +89,7 @@ const CompleteProfile = () => {
         console.log(result.message);
         console.log(result.user);
   
-        navigation.navigate('Home', { userId: userId });
+        navigation.navigate('Home');
       } else {
         console.error(result.error);
       }

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
-import { useToken } from '../components/TokenProvider'; 
+import { useAuth } from '../components/AuthProvider'; 
 
 export default function Login() {
   const navigation = useNavigation();
-  const { saveToken } = useToken(); // Use the setToken function from useToken hook
+  const { saveAuthData } = useAuth(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -31,8 +31,7 @@ export default function Login() {
         console.log('Access Token:', responseData.access_token);
         console.log('User ID:', responseData.user_id);
         
-        // Set the access token using the setToken function
-        saveToken(responseData.access_token);
+        saveAuthData(responseData.access_token, responseData.user_id);
         
         navigation.navigate('Home', {
           userId: responseData.user_id,

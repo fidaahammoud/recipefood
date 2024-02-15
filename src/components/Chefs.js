@@ -27,7 +27,7 @@ const Chefs = () => {
             })
             .then((imageData) => {
               const imageUrl = `${BASE_URL}/storage/${imageData.data.image}`;
-              console.log("Image URL for chef", chef.id, ":", imageUrl);
+              //console.log("Image URL for chef", chef.id, ":", imageUrl);
               return {
                 ...chef,
                 imageUrl: imageUrl,

@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useToken } from '../components/TokenProvider'; 
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useAuth } from '../components/AuthProvider'; 
 import { API_HOST } from "@env";
-import ImagePickerComponent from '../components/ImageHandling'; 
 
-const RecipeForm = ({ route }) => {
+
+const RecipeForm = () => {
   const navigation = useNavigation();
-  const { getToken } = useToken(); // Use the useToken hook to access getToken function
-  const accessToken = getToken(); // Retrieve the access token using getToken function
-
-  // Retrieve userId and recipeId from route parameters
-  const { userId, recipeId } = route.params;
+  const { getAuthData } = useAuth();
+  const { userId, token } = getAuthData();
+  const route = useRoute();
+  const { recipeId: initialRecipeId } = route.params || {}; // Handle absence of recipeId parameter
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -20,12 +19,10 @@ const RecipeForm = ({ route }) => {
   const [ingredients, setIngredients] = useState('');
   const [preparationTime, setPreparationTime] = useState('');
   const [comments, setComments] = useState('');
-  const [image, setImage] = useState(null);
+  const [recipeId, setRecipeId] = useState(initialRecipeId || null); // Initialize recipeId with the initialRecipeId or null
 
   const handleSave = async () => {
     try {
-      // Prepare recipe data object
-      console.log("user id "+ userId);
       const recipeData = {
         title,
         description,
@@ -36,35 +33,25 @@ const RecipeForm = ({ route }) => {
         preparationSteps: [steps]
       };
 
-      // Send POST request to the backend API to save recipe details
       const response = await fetch(`${API_HOST}/recipes`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(recipeData)
       });
 
       if (response.ok) {
-        // Recipe creation successful, navigate to image upload screen
         const responseData = await response.json();
-        const recipeId = responseData.data.id;
+        const newRecipeId = responseData.data.id;
+        setRecipeId(newRecipeId); 
 
-        console.log(recipeId);
-        console.log(' saving recipe:', responseData);
-        // Pass userId and recipeId when navigating to UploadRecipeImageScreen
-        navigation.navigate('ImageUpload', {
-          userId: userId,
-          recipeId: recipeId
-        });
-        
+        navigation.navigate('ImageUpload', { recipeId: newRecipeId }); // Navigate with the new recipe ID
       } else {
-        // Handle failed recipe creation
-        console.error('Error saving recipe:', error); // Log the error object directly
+        console.error('Error saving recipe:', error);
         if (response.status === 422) {
-          // Handle validation errors
           const responseData = await response.json();
           if (responseData.errors) {
             const errorMessages = Object.values(responseData.errors).flat();
@@ -73,13 +60,11 @@ const RecipeForm = ({ route }) => {
             alert('Failed to save recipe. Please try again ');
           }
         } else {
-          // Handle other errors
           alert('Failed to save recipe.');
         }
       }
     } catch (error) {
-      console.log(" access token : "+accessToken);
-      console.error('Error saving recipe:', error); // Log the error object directly
+      console.error('Error saving recipe:', error);
       alert('Failed to save recipe. Please try again later.');
     }
   };

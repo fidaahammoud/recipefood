@@ -3,14 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
-const Footer = ({ userId }) => {
+const Footer = () => {
   const navigation = useNavigation();
   
   const handleUploadPress = () => {
-    console.log("footer "+userId);
-    navigation.navigate('AddRecipe', {
-      userId: userId,
-    });
+    navigation.navigate('AddRecipe');
   }; 
 
   return (

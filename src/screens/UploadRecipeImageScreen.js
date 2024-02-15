@@ -2,28 +2,27 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import ImagePickerComponent from '../components/ImageHandling'; 
-import { useToken } from '../components/TokenProvider'; 
+import { useAuth } from '../components/AuthProvider'; 
 import { API_HOST } from "@env";
 
 const UploadRecipeImageScreen = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { userId, recipeId } = route.params; // Retrieve userId from route parameters
-  const { getToken } = useToken(); // Use the useToken hook to access getToken function
-  const accessToken = getToken(); // Retrieve the access token using getToken function
 
+  const { getAuthData } = useAuth();
+  const { userId, token } = getAuthData();
   // State variable for selected image
   const [image, setImage] = useState(null);
-
+  const route = useRoute();
+  const {  recipeId } = route.params;
   // Function to handle image upload
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      console.log("Access token:", accessToken);
+      console.log("Access token:", token);
       console.log("user id:", userId);
       console.log("recipe id:", recipeId);
 
       const apiUrl = `${API_HOST}/image/${userId}/recipe/${recipeId}`;
-      console.log(" access token upload image recipe "+accessToken);
+      console.log(" access token upload image recipe "+token);
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
@@ -37,7 +36,7 @@ const UploadRecipeImageScreen = () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${accessToken}`, 
+          Authorization: `Bearer ${token}`, 
         },
         
       });
