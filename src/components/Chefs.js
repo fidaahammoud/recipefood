@@ -21,13 +21,12 @@ const Chefs = () => {
           return fetch(`${API_HOST}/images/${chef.image_id}`)
             .then((response) => {
               if (!response.ok) {
-                throw new Error(`Failed to fetch image for chef ${chef.id}: ${response.statusText}`);
+                throw new Error(`Failed to fetch image for chef ${chef.id}`);
               }
               return response.json();
             })
             .then((imageData) => {
               const imageUrl = `${BASE_URL}/storage/${imageData.data.image}`;
-              //console.log("Image URL for chef", chef.id, ":", imageUrl);
               return {
                 ...chef,
                 imageUrl: imageUrl,
