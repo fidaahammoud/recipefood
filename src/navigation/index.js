@@ -14,7 +14,7 @@ import AddRecipeScreen from '../screens/AddRecipeScreen';
 import UploadRecipeImageScreen from '../screens/UploadRecipeImageScreen'; 
 import { AuthProvider } from '../components/AuthProvider';
 import RecipeDetailsScreen from '../screens/RecipeDetailsScreen'; 
-
+import ProfileScreen from '../screens/ProfileScreen'; 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
@@ -38,6 +38,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="AddRecipe" component={AddRecipeScreen} />
                 <Stack.Screen name="ImageUpload" component={UploadRecipeImageScreen} />
                 <Stack.Screen name="RecipeDetails" component={RecipeDetailsScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
             </Stack.Navigator>
         </NavigationContainer>  
         </AuthProvider>

@@ -10,7 +10,7 @@ const RecipeForm = () => {
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
   const route = useRoute();
-  const { recipeId: initialRecipeId } = route.params || {}; // Handle absence of recipeId parameter
+  
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -19,7 +19,7 @@ const RecipeForm = () => {
   const [ingredients, setIngredients] = useState('');
   const [preparationTime, setPreparationTime] = useState('');
   const [comments, setComments] = useState('');
-  const [recipeId, setRecipeId] = useState(initialRecipeId || null); // Initialize recipeId with the initialRecipeId or null
+  const [recipeId, setRecipeId] = useState(''); 
 
   const handleSave = async () => {
     try {
@@ -48,7 +48,7 @@ const RecipeForm = () => {
         const newRecipeId = responseData.data.id;
         setRecipeId(newRecipeId); 
 
-        navigation.navigate('ImageUpload', { recipeId: newRecipeId }); // Navigate with the new recipe ID
+        navigation.navigate('ImageUpload', { recipeId: newRecipeId });
       } else {
         console.error('Error saving recipe:', error);
         if (response.status === 422) {
@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   multiline: {
-    height: 100, // Adjust as needed
-    textAlignVertical: 'top', // For multiline text alignment
+    height: 100, 
+    textAlignVertical: 'top', 
   },
 });
 

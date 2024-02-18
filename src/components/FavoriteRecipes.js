@@ -3,12 +3,16 @@ import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'rea
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import useRecipeFetcher from "../components/RecipeFetcher";
+import useRecipeFetcher from "./RecipeFetcher";
+import { useAuth } from '../components/AuthProvider'; 
 
-
-const LatestRecipes = () => {
+const FavoriteRecipes = () => {
   const navigation = useNavigation();
-  const { recipes, error } = useRecipeFetcher(`${API_HOST}/recipes?sort=-created_at`);
+  const { getAuthData } = useAuth();
+  const { userId, token } = getAuthData();
+
+  const { recipes, error } = useRecipeFetcher(`${API_HOST}/users/${userId}/favorites`);
+  console.log("favorit recipes api: "+`${API_HOST}/users/${userId}/favorites`);
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
@@ -106,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LatestRecipes;
+export default FavoriteRecipes;

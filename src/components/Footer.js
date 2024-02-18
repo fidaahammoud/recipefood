@@ -10,6 +10,10 @@ const Footer = () => {
     navigation.navigate('AddRecipe');
   }; 
 
+  const handleProfilePress = () => {
+    navigation.navigate('Profile');
+  }; 
+
   return (
     <View style={styles.footer}>
       <TouchableOpacity style={styles.iconContainer}>
@@ -24,7 +28,7 @@ const Footer = () => {
         <Icon name="bell" size={30} color="black" />
         <Text>Notifications</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity style={styles.iconContainer}  onPress={handleProfilePress}>
         <Icon name="user" size={30} color="black" />
         <Text>Profile</Text>
       </TouchableOpacity>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useAuth } from '../components/AuthProvider'; // Import useAuth hook from AuthProvider
+import { useAuth } from '../components/AuthProvider'; 
 import ImagePickerComponent from '../components/ImageHandling'; 
 import { API_HOST } from "@env";
 
@@ -15,10 +15,6 @@ const CompleteProfile = () => {
   const imageUriRef = useRef(null);
   const [loading, setLoading] = useState(false);
   
-  // Retrieve user ID from route parameters
-  
-  
-  // Retrieve access token and user ID from auth provider
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
 
