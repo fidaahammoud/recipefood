@@ -5,6 +5,7 @@ import PersonalInformationComponent from '../components/PersonalInformationCompo
 import { useNavigation } from '@react-navigation/native';
 import RecipeOfUser from '../components/RecipeOfUser';
 import FavoriteRecipes from '../components/FavoriteRecipes';
+import Footer from "../components/Footer"; 
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -22,6 +23,11 @@ const ProfileScreen = () => {
     setShowMyRecipes(false);
   };
 
+  const handleEditProfilePress = () => {
+    navigation.navigate('EditProfile');
+  };
+
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handleSettingsPress} style={styles.settingsButton}>
@@ -29,7 +35,7 @@ const ProfileScreen = () => {
       </TouchableOpacity>
       <PersonalInformationComponent />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity style={styles.profileButton} onPress={handleEditProfilePress}>
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
@@ -48,6 +54,9 @@ const ProfileScreen = () => {
         </TouchableOpacity>
       </View>
       {showMyRecipes ? <RecipeOfUser /> : <FavoriteRecipes />}
+
+       {/* Footer */}
+       <Footer/>
     </View>
   );
 };

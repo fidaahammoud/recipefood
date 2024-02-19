@@ -48,8 +48,7 @@ const UploadRecipeImageScreen = () => {
         Alert.alert('Error', 'Failed to upload recipe image. Please try again.');
       } else {
         console.log('Recipe image added successfully');
-        // Optionally, navigate the user to another screen or provide visual feedback
-        navigation.goBack(); // Navigate back after successful upload
+        navigation.navigate('Home');
       }
     } catch (error) {
       console.error('Error during API call:', error);

@@ -14,9 +14,17 @@ const Footer = () => {
     navigation.navigate('Profile');
   }; 
 
+  const handleHomeePress = () => {
+    navigation.navigate('Home');
+  }; 
+  const handleNotificationPress = () => {
+    //navigation.navigate('Notificatio');
+  }; 
+
+
   return (
     <View style={styles.footer}>
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity style={styles.iconContainer}onPress={handleHomeePress}>
         <Icon name="home" size={30} color="black" />
         <Text>Home</Text>
       </TouchableOpacity>

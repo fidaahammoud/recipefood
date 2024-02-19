@@ -4,18 +4,46 @@ import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import useRecipeFetcher from "../components/RecipeFetcher";
-
+import { useAuth } from '../components/AuthProvider';
 
 const LatestRecipes = () => {
   const navigation = useNavigation();
   const { recipes, error } = useRecipeFetcher(`${API_HOST}/recipes?sort=-created_at`);
+  const { getAuthData } = useAuth();
+  const {  token} = getAuthData();
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
-  const handleLikePress = (recipeId) => {
-    console.log(`Liked recipe: ${recipeId}`);
+  const handleLikePress = async (recipeId) => {
+    try {
+      const response = await fetch(`${API_HOST}/recipes/${recipeId}/like`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to like recipe');
+      }
+  
+      const responseData = await response.json();
+      if (responseData.message) {
+        // Display an alert with the message from the API response
+        alert(responseData.message);
+      } else {
+        console.warn('Received unexpected response from server:', responseData);
+      }
+      
+      // Optionally, you can update the state or perform any other action upon successful liking of the recipe
+      console.log(`Liked recipe: ${recipeId}`);
+    } catch (error) {
+      console.error('Error liking recipe:', error);
+    }
   };
 
   return (
