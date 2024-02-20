@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -8,9 +8,9 @@ import { useAuth } from '../components/AuthProvider';
 
 const LatestRecipes = () => {
   const navigation = useNavigation();
-  const { recipes, error } = useRecipeFetcher(`${API_HOST}/recipes?sort=-created_at`);
+  const { recipes, error, setRecipes } = useRecipeFetcher(`${API_HOST}/recipes?sort=-created_at`);
   const { getAuthData } = useAuth();
-  const {  token} = getAuthData();
+  const { token } = getAuthData();
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
@@ -33,18 +33,27 @@ const LatestRecipes = () => {
   
       const responseData = await response.json();
       if (responseData.message) {
-        // Display an alert with the message from the API response
-        alert(responseData.message);
+        Alert.alert(responseData.message);
+        // Update the number of likes in the state
+        const updatedRecipes = recipes.map(recipe => {
+          if (recipe.id === recipeId) {
+            return {
+              ...recipe,
+              nbOfLikes: responseData.nbOfLikes
+            };
+          }
+          return recipe;
+        });
+        setRecipes(updatedRecipes);
       } else {
         console.warn('Received unexpected response from server:', responseData);
       }
-      
-      // Optionally, you can update the state or perform any other action upon successful liking of the recipe
-      console.log(`Liked recipe: ${recipeId}`);
+  
     } catch (error) {
       console.error('Error liking recipe:', error);
     }
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
