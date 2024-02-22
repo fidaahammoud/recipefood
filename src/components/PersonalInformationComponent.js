@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { API_HOST } from "@env";
 import { useAuth } from './AuthProvider';
+import HttpService from './HttpService'; 
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
@@ -12,36 +13,25 @@ const PersonalInformationComponent = () => {
   const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
+    const httpService = new HttpService(); 
+  
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${API_HOST}/users/${userId}`);
-       
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+        console.log(userId);
+        const response = await httpService.get(`${API_HOST}/users/${userId}`);
+        const userData = response; 
+        setUserData(userData);
+        if(userData && userData.images) {
+          setProfileImage(`${BASE_URL}/storage/${userData.images.image}`);
         }
-        const userData = await response.json();
-        setUserData(userData.data);
-        fetchProfileImage(userData.data.image_id);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
+  
     fetchUserData();
   }, [userId]);
-
-  const fetchProfileImage = async (imageId) => {
-    try {
-      const response = await fetch(`${API_HOST}/images/${imageId}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch profile image for user ${userId}`);
-      }
-      const imageData = await response.json();
-      setProfileImage(`${BASE_URL}/storage/${imageData.data.image}`);
-    } catch (error) {
-      console.error('Error fetching profile image:', error);
-    }
-  };
+  
 
   return (
     <View style={styles.container}>

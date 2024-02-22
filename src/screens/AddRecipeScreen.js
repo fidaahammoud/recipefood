@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
@@ -29,8 +29,7 @@ const RecipeForm = () => {
   }, [imageId]);
 
   const validateForm = () => {
-    console.log("validae form");
-    if (title.trim() !== '' && description.trim() !== '' && imageId.toString().trim() !== '') {
+    if (title.trim() !== '' && description.trim() !== '' && imageId.toString().trim() !== '' && category.trim() !== '' && ingredients.trim() !== '' && steps.trim() !== '' && preparationTime.trim() !== '' ) {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
@@ -40,12 +39,7 @@ const RecipeForm = () => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      console.log("Access token:", token);
-      console.log("user id:", userId);
-      
-
       const apiUrl = `${API_HOST}/image/${userId}/recipe`;
-      console.log(" access token upload image recipe " + token);
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
@@ -61,26 +55,18 @@ const RecipeForm = () => {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
-
       });
 
       if (!response.ok) {
         const errorData = await response.text();
         console.error('Error saving image:', errorData);
-        // Show an error message to the user
         Alert.alert('Error', 'Failed to upload recipe image. Please try again.');
       } else {
         const result = await response.json();
-       setImageId(result.id);
-        //validateForm();
-       
-      console.log('Recipe image added successfully');
-
-       
+        setImageId(result.id);
       }
     } catch (error) {
       console.error('Error during API call:', error);
-      // Show an error message to the user
       Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
     }
   };
@@ -97,9 +83,8 @@ const RecipeForm = () => {
           comment: comments,
           ingredients: [{ ingredientName: ingredients, measurementUnit: 'grams' }],
           preparationSteps: [steps],
-          image_id:imageId
+          image_id: imageId
         };
-        console.log(recipeData);
 
         const response = await fetch(`${API_HOST}/recipes`, {
           method: 'POST',
@@ -115,7 +100,6 @@ const RecipeForm = () => {
           const responseData = await response.json();
           const newRecipeId = responseData.data.id;
           setRecipeId(newRecipeId);
-
           navigation.navigate('Home');
         } else {
           console.error('Error saving recipe:', error);
@@ -138,6 +122,10 @@ const RecipeForm = () => {
       console.error('Error saving recipe:', error);
       alert('Failed to save recipe. Please try again later.');
     }
+  };
+
+  const handleCancel = () => {
+    navigation.navigate('Home');
   };
 
   return (
@@ -197,10 +185,14 @@ const RecipeForm = () => {
         multiline
       />
 
-      <View style={styles.container}>
+      <View style={styles.imagePicker}>
         <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
       </View>
-      <Button title="Submit" onPress={handleSave} disabled={!isFormValid} />
+      
+      <View style={styles.buttonContainer}>
+        <Button title="Cancel" onPress={handleCancel} color="#FF0000" />
+        <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
+      </View>
     </ScrollView>
   );
 };
@@ -223,6 +215,13 @@ const styles = StyleSheet.create({
   multiline: {
     height: 100,
     textAlignVertical: 'top',
+  },
+  imagePicker: {
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 

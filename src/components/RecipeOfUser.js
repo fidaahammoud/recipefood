@@ -12,15 +12,14 @@ const RecipeOfUser = () => {
   const { userId, token } = getAuthData();
 
   const { recipes, error } = useRecipeFetcher(`${API_HOST}/users/${userId}/recipes?sort=-created_at`);
-  console.log(`${API_HOST}/users/${userId}/recipes`);
+  
+  //console.log("users recipe url: "+`${API_HOST}/users/${userId}/recipes`);
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
-  const handleLikePress = (recipeId) => {
-    console.log(`Liked recipe: ${recipeId}`);
-  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -34,12 +33,12 @@ const RecipeOfUser = () => {
           <Image source={{ uri: recipe.imageUrl }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>
-            <TouchableOpacity onPress={() => handleLikePress(recipe.id)}>
+            <View >
               <View style={styles.likesContainer}>
                 <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
                 <Text style={styles.likesText}>{recipe.nbOfLikes}</Text>
               </View>
-            </TouchableOpacity>
+            </View>
             <View style={styles.ratingContainer}>
               <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>

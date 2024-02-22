@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider'; 
+import HttpService from '../components/HttpService'; 
 import { API_HOST } from "@env";
 
 export default function CreateAccount() {
@@ -10,6 +11,8 @@ export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const httpService = new HttpService();
 
   const handleCreateAccount = async () => {
     if (password !== confirmPassword) {
@@ -20,57 +23,25 @@ export default function CreateAccount() {
     const apiUrl = `${API_HOST}/register`;
 
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          password_confirmation: confirmPassword,
-        }),
-      });
+      const responseData = await httpService.post(apiUrl, {
+        email: email,
+        password: password,
+        password_confirmation: confirmPassword,
+      },null);
 
-      const responseData = await response.text();
-
-      try {
-        const respData = JSON.parse(responseData);
-
-        if (response.ok) {
-          console.log('Registration successful');
-
-          if (respData && respData.data && respData.data.id && respData.access_token) {
-            // Save the token and user ID using the saveAuthData function from useAuth hook
-            saveAuthData(respData.access_token, respData.data.id);
-            console.log(respData.access_token+ " "+respData.data.id);
-            navigation.navigate('CompleteProfile');
-
-          } else {
-            console.error('Unexpected response format:', respData);
-            alert('Unexpected response format. Please try again.');
-          }
-        } else {
-          console.log('Registration failed:', respData);
-
-          if (response.status === 422 && respData.errors && respData.errors.email) {
-            alert('The email has already been taken. Please use a different email.');
-          } else {
-            alert('Registration failed. Please try again.');
-          }
-        }
-      } catch (parseError) {
-        console.error('Error parsing JSON response:', parseError);
-        console.log('Raw Response:', responseData);
-        alert(`Error parsing server response. Please try again.\n\nRaw Response:\n${responseData}`);
+      if (responseData && responseData.data && responseData.data.id && responseData.access_token) {
+        saveAuthData(responseData.access_token, responseData.data.id);
+        console.log(responseData.access_token+ " "+responseData.data.id);
+        navigation.navigate('CompleteProfile');
+      } else {
+        console.error('Unexpected response format:', responseData);
+        alert('Unexpected response format. Please try again.');
       }
     } catch (error) {
       console.error('Error during registration:', error);
       alert('Error during registration. Please try again.');
     }
   };
-
 
   return (
     <View style={styles.container}>

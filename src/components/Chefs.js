@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
+import HttpService from './HttpService';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
@@ -9,33 +10,19 @@ const Chefs = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_HOST}/users`)
+    const httpService = new HttpService(); 
+
+    httpService.get(`${API_HOST}/users`,null)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch chefs');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const chefPromises = data.data.map((chef) => {
-          return fetch(`${API_HOST}/images/${chef.image_id}`)
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`Failed to fetch image for chef ${chef.id}`);
-              }
-              return response.json();
-            })
-            .then((imageData) => {
-              const imageUrl = `${BASE_URL}/storage/${imageData.data.image}`;
-              return {
-                ...chef,
-                imageUrl: imageUrl,
-              };
-            });
+        const chefsData = response.data.map((chef) => {
+          const imageUrl = `${BASE_URL}/storage/${chef.images.image}`;
+          return {
+            ...chef,
+            imageUrl: imageUrl,
+          };
         });
-        return Promise.all(chefPromises);
+        setChefs(chefsData);
       })
-      .then((chefsData) => setChefs(chefsData))
       .catch((error) => setError(error.message));
   }, []);
 

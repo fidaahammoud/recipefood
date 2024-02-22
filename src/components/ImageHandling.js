@@ -23,7 +23,7 @@ const ImagePickerComponent = ({ setImage, saveImageToDatabase }) => {
 
   return (
     <>
-      <Button title="Upload a photo" onPress={pickImage} />
+      <Button title="Upload a photo" onPress={pickImage} color="#5B4444" />
     </>
   );
 };

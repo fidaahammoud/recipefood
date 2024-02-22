@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useAuth } from '../components/AuthProvider'; 
-import ImagePickerComponent from '../components/ImageHandling'; 
+import { useAuth } from '../components/AuthProvider';
+import HttpService from '../components/HttpService';
+import ImagePickerComponent from '../components/ImageHandling';
 import { API_HOST } from "@env";
 
 const CompleteProfile = () => {
   const navigation = useNavigation();
- 
+
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [storedImageUri, setStoredImageUri] = useState(null);
   const imageUriRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  
+
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
 
@@ -27,13 +28,12 @@ const CompleteProfile = () => {
     setStoredImageUri(uri);
   };
 
+  const httpService = new HttpService();
+
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      console.log('user id:', userId);
-
       const apiUrl = `${API_HOST}/image/${userId}`;
-      console.log('Access Token:', token);
-
+      
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
@@ -41,58 +41,37 @@ const CompleteProfile = () => {
         type: 'image/jpg',
       });
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('Error saving image:', errorData);
-      }
+      await httpService.uploadImage(apiUrl, formData, token);
     } catch (error) {
-      console.error('Error during API call:', error);
+      console.error('Error during image upload:', error);
     }
   };
 
   const handleSubmit = async () => {
     try {
       const apiUrl = `${API_HOST}/completeProfile/${userId}`;
-      console.log('Access Token:', token);
   
-      const response = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          username,
-          name: fullName,
-          bio: aboutMe,
-        }),
-      });
+      const response = await httpService.put(apiUrl, {
+        username,
+        name: fullName,
+        bio: aboutMe,
+      }, token);
   
-      const result = await response.json();
+      console.log('Server response:', response);
   
-      if (response.ok) {
-        console.log(result.message);
-        console.log(result.user);
+      if (response && response.message === "Profile completed successfully") {
+        console.log(response.message);
+        console.log(response.user);
   
         navigation.navigate('Home');
       } else {
-        console.error(result.error);
+        console.error(response.message);
       }
     } catch (error) {
       console.error('Error during profile update:', error);
     }
   };
+  
 
   return (
     <ImageBackground
@@ -124,8 +103,10 @@ const CompleteProfile = () => {
           onChangeText={setAboutMe}
         />
         <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
-        <Button title="Submit" onPress={handleSubmit} />
-        {loading && <ActivityIndicator size="small" color="#8B4513" />}
+        <View style={styles.buttonContainer}>
+          <Button title="Submit" onPress={handleSubmit} color="#5B4444" />
+          {loading && <ActivityIndicator size="small" color="#5B4444" />}
+        </View>
       </View>
     </ImageBackground>
   );
@@ -165,6 +146,10 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     marginBottom: 10,
+  },
+  buttonContainer: {
+    marginTop: 10,
+    width: '100%',
   },
 });
 
