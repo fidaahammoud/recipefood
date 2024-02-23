@@ -19,6 +19,32 @@ const CompleteProfile = () => {
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
 
+
+  const [error, setError] = useState(null);
+  
+  postData = async (data) => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.put(`${API_HOST}/completeProfile/${userId}`,data,token);
+      console.log(response.user);
+      navigation.navigate('Home');
+    } 
+    catch (error) {
+      setError(error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const data = {
+        username,
+        name: fullName,
+        bio: aboutMe,
+    };
+    postData(data);
+  };
+
+
+
   useEffect(() => {
     setStoredImageUri(imageUriRef.current);
   }, []);
@@ -47,30 +73,30 @@ const CompleteProfile = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      const apiUrl = `${API_HOST}/completeProfile/${userId}`;
+  // const handleSubmit = async () => {
+  //   try {
+  //     const apiUrl = `${API_HOST}/completeProfile/${userId}`;
   
-      const response = await httpService.put(apiUrl, {
-        username,
-        name: fullName,
-        bio: aboutMe,
-      }, token);
+  //     const response = await httpService.put(apiUrl, {
+  //       username,
+  //       name: fullName,
+  //       bio: aboutMe,
+  //     }, token);
   
-      console.log('Server response:', response);
+  //     console.log('Server response:', response);
   
-      if (response && response.message === "Profile completed successfully") {
-        console.log(response.message);
-        console.log(response.user);
+  //     if (response && response.message === "Profile completed successfully") {
+  //       console.log(response.message);
+  //       console.log(response.user);
   
-        navigation.navigate('Home');
-      } else {
-        console.error(response.message);
-      }
-    } catch (error) {
-      console.error('Error during profile update:', error);
-    }
-  };
+  //       navigation.navigate('Home');
+  //     } else {
+  //       console.error(response.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during profile update:', error);
+  //   }
+  // };
   
 
   return (

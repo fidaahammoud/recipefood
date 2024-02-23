@@ -17,43 +17,43 @@ const LatestRecipes = () => {
   };
 
   const handleLikePress = async (recipeId) => {
-    // try {
-    //   const response = await fetch(`${API_HOST}/recipes/${recipeId}/like`, {
-    //     method: 'POST',
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
+    try {
+      const response = await fetch(`${API_HOST}/recipes/${recipeId}/like`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
   
-    //   if (!response.ok) {
-    //     throw new Error('Failed to like recipe');
-    //   }
+      if (!response.ok) {
+        throw new Error('Failed to like recipe');
+      }
   
-    //   const responseData = await response.json();
-    //   if (responseData.message) {
-    //     Alert.alert(responseData.message);
-    //     // Update the number of likes in the state only if setRecipes is available
-    //     if (setRecipes) {
-    //       const updatedRecipes = recipes.map(recipe => {
-    //         if (recipe.id === recipeId) {
-    //           return {
-    //             ...recipe,
-    //             nbOfLikes: responseData.nbOfLikes
-    //           };
-    //         }
-    //         return recipe;
-    //       });
-    //       setRecipes(updatedRecipes);
-    //     }
-    //   } else {
-    //     console.warn('Received unexpected response from server:', responseData);
-    //   }
+      const responseData = await response.json();
+      if (responseData.message) {
+        Alert.alert(responseData.message);
+        // Update the number of likes in the state only if setRecipes is available
+        if (setRecipes) {
+          const updatedRecipes = recipes.map(recipe => {
+            if (recipe.id === recipeId) {
+              return {
+                ...recipe,
+                nbOfLikes: responseData.nbOfLikes
+              };
+            }
+            return recipe;
+          });
+          setRecipes(updatedRecipes);
+        }
+      } else {
+        console.warn('Received unexpected response from server:', responseData);
+      }
   
-    // } catch (error) {
-    //   console.error('Error liking recipe:', error);
-    // }
+    } catch (error) {
+      console.error('Error liking recipe:', error);
+    }
   };
   
 

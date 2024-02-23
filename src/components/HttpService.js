@@ -30,7 +30,6 @@ class HttpService extends Component {
             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
-        
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');

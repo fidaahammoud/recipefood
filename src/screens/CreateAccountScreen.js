@@ -11,37 +11,60 @@ export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  //const httpService = new HttpService();
 
-  const httpService = new HttpService();
+  postData = async (data) => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.post(`${API_HOST}/register`,data,null);
+      saveAuthData(response.access_token, response.data.id);
+      navigation.navigate('CompleteProfile');
+    } 
+    catch (error) {
+      setError(error);
+    }
+  };
 
   const handleCreateAccount = async () => {
-    if (password !== confirmPassword) {
-      alert('Password and Confirm Password do not match');
-      return;
-    }
-
-    const apiUrl = `${API_HOST}/register`;
-
-    try {
-      const responseData = await httpService.post(apiUrl, {
+    const data = {
         email: email,
         password: password,
         password_confirmation: confirmPassword,
-      },null);
-
-      if (responseData && responseData.data && responseData.data.id && responseData.access_token) {
-        saveAuthData(responseData.access_token, responseData.data.id);
-        console.log(responseData.access_token+ " "+responseData.data.id);
-        navigation.navigate('CompleteProfile');
-      } else {
-        console.error('Unexpected response format:', responseData);
-        alert('Unexpected response format. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error during registration:', error);
-      alert('Error during registration. Please try again.');
-    }
+    };
+    postData(data);
   };
+
+
+
+  // const handleCreateAccount = async () => {
+  //   if (password !== confirmPassword) {
+  //     alert('Password and Confirm Password do not match');
+  //     return;
+  //   }
+
+  //   const apiUrl = `${API_HOST}/register`;
+
+  //   try {
+  //     const responseData = await httpService.post(apiUrl, {
+  //       email: email,
+  //       password: password,
+  //       password_confirmation: confirmPassword,
+  //     },null);
+
+  //     if (responseData && responseData.data && responseData.data.id && responseData.access_token) {
+  //       saveAuthData(responseData.access_token, responseData.data.id);
+  //       console.log(responseData.access_token+ " "+responseData.data.id);
+  //       navigation.navigate('CompleteProfile');
+  //     } else {
+  //       console.error('Unexpected response format:', responseData);
+  //       alert('Unexpected response format. Please try again.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during registration:', error);
+  //     alert('Error during registration. Please try again.');
+  //   }
+  // };
 
   return (
     <View style={styles.container}>

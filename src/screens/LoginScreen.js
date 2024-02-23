@@ -3,6 +3,7 @@ import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider'; 
+import HttpService from '../components/HttpService';
 
 export default function Login() {
   const navigation = useNavigation();
@@ -10,45 +11,26 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    const apiUrl = `${API_HOST}/login`;
+  const [error, setError] = useState(null);
+
+  postData = async (data) => {
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      });
-  
-      const responseData = await response.json();
-  
-      if (response.ok) {
-        console.log('Login successful');
-        console.log('Access Token:', responseData.access_token);
-        console.log('User ID:', responseData.user_id);
-        
-        saveAuthData(responseData.access_token, responseData.user_id);
-        
-        navigation.navigate('Home', {
-          userId: responseData.user_id,
-        });
-      } else {
-        console.log('Login failed:', responseData);
-       
-        if (response.status === 401) {
-          alert('Invalid email or password. Please try again.');
-        } else {
-          alert('Login failed. Please try again.');
-        }
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert('Error during login. Please try again.');
+      const httpService = new HttpService();
+      const response = await httpService.post(`${API_HOST}/login`,data,null);
+      saveAuthData(response.access_token, response.user_id);
+      navigation.navigate('Home');
+    } 
+    catch (error) {
+      setError(error);
     }
+  };
+
+  const handleLogin = async () => {
+    const data = {
+      email: email,
+      password: password
+    };
+    postData(data);
   };
 
   return (
