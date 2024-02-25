@@ -73,32 +73,6 @@ const CompleteProfile = () => {
     }
   };
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const apiUrl = `${API_HOST}/completeProfile/${userId}`;
-  
-  //     const response = await httpService.put(apiUrl, {
-  //       username,
-  //       name: fullName,
-  //       bio: aboutMe,
-  //     }, token);
-  
-  //     console.log('Server response:', response);
-  
-  //     if (response && response.message === "Profile completed successfully") {
-  //       console.log(response.message);
-  //       console.log(response.user);
-  
-  //       navigation.navigate('Home');
-  //     } else {
-  //       console.error(response.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error during profile update:', error);
-  //   }
-  // };
-  
-
   return (
     <ImageBackground
       source={require('../../assets/images/completeProfileBackground.jpg')}

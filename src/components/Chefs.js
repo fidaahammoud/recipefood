@@ -9,19 +9,21 @@ const Chefs = () => {
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
 
-  fetchData = async () => {
-    try {
-      const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/users`,null);
-      console.log(response);
-      setChefs(response.data);
-
-    } catch (error) {
-      setError(error);
-    }
-  };
-
+ 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const httpService = new HttpService();
+        //console.log(`${API_HOST}/users`);
+        const response = await httpService.get(`${API_HOST}/users`,null);
+        //console.log(response);
+        setChefs(response.data);
+  
+      } catch (error) {
+        setError(error);
+      }
+    };
+  
     fetchData();
   }, []);
 

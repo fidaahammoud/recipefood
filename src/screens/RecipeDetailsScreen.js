@@ -1,52 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // Import the FontAwesome icon library
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook for navigation
-
+import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
+//import { BASE_URL } from "@env";
+import HttpService from '../components/HttpService';
 
-const BASE_URL = 'http://192.168.56.10:80/laravel'; // Update with your base URL
+const BASE_URL = 'http://192.168.56.10:80/laravel';
+
 
 const RecipeDetails = ({ route }) => {
   const { recipeId } = route.params;
   const [recipeDetails, setRecipeDetails] = useState(null);
-  const [recipeImage, setRecipeImage] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false); // State to track favorite status
-  const [showIngredients, setShowIngredients] = useState(false); // State to track if ingredients are expanded
-  const [showSteps, setShowSteps] = useState(false); // State to track if steps are expanded
+  const [isFavorite, setIsFavorite] = useState(false); 
+  const [showIngredients, setShowIngredients] = useState(false); 
+  const [showSteps, setShowSteps] = useState(false); 
   const navigation = useNavigation();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchRecipeDetails = async () => {
       try {
-        const response = await fetch(`${API_HOST}/recipes/${recipeId}`);
-        const data = await response.json();
-        setRecipeDetails(data.data);
-
-        // Fetch the image data using the image_id
-        const imageResponse = await fetch(`${API_HOST}/images/${data.data.image_id}`);
-        const imageData = await imageResponse.json();
-        setRecipeImage(`${BASE_URL}/storage/${imageData.data.image}`);
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
+        //console.log(response);
+        setRecipeDetails(response);        
       } catch (error) {
         console.error('Error fetching recipe details:', error);
+        setError(error);
       }
     };
 
     fetchRecipeDetails();
   }, []);
 
+ 
+
+  if (!recipeDetails) {
+    console.log("Recipe details are not available yet.");
+    return <Text>Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text>Error fetching chefs: {error}</Text>;
+  }
+
+
   const handleFavorite = () => {
     // Toggle favorite status
     setIsFavorite(!isFavorite);
   };
 
-  if (!recipeDetails || !recipeImage) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -65,8 +69,8 @@ const RecipeDetails = ({ route }) => {
       
       {/* Recipe Image */}
       <Image
-        source={{ uri: recipeImage }}
-        style={styles.image}
+      source={{ uri: `${BASE_URL}/storage/${recipeDetails.images.image}`}}
+      style={styles.image}
       />
 
       {/* Recipe Details */}

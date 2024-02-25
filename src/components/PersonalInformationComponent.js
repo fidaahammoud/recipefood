@@ -8,49 +8,50 @@ const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const PersonalInformationComponent = () => {
   const { getAuthData } = useAuth();
-  const { userId } = getAuthData();
+  const { userId,token } = getAuthData();
   const [userData, setUserData] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
+  const [error, setError] = useState(null);
+
 
   useEffect(() => {
-    const httpService = new HttpService(); 
-  
-    const fetchUserData = async () => {
+    const fetchPersonalInformation = async () => {
       try {
-        console.log(userId);
-        const response = await httpService.get(`${API_HOST}/users/${userId}`);
-        const userData = response; 
-        setUserData(userData);
-        if(userData && userData.images) {
-          setProfileImage(`${BASE_URL}/storage/${userData.images.image}`);
-        }
+        const httpService = new HttpService();
+        console.log(`${API_HOST}/users/${userId}`);
+        const response = await httpService.get(`${API_HOST}/users/${userId}`,token);
+        console.log(response);
+        setUserData(response);
+  
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        setError(error);
       }
     };
   
-    fetchUserData();
-  }, [userId]);
-  
+    fetchPersonalInformation();
+  }, []);
+
+  if (error) {
+    return <Text>Error fetching chefs: {error}</Text>;
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        {profileImage && (
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        {userData && userData.images && (
+          <Image source={{ uri: `${BASE_URL}/storage/${userData.images.image}` }} style={styles.profileImage} />
         )}
         <View style={styles.textContainer}>
           {userData && (
             <>
               <Text style={styles.name}>{userData.name}</Text>
               <Text style={styles.username}>{userData.username}</Text>
+              <Text style={styles.bio}>{userData.bio}</Text>
+
             </>
           )}
         </View>
       </View>
-      {userData && (
-        <Text style={styles.bio}>  {userData.bio}</Text>
-      )}
+
     </View>
   );
 };
@@ -89,5 +90,6 @@ const styles = StyleSheet.create({
     paddingTop:20,
   },
 });
+
 
 export default PersonalInformationComponent;

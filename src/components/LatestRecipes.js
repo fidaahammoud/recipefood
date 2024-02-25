@@ -1,78 +1,73 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import useRecipeFetcher from "../components/RecipeFetcher";
+//import { BASE_URL } from "@env";
+const BASE_URL = 'http://192.168.56.10:80/laravel';
+
 import { useAuth } from '../components/AuthProvider';
+import HttpService from './HttpService';
 
 const LatestRecipes = () => {
   const navigation = useNavigation();
-  const { recipes, error, setRecipes } = useRecipeFetcher(`${API_HOST}/recipes?sort=-created_at`);
+  const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
+  const [error, setError] = useState(null);
+ 
+  useEffect(() => {
+    const fetchLatestRecipes = async () => {
+      try {
+        console.log(" latest recipes");
+  
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/recipes?sort=-created_at`, null);
+        setRecipes(response.data);
+      }
+       catch (error) {
+        setError(error.message);
+      }
+    };
 
-  const handleRecipePress = (recipeId) => {
-    navigation.navigate('RecipeDetails', { recipeId });
-  };
+    fetchLatestRecipes();
+  }, []);
+
+  if (error) {
+    return <Text>Error fetching latest recipes: {error}</Text>;
+  }
+
+
 
   const handleLikePress = async (recipeId) => {
     try {
-      const response = await fetch(`${API_HOST}/recipes/${recipeId}/like`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to like recipe');
-      }
-  
-      const responseData = await response.json();
-      if (responseData.message) {
-        Alert.alert(responseData.message);
-        // Update the number of likes in the state only if setRecipes is available
-        if (setRecipes) {
-          const updatedRecipes = recipes.map(recipe => {
-            if (recipe.id === recipeId) {
-              return {
-                ...recipe,
-                nbOfLikes: responseData.nbOfLikes
-              };
-            }
-            return recipe;
-          });
-          setRecipes(updatedRecipes);
-        }
-      } else {
-        console.warn('Received unexpected response from server:', responseData);
-      }
-  
+      const httpService = new HttpService();
+      const response =  await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
+      fetchLatestRecipes();
     } catch (error) {
-      console.error('Error liking recipe:', error);
+      setError(error.message);
     }
   };
-  
+
+  const handleRecipePress = (recipeId) => {
+    navigation.navigate('RecipeDetails', { recipeId });
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {error && <Text>Error fetching recipes: {error}</Text>}
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
-            <Image source={{ uri: recipe.creator.imageUrl }} style={styles.creatorImage} />
-            <Text style={styles.creatorName}>{recipe.creator.name}</Text>
+            <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+            <Text style={styles.creatorName}>{recipe.user.name}</Text>
           </View>
-          <Image source={{ uri: recipe.imageUrl }} style={styles.recipeImage} />
+          <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>
             <TouchableOpacity onPress={() => handleLikePress(recipe.id)}>
               <View style={styles.likesContainer}>
                 <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
-                <Text style={styles.likesText}>{recipe.nbOfLikes}</Text>
+                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
               </View>
             </TouchableOpacity>
             <View style={styles.ratingContainer}>
@@ -89,6 +84,11 @@ const LatestRecipes = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   recipeItem: {
     marginBottom: 16,

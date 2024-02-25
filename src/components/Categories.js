@@ -1,38 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import HttpService from './HttpService';
 
 import { API_HOST } from "@env";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch categories from the API
-    fetch(`${API_HOST}/categories`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCategories(data.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching categories:', error);
-        setError('An error occurred while fetching categories.');
-        setLoading(false);
-      });
+    const fetchCategories = async () => {
+      try {
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/categories`,null);
+        setCategories(response.data);
+  
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
-  }
-
   if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
+    return <Text>Error fetching chefs: {error}</Text>;
   }
 
   return (

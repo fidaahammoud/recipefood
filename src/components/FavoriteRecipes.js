@@ -1,18 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import useRecipeFetcher from "./RecipeFetcher";
 import { useAuth } from '../components/AuthProvider'; 
+const BASE_URL = 'http://192.168.56.10:80/laravel';
+import HttpService from './HttpService';
 
 const FavoriteRecipes = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
+  const [recipes, setRecipes] = useState([]);
+  const [error, setError] = useState(null);
 
-  const { recipes, error } = useRecipeFetcher(`${API_HOST}/users/${userId}/favorites`);
-  console.log("favorit recipes api: "+`${API_HOST}/users/${userId}/favorites`);
+  useEffect(() => {
+    const fetchFavoriteRecipes= async () => {
+      try {
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/users/${userId}/favorites`,token);
+        setRecipes(response.data);
+  
+      } catch (error) {
+        setError(error);
+      }
+    };
+  
+    fetchFavoriteRecipes();
+  }, []);
+
+  if (error) {
+    return <Text>Error fetching chefs: {error}</Text>;
+  }
+
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
@@ -28,10 +48,10 @@ const FavoriteRecipes = () => {
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
-            <Image source={{ uri: recipe.creator.imageUrl }} style={styles.creatorImage} />
-            <Text style={styles.creatorName}>{recipe.creator.name}</Text>
+            <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+            <Text style={styles.creatorName}>{recipe.user.name}</Text>
           </View>
-          <Image source={{ uri: recipe.imageUrl }} style={styles.recipeImage} />
+          <Image source={{ uri:  `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>
             <TouchableOpacity onPress={() => handleLikePress(recipe.id)}>

@@ -58,18 +58,18 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     position: "absolute",
-    top: hp(20),
+    top: hp(25),
     right: wp(20),
     alignItems: "flex-end",
   },
   logoImage: {
-    width: wp(20),
-    height: wp(20),
-    borderRadius: wp(10),
+    width: wp(25),
+    height: wp(25),
+    borderRadius: wp(12),
   },
   titleContainer: {
     position: "absolute",
-    top: hp(30),
+    top: hp(40),
     right: wp(12),
     alignItems: "flex-end",
   },
@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    top: hp(50),
-    right: wp(12),
+    top: hp(60),
+    right: wp(10),
     alignItems: "flex-end",
   },
   button: {

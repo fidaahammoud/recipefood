@@ -12,8 +12,7 @@ export default function CreateAccount() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
-  //const httpService = new HttpService();
-
+  
   postData = async (data) => {
     try {
       const httpService = new HttpService();
@@ -36,35 +35,6 @@ export default function CreateAccount() {
   };
 
 
-
-  // const handleCreateAccount = async () => {
-  //   if (password !== confirmPassword) {
-  //     alert('Password and Confirm Password do not match');
-  //     return;
-  //   }
-
-  //   const apiUrl = `${API_HOST}/register`;
-
-  //   try {
-  //     const responseData = await httpService.post(apiUrl, {
-  //       email: email,
-  //       password: password,
-  //       password_confirmation: confirmPassword,
-  //     },null);
-
-  //     if (responseData && responseData.data && responseData.data.id && responseData.access_token) {
-  //       saveAuthData(responseData.access_token, responseData.data.id);
-  //       console.log(responseData.access_token+ " "+responseData.data.id);
-  //       navigation.navigate('CompleteProfile');
-  //     } else {
-  //       console.error('Unexpected response format:', responseData);
-  //       alert('Unexpected response format. Please try again.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error during registration:', error);
-  //     alert('Error during registration. Please try again.');
-  //   }
-  // };
 
   return (
     <View style={styles.container}>

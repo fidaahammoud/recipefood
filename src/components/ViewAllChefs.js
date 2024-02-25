@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet,ActivityIndicator} from 'react-native';
 import { API_HOST } from "@env";
+import { BASE_URL } from "@env";
 import HttpService from './HttpService';
 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 const ViewAllChefs = () => {
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
 
+ 
   useEffect(() => {
-    const httpService = new HttpService(); 
-
-    httpService.get(`${API_HOST}/users`,null)
-      .then((response) => {
-        const chefsData = response.data.map((chef) => {
-          const imageUrl = `${BASE_URL}/storage/${chef.images.image}`;
-          return {
-            ...chef,
-            imageUrl: imageUrl,
-          };
-        });
-        setChefs(chefsData);
-      })
-      .catch((error) => setError(error.message));
+    const fetchData = async () => {
+      try {
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/users`,null);
+        setChefs(response.data);
+  
+      } catch (error) {
+        setError(error);
+      }
+    };
+  
+    fetchData();
   }, []);
 
   if (error) {
@@ -35,7 +34,7 @@ const ViewAllChefs = () => {
       {chefs.map((chef) => (
         <View key={chef.id} style={styles.chefContainer}>
           <Image
-            source={{ uri: chef.imageUrl }}
+             source={{ uri: `${BASE_URL}/storage/${chef.images.image}`}}
             style={styles.chefImage}
             onError={(error) => console.error('Image loading error:', error)}
           />
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
   chefContainer: {
     alignItems: 'center',
     marginBottom: 20, 
-    marginBottom: 20,
+    marginTop: 20, 
   },
   chefImage: {
     width: '100%',
@@ -62,6 +61,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 16, 
     fontWeight: 'bold', 
+    marginBottom: 8,
   },
 });
 

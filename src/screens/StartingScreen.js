@@ -25,7 +25,7 @@ export default function Starting() {
             >
               <Text style={styles.buttonText}>Create Account</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('login')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.footerText}>
               Already have an account? Login
             </Text>
