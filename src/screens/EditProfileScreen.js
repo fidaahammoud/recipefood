@@ -37,7 +37,6 @@ const EditProfileScreen = () => {
   const handleSubmit = async () => {
     const data = {};
 
-    // Add fields to data object if they are not empty
     if (name) {
       data.name = name;
     }

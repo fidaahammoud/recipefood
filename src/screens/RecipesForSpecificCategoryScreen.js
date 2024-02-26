@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
-import ViewAllChefs from "../components/ViewAllChefs";
+import FetchSameCategoryRecipes from "../components/FetchSameCategoryRecipes";
 
-const ViewAllChefsScreen = () => {
-  const navigation = useNavigation(); 
+const RecipesForSpecificCategoryScreen = () => {
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -16,7 +16,7 @@ const ViewAllChefsScreen = () => {
 
       <View style={styles.line} />
 
-      <ViewAllChefs />
+      <FetchSameCategoryRecipes />
     </View>
   );
 };
@@ -53,4 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewAllChefsScreen;
+export default RecipesForSpecificCategoryScreen;

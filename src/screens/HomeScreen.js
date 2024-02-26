@@ -41,7 +41,9 @@ const HomeScreen = () => {
           {/* Categories */}
           <View style={styles.categoriesContainer}>
             <Text style={styles.boldText}>Categories</Text>
-            <Text onPress={() => console.log('View All Categories pressed')} style={styles.boldText}>View All</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('ViewAllCategories')}>
+              <Text style={styles.boldText}>View All</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Your Categories Component */}

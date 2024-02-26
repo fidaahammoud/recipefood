@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
-import ViewAllChefs from "../components/ViewAllChefs";
+import ViewAllCategories from "../components/ViewAllCategories";
 
-const ViewAllChefsScreen = () => {
+const ViewAllCategoriesScreen = () => {
   const navigation = useNavigation(); 
 
   return (
@@ -16,7 +16,7 @@ const ViewAllChefsScreen = () => {
 
       <View style={styles.line} />
 
-      <ViewAllChefs />
+      <ViewAllCategories />
     </View>
   );
 };
@@ -53,4 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewAllChefsScreen;
+export default ViewAllCategoriesScreen;

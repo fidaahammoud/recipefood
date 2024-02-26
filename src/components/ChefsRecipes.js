@@ -1,55 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
-//import { BASE_URL } from "@env";
-const BASE_URL = 'http://192.168.56.10:80/laravel';
-
-import { useAuth } from '../components/AuthProvider';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useAuth } from '../components/AuthProvider'; 
 import HttpService from './HttpService';
 
-const LatestRecipes = () => {
+const BASE_URL = 'http://192.168.56.10:80/laravel';
+
+const ChefsRecipes = ({ chefId }) => {
   const navigation = useNavigation();
+ // const { getAuthData } = useAuth();
+  //const { userId } = getAuthData();
   const [recipes, setRecipes] = useState([]);
-  const { getAuthData } = useAuth();
-  const { token } = getAuthData();
   const [error, setError] = useState(null);
- 
-  const fetchLatestRecipes = async () => {
-    try {
-      const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/recipes?sort=-created_at`, null);
-      setRecipes(response.data);
-    }
-     catch (error) {
-      setError(error.message);
-    }
-  };
+  
   useEffect(() => {
-    fetchLatestRecipes();
+    const fetchFavoriteRecipes= async () => {
+      try {
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/users/${chefId}/recipes?sort=-created_at`);
+        setRecipes(response.data);
+  
+      } catch (error) {
+        setError(error);
+      }
+    };
+  
+    fetchFavoriteRecipes();
   }, []);
 
   if (error) {
-    return <Text>Error fetching latest recipes: {error}</Text>;
+    return <Text>Error fetching chefs: {error}</Text>;
   }
-
-  const handleLikePress = async (recipeId) => {
-    try {
-      const httpService = new HttpService();
-      const response =  await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
-      fetchLatestRecipes();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
-  }
+  };
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {error && <Text>Error fetching recipes: {error}</Text>}
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
@@ -59,12 +52,12 @@ const LatestRecipes = () => {
           <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>
-            <TouchableOpacity onPress={() => handleLikePress(recipe.id)}>
+            <View >
               <View style={styles.likesContainer}>
                 <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
-                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
+                <Text style={styles.likesText}>{recipe.nbOfLikes}</Text>
               </View>
-            </TouchableOpacity>
+            </View>
             <View style={styles.ratingContainer}>
               <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
@@ -79,11 +72,6 @@ const LatestRecipes = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   recipeItem: {
     marginBottom: 16,
@@ -140,4 +128,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LatestRecipes;
+export default ChefsRecipes;

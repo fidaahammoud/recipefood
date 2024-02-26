@@ -4,30 +4,39 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 //import { BASE_URL } from "@env";
+import { useRoute } from '@react-navigation/native';
+
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
 
-const LatestRecipes = () => {
+const FetchSameCategoryRecipes = () => {
   const navigation = useNavigation();
   const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
   const [error, setError] = useState(null);
+
+  const route = useRoute(); 
+  const { categoryId } = route.params;
+
  
-  const fetchLatestRecipes = async () => {
+  const fetchRecipes = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/recipes?sort=-created_at`, null);
-      setRecipes(response.data);
-    }
-     catch (error) {
+      const response = await httpService.get(`${API_HOST}/categories/${categoryId}`, null);
+      if (Array.isArray(response.recipes)) {
+        setRecipes(response.recipes);
+      } else {
+        setError('Invalid response format: recipes array not found');
+      }
+    } catch (error) {
       setError(error.message);
-    }
+    } 
   };
   useEffect(() => {
-    fetchLatestRecipes();
+    fetchRecipes();
   }, []);
 
   if (error) {
@@ -35,13 +44,13 @@ const LatestRecipes = () => {
   }
 
   const handleLikePress = async (recipeId) => {
-    try {
-      const httpService = new HttpService();
-      const response =  await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
-      fetchLatestRecipes();
-    } catch (error) {
-      setError(error.message);
-    }
+    // try {
+    //   const httpService = new HttpService();
+    //   const response =  await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
+    //   fetchRecipes();
+    // } catch (error) {
+    //   setError(error.message);
+    // }
   };
 
   const handleRecipePress = (recipeId) => {
@@ -140,4 +149,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LatestRecipes;
+export default FetchSameCategoryRecipes;
