@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet,TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
 
 const ViewAllChefs = () => {
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
-  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchChefs = async () => {
@@ -23,7 +24,7 @@ const ViewAllChefs = () => {
     };
 
     fetchChefs();
-  }, []);
+  }, [isFocused]);
 
   if (error) {
     return (

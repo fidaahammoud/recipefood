@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import HttpService from './HttpService'; 
 
@@ -8,6 +9,7 @@ const BASE_URL = 'http://192.168.56.10:80/laravel';
 const ChefsProfileInfo = ({ chefId }) => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const fetchPersonalInformation = async () => {
@@ -23,7 +25,7 @@ const ChefsProfileInfo = ({ chefId }) => {
     };
   
     fetchPersonalInformation();
-  }, [chefId]);
+  }, [chefId,isFocused]);
 
   if (error) {
     return <Text>Error fetching chef's information: {error}</Text>;

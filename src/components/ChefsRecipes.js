@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../components/AuthProvider'; 
@@ -12,6 +12,7 @@ const ChefsRecipes = ({ chefId }) => {
   const navigation = useNavigation();
  // const { getAuthData } = useAuth();
   //const { userId } = getAuthData();
+  const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
   
@@ -28,7 +29,7 @@ const ChefsRecipes = ({ chefId }) => {
     };
   
     fetchFavoriteRecipes();
-  }, []);
+  }, [isFocused]);
 
   if (error) {
     return <Text>Error fetching chefs: {error}</Text>;
@@ -50,12 +51,15 @@ const ChefsRecipes = ({ chefId }) => {
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
           </View>
           <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <View style={styles.titleContainer}>
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
+          <Text style={styles.categoryName}>{recipe.category.name}</Text>
+        </View>
           <View style={styles.recipeDetails}>
             <View >
               <View style={styles.likesContainer}>
                 <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
-                <Text style={styles.likesText}>{recipe.nbOfLikes}</Text>
+                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
               </View>
             </View>
             <View style={styles.ratingContainer}>
@@ -90,6 +94,7 @@ const styles = StyleSheet.create({
   creatorName: {
     fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'capitalize',
   },
   recipeImage: {
     width: '100%',
@@ -97,8 +102,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   recipeTitle: {
+    flex: 1, 
     fontSize: 18,
+    textTransform: 'capitalize',
+    fontWeight: 'bold',
+  },
+  categoryName: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
   recipeDetails: {

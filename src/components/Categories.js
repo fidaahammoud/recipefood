@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, ActivityIndicator,TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useIsFocused } from '@react-navigation/native';
 
 import HttpService from './HttpService';
 
 import { API_HOST } from "@env";
 
 const Categories = () => {
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
-  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -24,21 +25,21 @@ const Categories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [isFocused]);
 
   if (error) {
     return <Text>Error fetching chefs: {error}</Text>;
   }
 
-  const handleCategoryPress = (categoryId) => {
-    navigation.navigate('RecipesOfSpecificCategory', { categoryId: categoryId });
+  const handleCategoryPress = (categoryId,categoryName) => {
+    navigation.navigate('RecipesOfSpecificCategory', { categoryId , categoryName });
   };
 
 
    return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {categories.map((category) => (
-        <TouchableOpacity key={category.id} style={styles.categoryContainer} onPress={() => handleCategoryPress(category.id)}>
+        <TouchableOpacity key={category.id} style={styles.categoryContainer} onPress={() => handleCategoryPress(category.id,category.name)}>
           <Image source={{ uri: category.categoryImage }} style={styles.categoryImage} />
           <Text style={styles.categoryName}>{category.name}</Text>
         </TouchableOpacity>

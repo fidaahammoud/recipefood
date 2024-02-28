@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
-//import { BASE_URL } from "@env";
 import HttpService from '../components/HttpService';
+import { useAuth } from '../components/AuthProvider';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
-
 
 const RecipeDetails = ({ route }) => {
   const { recipeId } = route.params;
@@ -15,29 +15,42 @@ const RecipeDetails = ({ route }) => {
   const [isFavorite, setIsFavorite] = useState(false); 
   const [showIngredients, setShowIngredients] = useState(false); 
   const [showSteps, setShowSteps] = useState(false); 
+  const [totalLikes, setTotalLikes] = useState(0); 
   const navigation = useNavigation();
   const [error, setError] = useState(null);
+  const { getAuthData } = useAuth();
+  const { token } = getAuthData();
+  const isFocused = useIsFocused();
+
+  const fetchRecipeDetails = useCallback(async () => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
+      setRecipeDetails(response);
+      setTotalLikes(response.totalLikes);        
+    } catch (error) {
+      console.error('Error fetching recipe details:', error);
+      setError(error);
+    }
+  }, [recipeId]);
 
   useEffect(() => {
-    const fetchRecipeDetails = async () => {
-      try {
-        const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
-        //console.log(response);
-        setRecipeDetails(response);        
-      } catch (error) {
-        console.error('Error fetching recipe details:', error);
-        setError(error);
-      }
-    };
+    if (isFocused) {
+      fetchRecipeDetails();
+    }
+  }, [isFocused, fetchRecipeDetails]);
 
-    fetchRecipeDetails();
-  }, []);
-
- 
+  const handleLikePress = async (recipeId) => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
+      setTotalLikes(response.nbOfLikes);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   if (!recipeDetails) {
-    console.log("Recipe details are not available yet.");
     return <Text>Loading...</Text>;
   }
 
@@ -45,39 +58,53 @@ const RecipeDetails = ({ route }) => {
     return <Text>Error fetching chefs: {error}</Text>;
   }
 
-
   const handleFavorite = () => {
-    // Toggle favorite status
     setIsFavorite(!isFavorite);
   };
 
-
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <View style={styles.topBar}>
-        {/* Back Button */}
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <FontAwesome name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-        
-        {/* Favorite Icon */}
-        <TouchableOpacity onPress={handleFavorite}>
-          <FontAwesome name="heart" size={24} color={isFavorite ? 'red' : 'white'} />
-        </TouchableOpacity>
-      </View>
-      
-      {/* Recipe Image */}
-      <Image
-      source={{ uri: `${BASE_URL}/storage/${recipeDetails.images.image}`}}
-      style={styles.image}
-      />
+    <View style={styles.topBar}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
+      </TouchableOpacity>
+    </View>
+    
+    <Text style={styles.title}>{recipeDetails.title}</Text>
+    <View style={styles.line} />
 
-      {/* Recipe Details */}
-      <Text style={styles.title}>{recipeDetails.title}</Text>
+    <View style={styles.creatorContainer}>
+      <Image source={{ uri: `${BASE_URL}/storage/${recipeDetails.user.images.image}` }} style={styles.creatorImage} />
+      <Text style={styles.creatorName}>{recipeDetails.user.name}</Text>
+    </View>
+  
+    <View style={styles.imageContainer}>
+      <Image
+        source={{ uri: `${BASE_URL}/storage/${recipeDetails.images.image}`}}
+        style={styles.image}
+      />
+      <TouchableOpacity onPress={handleFavorite} style={styles.favoriteIconContainer}>
+        <FontAwesome name="heart" size={24} color={isFavorite ? 'red' : 'grey'} />
+      </TouchableOpacity>
+    </View>
+  
+    <View style={styles.likeAndRatingContainer}>
+      <TouchableOpacity style={styles.likeContainer} onPress={() => handleLikePress(recipeDetails.id)}>
+        <View style={styles.likesContainer}>
+          <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
+          <Text style={styles.likesText}>{totalLikes}</Text>
+        </View>
+      </TouchableOpacity>
+  
+      <View style={styles.ratingContainer}>
+        <Text style={styles.ratingText}>{recipeDetails.avrgRating}</Text>
+        <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
+      </View>
+    </View>
+  
+
       <Text style={[styles.description, styles.bold]}>Description: {recipeDetails.description}</Text>
       
-      {/* Ingredients Section */}
       <View style={styles.sectionHeader}>
         <Text style={styles.title}>Ingredients</Text>
         <TouchableOpacity onPress={() => setShowIngredients(!showIngredients)}>
@@ -88,7 +115,6 @@ const RecipeDetails = ({ route }) => {
         <Text key={ingredient.id}>{ingredient.ingredientName} - {ingredient.measurementUnit}</Text>
       ))}
 
-      {/* Steps Section */}
       <View style={styles.sectionHeader}>
         <Text style={styles.title}>Steps</Text>
         <TouchableOpacity onPress={() => setShowSteps(!showSteps)}>
@@ -113,18 +139,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 10,
+  },
   image: {
     width: '100%',
     height: 200,
     resizeMode: 'cover',
-    marginBottom: 10,
+  },
+  favoriteIconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    textTransform: 'capitalize',
+
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+
+  creatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    marginLeft: 7,
+  },
+  creatorImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  creatorName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+
+  },
+  line: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'black',
     marginBottom: 10,
   },
   description: {
+    marginTop: 15,
     fontSize: 18,
     marginBottom: 10,
   },
@@ -136,6 +199,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  likeAndRatingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  likeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  likesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  likesIcon: {
+    marginRight: 5,
+  },
+  likesText: {
+    fontSize: 16,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ratingIcon: {
+    marginLeft: 5,
+  },
+  ratingText: {
+    fontSize: 16,
   },
 });
 

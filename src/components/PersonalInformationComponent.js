@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+
 import { API_HOST } from "@env";
 import { useAuth } from './AuthProvider';
 import HttpService from './HttpService'; 
@@ -7,6 +9,7 @@ import HttpService from './HttpService';
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const PersonalInformationComponent = () => {
+  const isFocused = useIsFocused();
   const { getAuthData } = useAuth();
   const { userId,token } = getAuthData();
   const [userData, setUserData] = useState(null);
@@ -28,7 +31,7 @@ const PersonalInformationComponent = () => {
     };
   
     fetchPersonalInformation();
-  }, []);
+  }, [isFocused]);
 
   if (error) {
     return <Text>Error fetching chefs: {error}</Text>;

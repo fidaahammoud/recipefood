@@ -85,7 +85,7 @@ class HttpService extends Component {
   }
 
   render() {
-    return null; // Since this is a utility component, it doesn't render anything
+    return null; 
   }
 }
 

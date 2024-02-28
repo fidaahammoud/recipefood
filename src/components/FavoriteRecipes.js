@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../components/AuthProvider'; 
@@ -9,6 +9,7 @@ import HttpService from './HttpService';
 
 const FavoriteRecipes = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
   const [recipes, setRecipes] = useState([]);
@@ -27,7 +28,7 @@ const FavoriteRecipes = () => {
     };
   
     fetchFavoriteRecipes();
-  }, []);
+  }, [isFocused]);
 
   if (error) {
     return <Text>Error fetching chefs: {error}</Text>;
@@ -57,7 +58,7 @@ const FavoriteRecipes = () => {
             <TouchableOpacity onPress={() => handleLikePress(recipe.id)}>
               <View style={styles.likesContainer}>
                 <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
-                <Text style={styles.likesText}>{recipe.nbOfLikes}</Text>
+                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
               </View>
             </TouchableOpacity>
             <View style={styles.ratingContainer}>

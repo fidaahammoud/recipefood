@@ -12,7 +12,7 @@ const ViewAllCategoriesScreen = () => {
         <Text style={styles.backButtonText}> Back</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Chefs</Text>
+      <Text style={styles.title}>Category</Text>
 
       <View style={styles.line} />
 

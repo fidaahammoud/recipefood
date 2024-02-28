@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
 
 const Chefs = () => {
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
-  const navigation = useNavigation();
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,14 +25,13 @@ const Chefs = () => {
     };
   
     fetchData();
-  }, []);
+  }, [isFocused]);
 
   if (error) {
     return <Text>Error fetching chefs: {error}</Text>;
   }
 
   const handleChefPress = (chefId) => {
-    // Navigate to the chef's profile details screen
     navigation.navigate('ViewChefsProfile', { chefId });
   };
 
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
   chefName: {
     marginTop: 5,
     fontSize: 12,
+    textTransform: 'capitalize',
   },
 });
 

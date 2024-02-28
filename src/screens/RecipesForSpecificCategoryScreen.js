@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation ,useRoute } from '@react-navigation/native'; 
 import FetchSameCategoryRecipes from "../components/FetchSameCategoryRecipes";
 
 const RecipesForSpecificCategoryScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { categoryName } = route.params;
 
   return (
     <View style={styles.container}>
@@ -12,7 +14,7 @@ const RecipesForSpecificCategoryScreen = () => {
         <Text style={styles.backButtonText}> Back</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Chefs</Text>
+      <Text style={styles.title}>{categoryName}</Text>
 
       <View style={styles.line} />
 
