@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState , useEffect} from 'react';
+import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider'; 
@@ -10,6 +10,7 @@ export default function Login() {
   const { saveAuthData } = useAuth(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginDisabled, setLoginDisabled] = useState(true); 
 
   const [error, setError] = useState(null);
 
@@ -33,6 +34,14 @@ export default function Login() {
     postData(data);
   };
 
+  useEffect(() => {
+    if (email && password) {
+      setLoginDisabled(false);
+    } else {
+      setLoginDisabled(true);
+    }
+  }, [email, password]);
+
   return (
     <View style={styles.container}>
       {/* Image */}
@@ -50,7 +59,7 @@ export default function Login() {
           <Text style={styles.loginButton}>Register</Text>
         </TouchableOpacity>
       </View>
-
+      <ScrollView>
       {/* Form Section */}
       <View style={styles.formContainer}>
         <Text style={styles.instructionsText}>
@@ -73,12 +82,14 @@ export default function Login() {
           onChangeText={(text) => setPassword(text)}
         />
         <TouchableOpacity 
-          style={styles.createAccountButton} 
+          style={[styles.createAccountButton, { opacity: loginDisabled ? 0.5 : 1 }]} 
           onPress={handleLogin}
+          disabled={loginDisabled}
         >
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </View>
   );
 };

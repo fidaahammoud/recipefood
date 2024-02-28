@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView  } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { FontAwesome } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -22,17 +23,22 @@ const RecipeDetails = ({ route }) => {
   const { token } = getAuthData();
   const isFocused = useIsFocused();
 
+  const [userRating, setUserRating] = useState(0); 
+  const [avgRate, setAvgRate] = useState(0); 
+
+
   const fetchRecipeDetails = useCallback(async () => {
     try {
       const httpService = new HttpService();
       const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
       setRecipeDetails(response);
-      setTotalLikes(response.totalLikes);        
+      setTotalLikes(response.totalLikes); 
+      setAvgRate(parseFloat(response.avrgRating));
     } catch (error) {
       console.error('Error fetching recipe details:', error);
       setError(error);
     }
-  }, [recipeId]);
+  }, [recipeId,isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -50,10 +56,27 @@ const RecipeDetails = ({ route }) => {
     }
   };
 
-  if (!recipeDetails) {
+
+  const handleRatingChange = (rating) => {
+    setUserRating(rating);
+  };
+
+  const submitRating = async () => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/rate/${userRating}`, { rating: userRating }, token);
+      console.log(response.avgRating);
+      setAvgRate(parseFloat(response.avgRating));
+    } catch (error) {
+      setError(error.message);
+      console.error('Error submitting rating:', error);
+    }
+  };
+
+
+  if (!recipeDetails && !error) {
     return <Text>Loading...</Text>;
   }
-
   if (error) {
     return <Text>Error fetching chefs: {error}</Text>;
   }
@@ -61,6 +84,11 @@ const RecipeDetails = ({ route }) => {
   const handleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
+
+  const navigateToViewComments = () => {
+    navigation.navigate('RecipeComments', { recipeId });
+  };
+
 
   return (
     <View style={styles.container}>
@@ -73,6 +101,7 @@ const RecipeDetails = ({ route }) => {
     <Text style={styles.title}>{recipeDetails.title}</Text>
     <View style={styles.line} />
 
+    <ScrollView horizantal showsHorizontalScrollIndicator={false}>
     <View style={styles.creatorContainer}>
       <Image source={{ uri: `${BASE_URL}/storage/${recipeDetails.user.images.image}` }} style={styles.creatorImage} />
       <Text style={styles.creatorName}>{recipeDetails.user.name}</Text>
@@ -95,16 +124,29 @@ const RecipeDetails = ({ route }) => {
           <Text style={styles.likesText}>{totalLikes}</Text>
         </View>
       </TouchableOpacity>
-  
+
+      {/* Button to view comments */}
+      <TouchableOpacity  style={styles.viewCommentsButton} onPress={() => navigateToViewComments()} >
+        <Text style={styles.viewCommentsText}>View Comments</Text>
+      </TouchableOpacity>
+
       <View style={styles.ratingContainer}>
-        <Text style={styles.ratingText}>{recipeDetails.avrgRating}</Text>
+        <Text style={styles.ratingText}>{avgRate}</Text>
         <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
       </View>
     </View>
-  
 
-      <Text style={[styles.description, styles.bold]}>Description: {recipeDetails.description}</Text>
-      
+
+    <Text style={styles.description}>
+      <Text style={styles.title}>Description: </Text>
+      {recipeDetails.description}
+    </Text>  
+
+    <Text style={styles.preparationTime}>
+      <Text style={styles.title}>Preparation Time: </Text>
+      {recipeDetails.preparationTime} mins
+    </Text> 
+
       <View style={styles.sectionHeader}>
         <Text style={styles.title}>Ingredients</Text>
         <TouchableOpacity onPress={() => setShowIngredients(!showIngredients)}>
@@ -124,6 +166,24 @@ const RecipeDetails = ({ route }) => {
       {showSteps && recipeDetails.steps.map(step => (
         <Text key={step.id}>{step.stepDescription}</Text>
       ))}
+       {/* UI for rating */}
+       <View style={styles.addRatingContainer}>
+        <Text style={styles.userRatingText}>Your Rating: {userRating}</Text>
+        <Slider
+          style={styles.slider}
+          minimumValue={1}
+          maximumValue={5}
+          step={1}
+          value={userRating}
+          onValueChange={handleRatingChange}
+        />
+      </View>
+
+      {/* Button to submit rating */}
+      <TouchableOpacity style={styles.submitRatingButton} onPress={submitRating}>
+        <Text style={styles.submitRatingButtonText}>Submit Rating</Text>
+      </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -169,9 +229,9 @@ const styles = StyleSheet.create({
     marginLeft: 7,
   },
   creatorImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 30,
+    height: 30,
+    borderRadius: 10,
     marginRight: 8,
   },
   creatorName: {
@@ -191,6 +251,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
+  preparationTime: {
+    marginTop: 15,
+    fontSize: 18,
+    marginBottom: 10,
+
+  },
+
   bold: {
     fontWeight: 'bold',
   },
@@ -203,7 +270,6 @@ const styles = StyleSheet.create({
   likeAndRatingContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 10,
   },
   likeContainer: {
@@ -221,6 +287,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   ratingContainer: {
+    marginTop: 20,
+    
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -229,7 +297,46 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 16,
+    marginRight: 5,
   },
+  viewCommentsButton: {
+    backgroundColor: '#5B4444',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  viewCommentsText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
+  slider: {
+    width: '100%',
+  },
+  submitRatingButton: {
+    backgroundColor: '#5B4444',
+    marginTop:20,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  submitRatingButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  addRatingContainer: {
+    marginTop:20,
+
+  },
+  userRatingText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+
+
+  }
 });
 
 export default RecipeDetails;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Image, Text, TextInput, TouchableOpacity, StyleSheet,ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider'; 
 import HttpService from '../components/HttpService'; 
@@ -12,6 +12,8 @@ export default function CreateAccount() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
+  const [submitDisabled, setSubmitDisabled] = useState(true); 
+
   
   postData = async (data) => {
     try {
@@ -34,6 +36,13 @@ export default function CreateAccount() {
     postData(data);
   };
 
+  useEffect(() => {
+    if (email && password && confirmPassword) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [email, password, confirmPassword]);
 
 
   return (
@@ -50,6 +59,7 @@ export default function CreateAccount() {
           <Text style={styles.loginButton}>Login</Text>
         </TouchableOpacity>
       </View>
+      <ScrollView>
       <View style={styles.formContainer}>
         <Text style={styles.instructionsText}>
           <Text style={{ fontWeight: 'bold', fontSize: 24, color: '#654321' }}>
@@ -80,13 +90,14 @@ export default function CreateAccount() {
           value={confirmPassword}
           onChangeText={(text) => setConfirmPassword(text)}
         />
-        <TouchableOpacity style={styles.createAccountButton} onPress={handleCreateAccount}>
+          <TouchableOpacity style={[styles.createAccountButton, submitDisabled && { opacity: 0.5 }]} onPress={handleCreateAccount} disabled={submitDisabled}>
           <Text style={styles.buttonText}>Create Account</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.facebookButton}>
           <Text style={styles.buttonText}>Sign up with Facebook</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </View>
   );
 }

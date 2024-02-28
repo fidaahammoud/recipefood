@@ -15,6 +15,7 @@ const CompleteProfile = () => {
   const [storedImageUri, setStoredImageUri] = useState(null);
   const imageUriRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(true); 
 
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
@@ -43,11 +44,14 @@ const CompleteProfile = () => {
     postData(data);
   };
 
-
-
   useEffect(() => {
     setStoredImageUri(imageUriRef.current);
-  }, []);
+    if (username && fullName && storedImageUri) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [username, fullName, storedImageUri]);
 
   const setImage = (uri) => {
     imageUriRef.current = uri;
@@ -104,7 +108,7 @@ const CompleteProfile = () => {
         />
         <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
         <View style={styles.buttonContainer}>
-          <Button title="Submit" onPress={handleSubmit} color="#5B4444" />
+          <Button title="Submit" onPress={handleSubmit} color="#5B4444" disabled={submitDisabled} />
           {loading && <ActivityIndicator size="small" color="#5B4444" />}
         </View>
       </View>

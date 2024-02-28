@@ -11,6 +11,8 @@ import LoginScreen from "../screens/LoginScreen";
 import AddRecipeScreen from '../screens/AddRecipeScreen'; 
 import { AuthProvider } from '../components/AuthProvider';
 import RecipeDetailsScreen from '../screens/RecipeDetailsScreen'; 
+import RcipeCommentScreen from '../screens/RcipeCommentScreen'; 
+
 import ProfileScreen from '../screens/ProfileScreen'; 
 import EditProfileScreen from '../screens/EditProfileScreen'; 
 import ViewAllChefsScreen from '../screens/ViewAllChefsScreen'; 
@@ -45,6 +47,8 @@ export default function AppNavigation() {
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="AddRecipe" component={AddRecipeScreen} />
                 <Stack.Screen name="RecipeDetails" component={RecipeDetailsScreen} />
+                <Stack.Screen name="RecipeComments" component={RcipeCommentScreen} />
+
                 <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             </Stack.Navigator>
