@@ -1,13 +1,20 @@
-// RcipeCommentScreen.js
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import ViewComments from '../components/ViewComments';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Button, TextInput } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
-const RcipeCommentScreen = ({ route }) => { 
+import ViewComments from '../components/ViewComments';
+import HttpService from '../components/HttpService';
+import { useAuth } from '../components/AuthProvider';
+import { API_HOST } from "@env";
+
+const RcipeCommentScreen = ({ route }) => {
+
   return (
-    <View style={styles.container}>
-      <ViewComments route={route} />
-    </View>
+    
+      <View style={styles.container}>
+        <ViewComments route={route} />
+      </View>
+   
   );
 };
 
@@ -16,6 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+
 });
 
 export default RcipeCommentScreen;

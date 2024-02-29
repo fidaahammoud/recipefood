@@ -56,6 +56,16 @@ const RecipeDetails = ({ route }) => {
     }
   };
 
+  const handleFavoritePress = async (recipeId) => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/addToFavorite`, null, token);
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
 
   const handleRatingChange = (rating) => {
     setUserRating(rating);
@@ -83,6 +93,7 @@ const RecipeDetails = ({ route }) => {
 
   const handleFavorite = () => {
     setIsFavorite(!isFavorite);
+    
   };
 
   const navigateToViewComments = () => {
@@ -112,7 +123,7 @@ const RecipeDetails = ({ route }) => {
         source={{ uri: `${BASE_URL}/storage/${recipeDetails.images.image}`}}
         style={styles.image}
       />
-      <TouchableOpacity onPress={handleFavorite} style={styles.favoriteIconContainer}>
+      <TouchableOpacity onPress={() => handleFavoritePress(recipeDetails.id)} style={styles.favoriteIconContainer}>
         <FontAwesome name="heart" size={24} color={isFavorite ? 'red' : 'grey'} />
       </TouchableOpacity>
     </View>

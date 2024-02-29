@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'rea
 import { useNavigation ,useIsFocused} from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useAuth } from '../components/AuthProvider'; 
+import { useAuth } from './AuthProvider'; 
 import HttpService from './HttpService';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';

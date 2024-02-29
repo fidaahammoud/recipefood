@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image , TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, StyleSheet, Image , TouchableOpacity,Button, TextInput, ScrollView} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
@@ -17,6 +16,8 @@ const ViewComments = ({ route }) => {
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
+  const [comment, setComment] = useState('');
+  
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -37,7 +38,23 @@ const ViewComments = ({ route }) => {
     return <Text>Error fetching comments: {error}</Text>;
   }
 
+  const handleCommentSubmit = async () => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/comments`, data, token);
+      setComments(response.data.comments); 
+    
+    } catch (error) {
+      setError(error.message); 
+    }
+  };
+  const data = {
+         content: comment
+      };
+  
+
   return (
+    <ScrollView>
     <View style={styles.container}>
         <View style={styles.topBar}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -57,7 +74,19 @@ const ViewComments = ({ route }) => {
           <Text style={styles.commentAuthor}>- {comment.user.name}</Text>
         </View>
       ))}
+      <TextInput
+          style={styles.input}
+          placeholder="Enter your comment"
+          value={comment}
+          onChangeText={text => setComment(text)}
+        />
+        <Button
+          title="Submit Comment"
+          onPress={handleCommentSubmit}
+          color="#5B4444"
+        />
     </View>
+    </ScrollView>
   );
 };
 
@@ -75,7 +104,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-
   },
   commentContainer: {
     flexDirection: 'row', 
@@ -85,7 +113,6 @@ const styles = StyleSheet.create({
   comment: {
     fontSize: 16,
     marginLeft: 10, 
-
   },
   commentAuthor: {
     fontStyle: 'italic',
@@ -102,6 +129,15 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'black',
     marginBottom: 10,
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    marginTop: 100,
+    paddingHorizontal: 10,
+    borderRadius: 8, 
   },
 });
 
