@@ -7,38 +7,39 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import HttpService from '../components/HttpService';
 import { useAuth } from '../components/AuthProvider';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const RecipeDetails = ({ route }) => {
   const { recipeId } = route.params;
   const [recipeDetails, setRecipeDetails] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false); 
-  const [showIngredients, setShowIngredients] = useState(false); 
-  const [showSteps, setShowSteps] = useState(false); 
-  const [totalLikes, setTotalLikes] = useState(0); 
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+
+  const [showIngredients, setShowIngredients] = useState(false);
+  const [showSteps, setShowSteps] = useState(false);
+  const [totalLikes, setTotalLikes] = useState(0);
   const navigation = useNavigation();
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
-  const { token } = getAuthData();
+  const { token, userId } = getAuthData(); // Assuming you have a way to get the user's ID
   const isFocused = useIsFocused();
 
-  const [userRating, setUserRating] = useState(0); 
-  const [avgRate, setAvgRate] = useState(0); 
-
+  const [userRating, setUserRating] = useState(0);
+  const [avgRate, setAvgRate] = useState(0);
 
   const fetchRecipeDetails = useCallback(async () => {
     try {
       const httpService = new HttpService();
       const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
       setRecipeDetails(response);
-      setTotalLikes(response.totalLikes); 
+      setTotalLikes(response.totalLikes);
       setAvgRate(parseFloat(response.avrgRating));
     } catch (error) {
       console.error('Error fetching recipe details:', error);
       setError(error);
     }
-  }, [recipeId,isFocused]);
+  }, [recipeId, isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -46,11 +47,40 @@ const RecipeDetails = ({ route }) => {
     }
   }, [isFocused, fetchRecipeDetails]);
 
+  useEffect(() => {
+    const loadFavoriteStatus = async () => {
+      try {
+        const favoriteStatus = await AsyncStorage.getItem(`favorite_${userId}_${recipeId}`);
+        if (favoriteStatus !== null) {
+          setIsFavorite(JSON.parse(favoriteStatus));
+        }
+      } catch (error) {
+        console.error('Error loading favorite status:', error);
+      }
+    };
+
+    const loadLikeStatus = async () => {
+      try {
+        const likeStatus = await AsyncStorage.getItem(`like_${userId}_${recipeId}`);
+        if (likeStatus !== null) {
+          setIsLiked(JSON.parse(likeStatus));
+        }
+      } catch (error) {
+        console.error('Error loading like status:', error);
+      }
+    };
+
+    loadFavoriteStatus();
+    loadLikeStatus();
+  }, [recipeId, userId]);
+
   const handleLikePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
       setTotalLikes(response.nbOfLikes);
+      setIsLiked(!isLiked);
+      await AsyncStorage.setItem(`like_${userId}_${recipeId}`, JSON.stringify(true));
     } catch (error) {
       setError(error.message);
     }
@@ -61,11 +91,11 @@ const RecipeDetails = ({ route }) => {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/addToFavorite`, null, token);
       setIsFavorite(!isFavorite);
+      await AsyncStorage.setItem(`favorite_${userId}_${recipeId}`, JSON.stringify(!isFavorite)); 
     } catch (error) {
       setError(error.message);
     }
   };
-
 
   const handleRatingChange = (rating) => {
     setUserRating(rating);
@@ -83,7 +113,6 @@ const RecipeDetails = ({ route }) => {
     }
   };
 
-
   if (!recipeDetails && !error) {
     return <Text>Loading...</Text>;
   }
@@ -91,15 +120,9 @@ const RecipeDetails = ({ route }) => {
     return <Text>Error fetching chefs: {error}</Text>;
   }
 
-  const handleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    
-  };
-
   const navigateToViewComments = () => {
     navigation.navigate('RecipeComments', { recipeId });
   };
-
 
   return (
     <View style={styles.container}>
@@ -131,7 +154,7 @@ const RecipeDetails = ({ route }) => {
     <View style={styles.likeAndRatingContainer}>
       <TouchableOpacity style={styles.likeContainer} onPress={() => handleLikePress(recipeDetails.id)}>
         <View style={styles.likesContainer}>
-          <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
+        <Icon name="thumbs-o-up" size={20} color={isLiked ? 'green' : 'grey'} style={styles.likesIcon} />
           <Text style={styles.likesText}>{totalLikes}</Text>
         </View>
       </TouchableOpacity>
