@@ -8,6 +8,7 @@ import { API_HOST } from "@env";
 
 const CompleteProfile = () => {
   const navigation = useNavigation();
+  const httpService = new HttpService();
 
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
@@ -25,7 +26,6 @@ const CompleteProfile = () => {
   
   postData = async (data) => {
     try {
-      const httpService = new HttpService();
       const response = await httpService.put(`${API_HOST}/completeProfile/${userId}`,data,token);
       console.log(response.user);
       navigation.navigate('Home');
@@ -57,8 +57,6 @@ const CompleteProfile = () => {
     imageUriRef.current = uri;
     setStoredImageUri(uri);
   };
-
-  const httpService = new HttpService();
 
   const saveImageToDatabase = async (selectedImage) => {
     try {

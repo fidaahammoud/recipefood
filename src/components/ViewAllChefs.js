@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
   },
   chefImage: {
     width: 220,
-    height: 220, // Set the height equal to the width to make the image square
-    borderRadius: 30, // Optional: add border radius for rounded corners
+    height: 220, 
+    borderRadius: 30, 
   },
   chefName: {
     marginTop: 5,

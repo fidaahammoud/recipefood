@@ -1,131 +1,169 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Modal, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
+import HttpService from '../components/HttpService';
 
 const RecipeForm = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
   const [image, setImage] = useState(null);
-
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [steps, setSteps] = useState('');
-  const [ingredients, setIngredients] = useState('');
+  const [steps, setSteps] = useState(['']); 
+  const [ingredients, setIngredients] = useState(['']);
+  const [measurementUnits, setMeasurementUnits] = useState(['']);
   const [preparationTime, setPreparationTime] = useState('');
   const [comments, setComments] = useState('');
   const [recipeId, setRecipeId] = useState('');
-
   const [imageId, setImageId] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [open, setOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [items, setItems] = useState([]);
+  const httpService = new HttpService();
 
   useEffect(() => {
-    // Validate form whenever imageId changes
+    fetchDropdownOptions();
+  }, []);
+
+  const fetchDropdownOptions = async () => {
+    try {
+      const response = await httpService.get(`${API_HOST}/categories`, null);
+      const data = response.data; 
+
+      if (data) {
+        setItems(data.map(item => ({ label: item.name, value: item.id })));
+      }
+    } catch (error) {
+      console.error('Error fetching dropdown options:', error);
+    }
+  };
+
+  const handleCategoryChange = (item) => {
+    setSelectedValue(item.value);
+    setOpen(false); 
+  };
+
+  useEffect(() => {
     validateForm();
   }, [imageId]);
 
+  useEffect(() => {
+    validateForm();
+  }, [ingredients, measurementUnits]);
+
   const validateForm = () => {
-    if (title.trim() !== '' && description.trim() !== '' && imageId.toString().trim() !== '' && category.trim() !== '' && ingredients.trim() !== '' && steps.trim() !== '' && preparationTime.trim() !== '' ) {
+    if (
+      title.trim() !== '' &&
+      description.trim() !== '' &&
+      imageId.toString().trim() !== '' &&
+      selectedValue.toString().trim() !== '' &&
+      ingredients.every(ingredient => ingredient.trim() !== '') && 
+      measurementUnits.every(unit => unit.trim() !== '') && 
+      steps.every(step => step.trim() !== '') && 
+      preparationTime.trim() !== ''
+    ) {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
     }
   };
 
-
   const saveImageToDatabase = async (selectedImage) => {
     try {
       const apiUrl = `${API_HOST}/image/${userId}/recipe`;
+      
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
-        name: 'recipe_image.jpg',
+        name: 'profile_image.jpg',
         type: 'image/jpg',
       });
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('Error saving image:', errorData);
-        Alert.alert('Error', 'Failed to upload recipe image. Please try again.');
-      } else {
-        const result = await response.json();
-        setImageId(result.id);
-      }
+      const resp = await httpService.uploadImage(apiUrl, formData, token);
+      setImageId(resp.id);
     } catch (error) {
-      console.error('Error during API call:', error);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
+      console.error('Error during image upload:', error);
     }
   };
 
-
   const handleSave = async () => {
-    try {
       if (isFormValid) {
         const recipeData = {
           title,
           description,
-          category,
+          category_id: selectedValue,
           preparationTime: parseInt(preparationTime),
           comment: comments,
-          ingredients: [{ ingredientName: ingredients, measurementUnit: 'grams' }],
-          preparationSteps: [steps],
+          ingredients: ingredients.map((ingredient, index) => ({ ingredientName: ingredient, measurementUnit: measurementUnits[index] })),
+          preparationSteps: steps,
           image_id: imageId
         };
 
-        const response = await fetch(`${API_HOST}/recipes`, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(recipeData)
-        });
-
-        if (response.ok) {
-          const responseData = await response.json();
-          const newRecipeId = responseData.data.id;
-          setRecipeId(newRecipeId);
+        try {
+          const response = await httpService.post(`${API_HOST}/recipes`,recipeData,token);
+          const newRecipeId = response.id;
+          setRecipeId(newRecipeId);     
           navigation.navigate('Home');
-        } else {
-          console.error('Error saving recipe:', error);
-          if (response.status === 422) {
-            const responseData = await response.json();
-            if (responseData.errors) {
-              const errorMessages = Object.values(responseData.errors).flat();
-              alert(errorMessages.join('\n'));
-            } else {
-              alert('Failed to save recipe. Please try again ');
-            }
-          } else {
-            alert('Failed to save recipe.');
-          }
+        } 
+        catch (error) {
+          setError(error);
         }
-      } else {
-        alert('Validation Error', 'Please fill in all fields.');
       }
-    } catch (error) {
-      console.error('Error saving recipe:', error);
-      alert('Failed to save recipe. Please try again later.');
-    }
   };
 
   const handleCancel = () => {
     navigation.navigate('Home');
+  };
+
+  const handleIngredientChange = (text, index) => {
+    const newIngredients = [...ingredients];
+    newIngredients[index] = text;
+    setIngredients(newIngredients);
+  };
+
+  const handleMeasurementUnitChange = (text, index) => {
+    const newMeasurementUnits = [...measurementUnits];
+    newMeasurementUnits[index] = text;
+    setMeasurementUnits(newMeasurementUnits);
+  };
+
+  const handleStepChange = (text, index) => {
+    const newSteps = [...steps];
+    newSteps[index] = text;
+    setSteps(newSteps);
+  };
+
+  const handleAddIngredient = () => {
+    setIngredients([...ingredients, '']);
+    setMeasurementUnits([...measurementUnits, '']);
+  };
+
+  const handleRemoveIngredient = (index) => {
+    const newIngredients = [...ingredients];
+    newIngredients.splice(index, 1);
+
+    const newMeasurementUnits = [...measurementUnits];
+    newMeasurementUnits.splice(index, 1);
+
+    setIngredients(newIngredients);
+    setMeasurementUnits(newMeasurementUnits);
+  };
+
+  const handleAddStep = () => {
+    setSteps([...steps, '']);
+  };
+
+  const handleRemoveStep = (index) => {
+    const newSteps = [...steps];
+    newSteps.splice(index, 1);
+    setSteps(newSteps);
   };
 
   return (
@@ -146,29 +184,55 @@ const RecipeForm = () => {
         style={styles.input}
         placeholder="Enter description"
       />
-      <Text style={styles.label}>Category:</Text>
-      <TextInput
-        value={category}
-        onChangeText={setCategory}
-        style={styles.input}
-        placeholder="Enter category"
-      />
+      <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpen(true)}>
+        <Text style={styles.label}>Category:</Text>
+        <Text style={styles.dropdownValue}>{selectedValue ? items.find(item => item.value === selectedValue)?.label : 'Click to select a category'}</Text>
+      </TouchableOpacity>
+
       <Text style={styles.label}>Steps:</Text>
-      <TextInput
-        value={steps}
-        onChangeText={setSteps}
-        style={[styles.input, styles.multiline]}
-        placeholder="Enter steps"
-        multiline
-      />
-      <Text style={styles.label}>Ingredients:</Text>
-      <TextInput
-        value={ingredients}
-        onChangeText={setIngredients}
-        style={[styles.input, styles.multiline]}
-        placeholder="Enter ingredients"
-        multiline
-      />
+      {steps.map((step, index) => (
+        <View key={index} style={styles.stepRow}>
+          <TextInput
+            value={step}
+            onChangeText={(text) => handleStepChange(text, index)}
+            style={[styles.input, styles.multiline, styles.stepInput]}
+            placeholder={`Enter step ${index + 1}`}
+            multiline
+          />
+          <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
+            <Text style={styles.removeButtonText}>-</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+      <TouchableOpacity onPress={handleAddStep} style={styles.addButton}>
+        <Text style={styles.buttonText}>+ Add Step</Text>
+      </TouchableOpacity>
+
+      <View>
+        <Text style={styles.label}>Ingredients:</Text>
+        {ingredients.map((ingredient, index) => (
+          <View key={index} style={styles.ingredientRow}>
+            <TextInput
+              value={ingredient}
+              onChangeText={(text) => handleIngredientChange(text, index)}
+              style={[styles.input, styles.ingredientInput]}
+              placeholder="Enter ingredient"
+            />
+            <TextInput
+              value={measurementUnits[index]}
+              onChangeText={(text) => handleMeasurementUnitChange(text, index)}
+              style={[styles.input, styles.measurementInput]}
+              placeholder="Unit"
+            />
+            <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
+              <Text style={styles.removeButtonText}>-</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+        <TouchableOpacity onPress={handleAddIngredient} style={styles.addButton}>
+          <Text style={styles.buttonText}>+ Add Ingredient</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.label}>Preparation Time:</Text>
       <TextInput
         value={preparationTime}
@@ -184,22 +248,40 @@ const RecipeForm = () => {
         placeholder="Enter comments"
         multiline
       />
-
       <View style={styles.imagePicker}>
         <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
       </View>
-      
       <View style={styles.buttonContainer}>
         <Button title="Cancel" onPress={handleCancel} color="#FF0000" />
         <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
       </View>
+      <Modal
+        visible={open}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <ScrollView>
+              {items.map(item => (
+                <TouchableOpacity
+                  key={item.value}
+                  style={styles.dropdownItem}
+                  onPress={() => handleCategoryChange(item)}>
+                  <Text>{item.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 30,
   },
   label: {
     marginBottom: 5,
@@ -213,7 +295,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   multiline: {
-    height: 100,
+    minHeight: 100,
     textAlignVertical: 'top',
   },
   imagePicker: {
@@ -222,6 +304,78 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  dropdownContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  dropdownValue: {
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    maxHeight: 200,
+    width: '80%',
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  stepInput: {
+    flex: 1,
+    marginRight: 5,
+  },
+  ingredientRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ingredientInput: {
+    flex: 1,
+    marginRight: 5,
+  },
+  measurementInput: {
+    width: 100,
+  },
+  removeButton: {
+    backgroundColor: '#5B4444',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  removeButtonText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  addButton: {
+    backgroundColor: '#5B4444',
+    borderRadius: 5,
+    padding: 5,
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
 
