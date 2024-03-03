@@ -1,34 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation ,useIsFocused} from '@react-navigation/native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Modal, Pressable, Alert  } from 'react-native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useAuth } from './AuthProvider'; 
+import { useAuth } from './AuthProvider';
 import HttpService from './HttpService';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const RecipeOfUser = () => {
   const isFocused = useIsFocused();
-
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
-  const { userId } = getAuthData();
+  const { userId , token} = getAuthData();
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
-  
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [showOptions, setShowOptions] = useState(false);
+
+  const httpService = new HttpService();
+
+
   useEffect(() => {
-    const fetchFavoriteRecipes= async () => {
+    const fetchFavoriteRecipes = async () => {
       try {
-        const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/users/${userId}/recipes?sort=-created_at`);
         setRecipes(response.data);
-  
+
       } catch (error) {
         setError(error);
       }
     };
-  
+
     fetchFavoriteRecipes();
   }, [isFocused]);
 
@@ -40,7 +43,30 @@ const RecipeOfUser = () => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
+  const handleOptionsPress = (recipe) => {
+    setSelectedRecipe(recipe);
+    setShowOptions(true);
+  };
 
+  const handleEditRecipe = (recipeId) => {
+    setShowOptions(false);
+    navigation.navigate('EditRecipe', { recipeId: recipeId });
+  };
+
+  const handleDeleteRecipe = async () => {
+    try {
+      console.log(`${API_HOST}/recipes/delete/${selectedRecipe.id}`);
+      console.log(token);
+      const response = await httpService.delete(`${API_HOST}/recipes/delete/${selectedRecipe.id}`,token);
+      console.log(response);
+      setShowOptions(false);
+      setRecipes(recipes.filter(recipe => recipe.id !== selectedRecipe.id));
+      Alert.alert('Success', 'Recipe deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting recipe:', error);
+      Alert.alert('Error', 'Failed to delete recipe. Please try again later.');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -50,6 +76,9 @@ const RecipeOfUser = () => {
           <View style={styles.creatorContainer}>
             <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
+            <TouchableOpacity onPress={() => handleOptionsPress(recipe)}>
+              <Icon name="ellipsis-h" size={20} color="black" style={styles.optionsIcon} />
+            </TouchableOpacity>
           </View>
           <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
@@ -67,6 +96,23 @@ const RecipeOfUser = () => {
           </View>
         </TouchableOpacity>
       ))}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showOptions}
+        onRequestClose={() => setShowOptions(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+          <Pressable onPress={() => handleEditRecipe(selectedRecipe.id)}>
+            <Text style={styles.modalOption}>Edit Recipe</Text>
+          </Pressable>
+            <Pressable onPress={handleDeleteRecipe}>
+              <Text style={styles.modalOption}>Delete Recipe</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -90,8 +136,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   creatorName: {
+    flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  optionsIcon: {
+    marginLeft: 'auto',
   },
   recipeImage: {
     width: '100%',
@@ -127,6 +177,22 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalOption: {
+    fontSize: 18,
+    paddingVertical: 10,
   },
 });
 

@@ -62,6 +62,26 @@ class HttpService extends Component {
     }
   }
 
+  async delete(url, token) {
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
   async uploadImage(url, data, token) {
     try {
       const response = await fetch(url, {
