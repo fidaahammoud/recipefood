@@ -5,7 +5,7 @@ import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from './AuthProvider';
 import HttpService from './HttpService';
-
+import { Utils } from './Utils'; 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const RecipeOfUser = () => {
@@ -19,6 +19,7 @@ const RecipeOfUser = () => {
   const [showOptions, setShowOptions] = useState(false);
 
   const httpService = new HttpService();
+  const { getTimeDifference } = Utils();
 
 
   useEffect(() => {
@@ -81,7 +82,10 @@ const RecipeOfUser = () => {
             </TouchableOpacity>
           </View>
           <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
-          <Text style={styles.recipeTitle}>{recipe.title}</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.recipeTitle}>{recipe.title}</Text>
+            <Text style={styles.categoryName}>{recipe.category.name}</Text>
+          </View>
           <View style={styles.recipeDetails}>
             <View >
               <View style={styles.likesContainer}>
@@ -94,6 +98,7 @@ const RecipeOfUser = () => {
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
             </View>
           </View>
+          <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
       ))}
       <Modal
@@ -149,8 +154,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   recipeTitle: {
+    flex: 1, 
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  categoryName: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
   recipeDetails: {
@@ -193,6 +208,11 @@ const styles = StyleSheet.create({
   modalOption: {
     fontSize: 18,
     paddingVertical: 10,
+  },
+  createdAt: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
   },
 });
 

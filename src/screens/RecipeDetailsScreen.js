@@ -9,6 +9,7 @@ import HttpService from '../components/HttpService';
 import { useAuth } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const BASE_URL = 'http://192.168.56.10:80/laravel';
+import { Utils } from '../components/Utils'; 
 
 const RecipeDetails = ({ route }) => {
   const { recipeId } = route.params;
@@ -22,11 +23,11 @@ const RecipeDetails = ({ route }) => {
   const navigation = useNavigation();
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
-  const { token, userId } = getAuthData(); // Assuming you have a way to get the user's ID
+  const { token, userId } = getAuthData();
   const isFocused = useIsFocused();
-
   const [userRating, setUserRating] = useState(0);
   const [avgRate, setAvgRate] = useState(0);
+  const { getTimeDifference } = Utils();
 
   const fetchRecipeDetails = useCallback(async () => {
     try {
@@ -170,15 +171,26 @@ const RecipeDetails = ({ route }) => {
       </View>
     </View>
 
+    <Text style={styles.createdAt}>{getTimeDifference(recipeDetails.created_at)}</Text>
 
     <Text style={styles.description}>
       <Text style={styles.title}>Description: </Text>
       {recipeDetails.description}
     </Text>  
 
+    <Text style={styles.category}>
+      <Text style={styles.title}>Category: </Text>
+      {recipeDetails.category.name}
+    </Text> 
+
     <Text style={styles.preparationTime}>
       <Text style={styles.title}>Preparation Time: </Text>
       {recipeDetails.preparationTime} mins
+    </Text> 
+
+    <Text style={styles.comment}>
+      <Text style={styles.title}>Chefs comment: </Text>
+      {recipeDetails.comment}
     </Text> 
 
       <View style={styles.sectionHeader}>
@@ -188,8 +200,11 @@ const RecipeDetails = ({ route }) => {
         </TouchableOpacity>
       </View>
       {showIngredients && recipeDetails.ingredients.map(ingredient => (
-        <Text key={ingredient.id}>{ingredient.ingredientName} - {ingredient.measurementUnit}</Text>
-      ))}
+        <View key={ingredient.id} style={styles.ingredient}>
+        <Text style={styles.bullet}>•</Text>
+        <Text style={styles.ingredientText}>{ingredient.ingredientName} - {ingredient.measurementUnit}</Text>
+      </View>
+        ))}
 
       <View style={styles.sectionHeader}>
         <Text style={styles.title}>Steps</Text>
@@ -198,7 +213,10 @@ const RecipeDetails = ({ route }) => {
         </TouchableOpacity>
       </View>
       {showSteps && recipeDetails.steps.map(step => (
-        <Text key={step.id}>{step.stepDescription}</Text>
+        <View key={step.id} style={styles.step}>
+        <Text style={styles.bullet}>•</Text>
+        <Text style={styles.stepText}>{step.stepDescription}</Text>
+      </View>
       ))}
        {/* UI for rating */}
        <View style={styles.addRatingContainer}>
@@ -251,7 +269,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textTransform: 'capitalize',
-
     textAlign: 'center',
     marginBottom: 10,
   },
@@ -285,11 +302,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
+  category: {
+    marginTop: 15,
+    fontSize: 18,
+    marginBottom: 10,
+
+  },
   preparationTime: {
     marginTop: 15,
     fontSize: 18,
     marginBottom: 10,
 
+  },
+  comment: {
+    marginTop: 15,
+    fontSize: 18,
+    marginBottom: 10,
   },
 
   bold: {
@@ -300,6 +328,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    marginTop: 15,
   },
   likeAndRatingContainer: {
     flexDirection: 'row',
@@ -368,9 +397,30 @@ const styles = StyleSheet.create({
   userRatingText: {
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  createdAt: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
+  },
+  bullet: {
+    width: 7,
+    height: 7,
+    borderRadius: 3,
+    backgroundColor: 'black',
+    marginRight: 5,
+  },
+  ingredient: {
+    fontSize: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  step: {
+    fontSize: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 
-
-  }
 });
 
 export default RecipeDetails;

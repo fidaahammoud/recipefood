@@ -6,6 +6,7 @@ import HttpService from './HttpService';
 import { API_HOST } from "@env";
 import { useAuth } from './AuthProvider';
 const BASE_URL = 'http://192.168.56.10:80/laravel';
+import { Utils } from './Utils'; 
 
 const ViewComments = ({ route }) => {
   const { recipeId } = route.params;
@@ -18,6 +19,7 @@ const ViewComments = ({ route }) => {
   const { token } = getAuthData();
   const [comment, setComment] = useState('');
   
+  const { getTimeDifference } = Utils();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -72,6 +74,8 @@ const ViewComments = ({ route }) => {
           />
           <Text style={styles.comment}>{comment.content}</Text>
           <Text style={styles.commentAuthor}>- {comment.user.name}</Text>
+          <Text style={styles.createdAt}>{getTimeDifference(comment.created_at)}</Text>
+
         </View>
       ))}
       <TextInput
@@ -138,6 +142,11 @@ const styles = StyleSheet.create({
     marginTop: 100,
     paddingHorizontal: 10,
     borderRadius: 8, 
+  },
+   createdAt: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 30,
   },
 });
 

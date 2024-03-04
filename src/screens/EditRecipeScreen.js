@@ -7,9 +7,11 @@ import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
 
 const EditRecipeForm = () => {
+  const httpService = new HttpService();
+
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-
+  const route = useRoute();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
   const [title, setTitle] = useState('');
@@ -26,8 +28,7 @@ const EditRecipeForm = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false); 
-  const httpService = new HttpService();
-  const route = useRoute();
+
 
   useEffect(() => {
     fetchRecipeDetails();
@@ -72,8 +73,7 @@ const EditRecipeForm = () => {
   }, [imageId,isFocused]);
 
   const validateForm = () => {
-    // Add your validation logic here
-    setIsFormValid(true); // Placeholder
+    setIsFormValid(true); 
   };
 
   const saveImageToDatabase = async (selectedImage) => {

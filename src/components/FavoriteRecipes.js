@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../components/AuthProvider'; 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 import HttpService from './HttpService';
-
+import { Utils } from './Utils'; 
 const FavoriteRecipes = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -14,6 +14,7 @@ const FavoriteRecipes = () => {
   const { userId, token } = getAuthData();
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
+  const { getTimeDifference } = Utils();
 
   useEffect(() => {
     const fetchFavoriteRecipes= async () => {
@@ -66,6 +67,7 @@ const FavoriteRecipes = () => {
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
             </View>
           </View>
+          <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -128,6 +130,11 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 16,
+  },
+  createdAt: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
   },
 });
 

@@ -10,7 +10,7 @@ const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
-
+import { Utils } from './Utils'; 
 const FetchSameCategoryRecipes = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -18,15 +18,17 @@ const FetchSameCategoryRecipes = () => {
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
   const [error, setError] = useState(null);
-
+  const [categoryName, setCategoryName] = useState('');
   const route = useRoute(); 
   const { categoryId } = route.params;
 
- 
+  const { getTimeDifference } = Utils();
+
   const fetchRecipes = async () => {
     try {
       const httpService = new HttpService();
       const response = await httpService.get(`${API_HOST}/categories/${categoryId}`, null);
+      setCategoryName(response.name);
       if (Array.isArray(response.recipes)) {
         setRecipes(response.recipes);
       } else {
@@ -57,7 +59,10 @@ const FetchSameCategoryRecipes = () => {
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
           </View>
           <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
-          <Text style={styles.recipeTitle}>{recipe.title}</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.recipeTitle}>{recipe.title}</Text>
+            <Text style={styles.categoryName}>{categoryName}</Text>
+          </View>
           <View style={styles.recipeDetails}>
             <View>
               <View style={styles.likesContainer}>
@@ -70,6 +75,7 @@ const FetchSameCategoryRecipes = () => {
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
             </View>
           </View>
+          <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -109,8 +115,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   recipeTitle: {
+    flex: 1, 
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  categoryName: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
   recipeDetails: {
@@ -137,6 +153,11 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 16,
+  },
+  createdAt: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
   },
 });
 

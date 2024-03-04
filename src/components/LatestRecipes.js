@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
+import { Utils } from './Utils'; // Import Utils component
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
@@ -15,8 +16,9 @@ const LatestRecipes = () => {
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
   const [error, setError] = useState(null);
- 
- 
+
+  
+  const { getTimeDifference } = Utils();
 
   useEffect(() => {
     const fetchLatestRecipes = async () => {
@@ -28,13 +30,13 @@ const LatestRecipes = () => {
         setError(error.message);
       }
     };
-    
+
     fetchLatestRecipes();
   }, [isFocused]);
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
-  }
+  };
 
   if (error) {
     return <Text>Error fetching latest recipes: {error}</Text>;
@@ -63,6 +65,8 @@ const LatestRecipes = () => {
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
             </View>
           </View>
+          {/* Use getTimeDifference function */}
+          <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   recipeTitle: {
-    flex: 1, 
+    flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -135,6 +139,11 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 16,
+  },
+  createdAt: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
   },
 });
 
