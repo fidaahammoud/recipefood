@@ -21,6 +21,8 @@ import ViewAllCategoriesScreen from '../screens/ViewAllCategoriesScreen';
 import ChefsProfileDetailsScreen from '../screens/ChefsProfileDetailsScreen'; 
 import RecipesForSpecificCategoryScreen from '../screens/RecipesForSpecificCategoryScreen'; 
 import EditRecipeScreen from '../screens/EditRecipeScreen'; 
+import SearchResultScreen from '../screens/SearchResultScreen'; 
+
 
 
 
@@ -53,6 +55,8 @@ export default function AppNavigation() {
                 <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
                 <Stack.Screen name="EditRecipe" component={EditRecipeScreen} />
+                <Stack.Screen name="SearchResults" component={SearchResultScreen} />
+
 
             </Stack.Navigator>
         </NavigationContainer>  

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image, TextInput, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -12,7 +12,11 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
   const { userId } = getAuthData();
+  const [searchQuery, setSearchQuery] = useState('');
 
+  const handleSearch = async () => {
+    navigation.navigate('SearchResults', { searchQuery });
+  };
   
   return (
     <View style={styles.container}>
@@ -28,12 +32,19 @@ const HomeScreen = () => {
           <Icon name="sort" size={30} color="black" onPress={() => console.log('Sort pressed')} />
         </View>
 
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            placeholder="Search..."
-            style={styles.searchInput}
-          />
+       {/* Search Bar */}
+       <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <TextInput
+              placeholder="Search..."
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={text => setSearchQuery(text)}
+            />
+            <TouchableOpacity onPress={handleSearch}>
+              <Icon name="search" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Categories and Chefs container */}
@@ -98,11 +109,17 @@ const styles = StyleSheet.create({
   searchContainer: {
     marginTop: 16,
   },
-  searchInput: {
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: 'gray',
-    padding: 8,
     borderRadius: 5,
+    paddingHorizontal: 8,
+  },
+  searchInput: {
+    flex: 1,
   },
   categoriesAndChefsContainer: {
     marginTop: 30,

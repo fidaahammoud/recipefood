@@ -25,7 +25,7 @@ const EditRecipeForm = () => {
   const [imageId, setImageId] = useState('');
   const [image, setImage] = useState(null);
 
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(true);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false); 
 
@@ -73,7 +73,20 @@ const EditRecipeForm = () => {
   }, [imageId,isFocused]);
 
   const validateForm = () => {
-    setIsFormValid(true); 
+    if (
+      title.trim() !== '' &&
+      description.trim() !== '' &&
+      imageId.toString().trim() !== '' &&
+      selectedCategory !== null &&
+      ingredients.every(ingredient => ingredient.name.trim() !== '' && ingredient.measurementUnit.trim() !== '') && 
+      steps.every(step => step.trim() !== '') && 
+      preparationTime.trim() !== '' &&
+      comments.trim() !== ''
+    ) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
   };
 
   const saveImageToDatabase = async (selectedImage) => {
@@ -96,6 +109,7 @@ const EditRecipeForm = () => {
   };
 
   const handleSave = async () => {
+    if (isFormValid) {
     const recipeData = {
       title,
       description,
@@ -117,6 +131,7 @@ const EditRecipeForm = () => {
     } catch (error) {
       setError(error);
     }
+  }
   };
   
   const handleCancel = () => {
@@ -231,6 +246,7 @@ const EditRecipeForm = () => {
       <TextInput
         value={preparationTime}
         onChangeText={setPreparationTime}
+        onBlur={validateForm}
         style={styles.input}
         placeholder="Enter preparation time"
       />
@@ -246,8 +262,8 @@ const EditRecipeForm = () => {
         <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
       </View>
       <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={handleSave} disabled={!isFormValid} />
-        <Button title="Cancel" onPress={handleCancel} />
+        <Button title="Cancel" onPress={handleCancel}  />
+        <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
       </View>
 
       {/* Modal for category selection */}
@@ -372,6 +388,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop:20
   },
 });
 

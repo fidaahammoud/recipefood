@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused, useRoute } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider';
-import HttpService from './HttpService';
-import { Utils } from './Utils'; 
+import HttpService from '../components/HttpService';
+import { Utils } from '../components/Utils';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
-const LatestRecipes = () => {
+const SearchResultScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
   const [error, setError] = useState(null);
+  const [recipes, setRecipes] = useState([]);
 
-  
+  const route = useRoute();
+  const { searchQuery } = route.params;
+
   const { getTimeDifference } = Utils();
 
   useEffect(() => {
-    const fetchLatestRecipes = async () => {
+    const fetchSearchRecipes = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/recipes?sort=-created_at`, null);
+        const response = await httpService.post(`${API_HOST}/recipes/search`, { query: searchQuery }, null);
         setRecipes(response.data);
       } catch (error) {
         setError(error.message);
       }
     };
 
-    fetchLatestRecipes();
+    fetchSearchRecipes();
   }, [isFocused]);
 
   const handleRecipePress = (recipeId) => {
@@ -44,6 +46,15 @@ const LatestRecipes = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Text style={styles.backButtonText}>Back</Text>
+      </TouchableOpacity>
+
+      <View style={styles.searchCriteriaContainer}>
+        <Text style={styles.searchCriteriaText}>Search For : {searchQuery}</Text>
+        <View style={styles.line} />
+      </View>
+
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
@@ -65,7 +76,6 @@ const LatestRecipes = () => {
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
             </View>
           </View>
-          {/* Use getTimeDifference function */}
           <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
       ))}
@@ -76,6 +86,32 @@ const LatestRecipes = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 1,
+  },
+  backButtonText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: 'black'
+  },
+  searchCriteriaContainer: {
+    alignItems: 'center',
+  },
+  searchCriteriaText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    marginTop: 30,
+  },
+  line: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'black',
+    marginBottom: 10,
   },
   recipeItem: {
     marginBottom: 16,
@@ -147,4 +183,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LatestRecipes;
+export default SearchResultScreen;
