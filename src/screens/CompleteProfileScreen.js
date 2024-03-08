@@ -27,8 +27,10 @@ const CompleteProfile = () => {
   postData = async (data) => {
     try {
       const response = await httpService.put(`${API_HOST}/completeProfile/${userId}`,data,token);
+      if (response && response.message === 'Profile completed successfully' ) {
       console.log(response.user);
       navigation.navigate('Home');
+      }
     } 
     catch (error) {
       setError(error);

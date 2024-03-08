@@ -6,9 +6,7 @@ import { useAuth } from '../components/AuthProvider';
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
-import MostLikedRecipes from "../components/MostLikedRecipes";
-import MostAverageRatingRecipes from "../components/MostAverageRatingRecipes";
-import SortRecipeByPreparationTime from "../components/SortRecipeByPreparationTime";
+
 
 
 import Footer from "../components/Footer"; 
@@ -18,7 +16,7 @@ const HomeScreen = () => {
   const { getAuthData } = useAuth();
   const { userId } = getAuthData();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortingOption, setSortingOption] = useState('latest'); // Default to 'latest'
+  const [sortingOption, setSortingOption] = useState('latest'); 
   const [modalVisible, setModalVisible] = useState(false);
   const handleSearch = async () => {
     navigation.navigate('SearchResults', { searchQuery });
@@ -28,27 +26,12 @@ const HomeScreen = () => {
     setModalVisible(true);
   };
 
-  // Function to handle sorting option change
   const handleSortingOptionChange = (option) => {
     setSortingOption(option);
-    setModalVisible(false); // Close the modal after selecting sorting option
+    setModalVisible(false); 
   };
 
-  // Function to render the appropriate component based on sorting option
-  const renderRecipesComponent = () => {
-    switch (sortingOption) {
-      case 'latest':
-        return <LatestRecipes />;
-      case 'mostLiked':
-        return <MostLikedRecipes />;
-      case 'topRated':
-        return <MostAverageRatingRecipes />;
-      case 'prepTime':
-        return <SortRecipeByPreparationTime />;
-      default:
-        return <LatestRecipes />;
-    }
-  };
+ 
 
   return (
     <View style={styles.container}>
@@ -103,9 +86,9 @@ const HomeScreen = () => {
           <Chefs />
         </View>
 
-        {/* Latest or Most Liked or Top Rated Recipes or by preparation time based on sorting option */}
-        <View style={styles.latestRecipesContainer}>
-          {renderRecipesComponent()}
+         {/* Latest Recipes */}
+         <View style={styles.latestRecipesContainer}>
+          <LatestRecipes sortingOption={sortingOption} />
         </View>
       </ScrollView>
 

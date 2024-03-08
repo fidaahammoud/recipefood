@@ -14,12 +14,14 @@ export default function Login() {
 
   const [error, setError] = useState(null);
 
-  postData = async (data) => {
+  const postData = async (data) => {
     try {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/login`,data,null);
-      saveAuthData(response.access_token, response.user_id);
-      navigation.navigate('Home');
+      if (response && response.access_token && response.user_id) {
+        saveAuthData(response.access_token, response.user_id);
+        navigation.navigate('Home');
+      } 
     } 
     catch (error) {
       setError(error);

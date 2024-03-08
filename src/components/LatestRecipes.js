@@ -9,7 +9,7 @@ import { Utils } from './Utils';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
-const LatestRecipes = () => {
+const LatestRecipes = ({ sortingOption }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
@@ -17,29 +17,45 @@ const LatestRecipes = () => {
   const { token } = getAuthData();
   const [error, setError] = useState(null);
 
-  
   const { getTimeDifference } = Utils();
 
   useEffect(() => {
-    const fetchLatestRecipes = async () => {
+    const fetchRecipes = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/recipes?sort=-created_at`, null);
+        let url;
+        switch (sortingOption) {
+          case 'latest':
+            url = `${API_HOST}/recipes?sort=-created_at`;
+            break;
+          case 'mostLiked':
+            url = `${API_HOST}/recipes?sort=-totalLikes`;
+            break;
+          case 'topRated':
+            url = `${API_HOST}/recipes?sort=-avrgRating`;
+            break;
+          case 'prepTime':
+            url = `${API_HOST}/recipes?sort=+preparationTime`;
+            break;
+          default:
+            url = `${API_HOST}/recipes?sort=-created_at`;
+        }
+        const response = await httpService.get(url, null);
         setRecipes(response.data);
       } catch (error) {
         setError(error.message);
       }
     };
 
-    fetchLatestRecipes();
-  }, [isFocused]);
+    fetchRecipes();
+  }, [isFocused, sortingOption]);
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
   if (error) {
-    return <Text>Error fetching latest recipes: {error}</Text>;
+    return <Text>Error fetching recipes: {error}</Text>;
   }
 
   return (
@@ -65,13 +81,13 @@ const LatestRecipes = () => {
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
             </View>
           </View>
-          {/* Use getTimeDifference function */}
           <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

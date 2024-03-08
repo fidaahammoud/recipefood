@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ToastAndroid } from 'react-native';
 
 class HttpService extends Component {
   async get(url, token) {
@@ -31,10 +32,19 @@ class HttpService extends Component {
         },
         body: JSON.stringify(data),
       });
+      const responseBody = await response.json();
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        console.log('Response status:', response.status);
+        console.log('Response body:', responseBody);
+  
+        if (response.status === 401 || response.status === 422) {
+          ToastAndroid.show(responseBody.message, ToastAndroid.SHORT);
+        } else {
+          throw new Error('Network response was not ok');
+        }
       }
-      return await response.json();
+      return responseBody;
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -52,10 +62,22 @@ class HttpService extends Component {
         },
         body: JSON.stringify(data),
       });
+      const responseBody = await response.json();
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        console.log('Response status:', response.status);
+        console.log('Response body:', responseBody);
+  
+        if (response.status === 400) {
+          // Check if the message field exists in the response body
+          const errorMessage = Array.isArray(responseBody.message) ? responseBody.message.join(', ') : responseBody.message;
+          // Join multiple error messages if they are in an array
+          ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+        } else {
+          throw new Error('Network response was not ok');
+        }
       }
-      return await response.json();
+      return responseBody;
     } catch (error) {
       console.error('Error:', error);
       throw error;

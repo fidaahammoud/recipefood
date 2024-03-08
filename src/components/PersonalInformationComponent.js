@@ -22,7 +22,6 @@ const PersonalInformationComponent = () => {
         const httpService = new HttpService();
         console.log(`${API_HOST}/users/${userId}`);
         const response = await httpService.get(`${API_HOST}/users/${userId}`,token);
-        console.log(response);
         setUserData(response);
   
       } catch (error) {
