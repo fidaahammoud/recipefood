@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     right: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     textTransform: 'capitalize',
     textAlign: 'center',
@@ -299,24 +299,24 @@ const styles = StyleSheet.create({
   },
   description: {
     marginTop: 15,
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 10,
   },
   category: {
     marginTop: 15,
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 10,
 
   },
   preparationTime: {
     marginTop: 15,
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 10,
 
   },
   comment: {
     marginTop: 15,
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 10,
   },
 

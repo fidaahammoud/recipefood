@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation,useIsFocused } from '@react-navigation/native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider';
 import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
-
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
@@ -18,9 +17,28 @@ const EditProfileScreen = () => {
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [storedImageUri, setStoredImageUri] = useState(null);
+  const [submitDisabled, setSubmitDisabled] = useState(true); 
 
+  useEffect(() => {
+    const fetchPersonalInformation = async () => {
+      try {
+        const httpService = new HttpService();
+        console.log(`${API_HOST}/users/${userId}`);
+        const response = await httpService.get(`${API_HOST}/users/${userId}`, token);
+        setName(response.name);
+        setUsername(response.username);
+        setBio(response.bio);
+      } catch (error) {
+        setError(error);
+      }
+    };
   
-  postData = async (data) => {
+    fetchPersonalInformation();
+  }, [isFocused]);
+
+ 
+
+  const postData = async (data) => {
     try {
       const httpService = new HttpService();
       console.log(`${API_HOST}/updatePersonalInformation/${userId}`);
@@ -37,25 +55,31 @@ const EditProfileScreen = () => {
 
   const handleSubmit = async () => {
     const data = {};
-
+  
     if (name) {
       data.name = name;
     }
     if (username) {
       data.username = username;
     }
-    if (bio) {
-      data.bio = bio;
-    }
-
- 
-    postData(data);
+    data.bio = bio !== '' ? bio : null;
+  
+    setSubmitDisabled(true);
+  
+    await postData(data);
+  
+    setSubmitDisabled(false);
   };
-
+  
 
   useEffect(() => {
     setStoredImageUri(imageUriRef.current);
-  }, [isFocused]);
+    if (username && name) {
+      setSubmitDisabled(false);
+    } else {
+      setSubmitDisabled(true);
+    }
+  }, [username, name, storedImageUri]);
 
   const setImage = (uri) => {
     imageUriRef.current = uri;
@@ -65,16 +89,13 @@ const EditProfileScreen = () => {
   const saveImageToDatabase = async (selectedImage) => {
     try {
       const httpService = new HttpService();
-
       const apiUrl = `${API_HOST}/image/${userId}`;
-
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
         name: 'profile_image.jpg',
         type: 'image/jpg',
       });
-
       const response = await httpService.uploadImage(apiUrl, formData, token);
       console.log('Image upload response:', response);
     } catch (error) {
@@ -82,81 +103,117 @@ const EditProfileScreen = () => {
       setError(error);
     }
   };
+
   const handleCancel = () => {
     navigation.navigate('Profile');
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+    <ImageBackground
+      source={require('../../assets/images/completeProfileBackground.jpg')}
+      style={styles.backgroundImage}
+    >
+      <View style={styles.container}>
+        <View style={styles.formContainer}>
+        {storedImageUri && (
+          <Image source={{ uri: storedImageUri }} style={styles.photoPreview} />
+        )}
+          <View style={styles.labelInputContainer}>
+            <Text style={styles.label}>Full name</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="Full name"
+            />
+          </View>
+          <View style={styles.labelInputContainer}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              value={username}
+              onChangeText={setUsername}
+              placeholder="Username"
+            />
+          </View>
+          <View style={styles.labelInputContainer}>
+            <Text style={styles.label}>Bio</Text>
+            <TextInput
+              style={[styles.input, styles.bioInput]}
+              value={bio}
+              onChangeText={setBio}
+              placeholder="Bio"
+              multiline
+            />
+          </View>
+          <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+            {!submitDisabled && (
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Done</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
       </View>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Name"
-      />
-      <TextInput
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Username"
-      />
-      <TextInput
-        style={styles.input}
-        value={bio}
-        onChangeText={setBio}
-        placeholder="Bio"
-        multiline
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Done</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-  },
-  imageContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  formContainer: {
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 10,
+    width: 400, 
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  labelInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
   },
+  label: {
+    flex: 1, 
+  },
   input: {
+    flex: 3, 
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  bioInput: {
+    height: 80,
+    textAlignVertical: 'top',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 20,
   },
-  cancelButton: {
-    backgroundColor: 'gray',
+  button: {
+    backgroundColor: '#5B4444',
     borderRadius: 3,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',
   },
-  button: {
-    backgroundColor: '#5B4444',
+  cancelButton: {
+    backgroundColor: 'gray',
     borderRadius: 3,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -166,6 +223,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  photoPreview: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10,
+    alignSelf: 'center'
   },
 });
 
