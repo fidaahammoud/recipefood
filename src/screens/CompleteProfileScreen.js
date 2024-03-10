@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute ,useIsFocused} from '@react-navigation/native';
+
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import ImagePickerComponent from '../components/ImageHandling';
@@ -9,6 +10,7 @@ import { API_HOST } from "@env";
 const CompleteProfile = () => {
   const navigation = useNavigation();
   const httpService = new HttpService();
+  const isFocused = useIsFocused();
 
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
@@ -53,7 +55,7 @@ const CompleteProfile = () => {
     } else {
       setSubmitDisabled(true);
     }
-  }, [username, fullName, storedImageUri]);
+  }, [username, fullName, storedImageUri,isFocused]);
 
   const setImage = (uri) => {
     imageUriRef.current = uri;

@@ -114,11 +114,11 @@ const RecipeDetails = ({ route }) => {
     }
   };
 
-  if (!recipeDetails && !error) {
-    return <Text>Loading...</Text>;
-  }
   if (error) {
-    return <Text>Error fetching chefs: {error}</Text>;
+    return <Text>Error fetching recipe details: {error.message}</Text>;
+  }
+  if (!recipeDetails) {
+    return <Text>Loading...</Text>;
   }
 
   const navigateToViewComments = () => {
@@ -218,18 +218,18 @@ const RecipeDetails = ({ route }) => {
         <Text style={styles.stepText}>{step.stepDescription}</Text>
       </View>
       ))}
-       {/* UI for rating */}
-       <View style={styles.addRatingContainer}>
-        <Text style={styles.userRatingText}>Your Rating: {userRating}</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={1}
-          maximumValue={5}
-          step={1}
-          value={userRating}
-          onValueChange={handleRatingChange}
-        />
-      </View>
+       
+        {/* UI for rating */}
+        <View style={styles.addRatingContainer}>
+          <Text style={styles.userRatingText}>Your Rating: {userRating}</Text>
+          <View style={styles.starsContainer}>
+            {[1, 2, 3, 4, 5].map(star => (
+              <TouchableOpacity key={star} onPress={() => handleRatingChange(star)}>
+                <Icon name={userRating >= star ? "star" : "star-o"} size={30} color="gold" style={styles.starIcon} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
       {/* Button to submit rating */}
       <TouchableOpacity style={styles.submitRatingButton} onPress={submitRating}>
@@ -376,8 +376,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   
-  slider: {
-    width: '100%',
+  starsContainer: {
+    flexDirection: 'row',
+    marginTop:15
+  },
+  starIcon: {
+    marginRight: 5,
   },
   submitRatingButton: {
     backgroundColor: '#5B4444',

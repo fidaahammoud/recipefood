@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Modal, Pressable, Alert  } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Modal, Pressable ,ToastAndroid } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from './AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
+
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const RecipeOfUser = () => {
@@ -56,16 +57,15 @@ const RecipeOfUser = () => {
 
   const handleDeleteRecipe = async () => {
     try {
-      console.log(`${API_HOST}/recipes/delete/${selectedRecipe.id}`);
-      console.log(token);
       const response = await httpService.delete(`${API_HOST}/recipes/delete/${selectedRecipe.id}`,token);
-      console.log(response);
       setShowOptions(false);
       setRecipes(recipes.filter(recipe => recipe.id !== selectedRecipe.id));
-      Alert.alert('Success', 'Recipe deleted successfully!');
+      ToastAndroid.show('Recipe deleted successfully!', ToastAndroid.SHORT);
+
     } catch (error) {
       console.error('Error deleting recipe:', error);
-      Alert.alert('Error', 'Failed to delete recipe. Please try again later.');
+      ToastAndroid.show('Failed to delete recipe. Please try again later.', ToastAndroid.SHORT);
+
     }
   };
 

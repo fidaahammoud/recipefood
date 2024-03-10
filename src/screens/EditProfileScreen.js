@@ -43,9 +43,9 @@ const EditProfileScreen = () => {
       const httpService = new HttpService();
       console.log(`${API_HOST}/updatePersonalInformation/${userId}`);
       const response = await httpService.put(`${API_HOST}/updatePersonalInformation/${userId}`, data, token);
-      console.log(response.message);
-      console.log(response.user);
+      if (response && response.message === 'Personal information updated successfully' ) {
       navigation.navigate('Profile');
+      }
     }
     catch (error) {
       console.error('Error posting data:', error);
