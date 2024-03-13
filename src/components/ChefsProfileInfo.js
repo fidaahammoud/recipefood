@@ -16,8 +16,6 @@ const ChefsProfileInfo = ({ chefId }) => {
       try {
         const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/users/${chefId}`);
-        console.log('userData:', response); 
-        console.log('name:', response.name); 
         setUserData(response);
       } catch (error) {
         setError(error);

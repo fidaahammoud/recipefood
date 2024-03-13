@@ -32,7 +32,7 @@ const FavoriteRecipes = () => {
   }, [isFocused]);
 
   if (error) {
-    return <Text>Error fetching chefs: {error}</Text>;
+    return <Text>Error fetching chefs: {error.message}</Text>;
   }
 
 
@@ -40,9 +40,7 @@ const FavoriteRecipes = () => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
-  const handleLikePress = (recipeId) => {
-    console.log(`Liked recipe: ${recipeId}`);
-  };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -56,12 +54,12 @@ const FavoriteRecipes = () => {
           <Image source={{ uri:  `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>
-            <TouchableOpacity onPress={() => handleLikePress(recipe.id)}>
+            <View >
               <View style={styles.likesContainer}>
                 <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
                 <Text style={styles.likesText}>{recipe.totalLikes}</Text>
               </View>
-            </TouchableOpacity>
+            </View>
             <View style={styles.ratingContainer}>
               <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
               <Text style={styles.ratingText}>{recipe.avrgRating}</Text>

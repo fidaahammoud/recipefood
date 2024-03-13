@@ -6,9 +6,6 @@ import { useAuth } from '../components/AuthProvider';
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
-
-
-
 import Footer from "../components/Footer"; 
 
 const HomeScreen = () => {
@@ -18,6 +15,8 @@ const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortingOption, setSortingOption] = useState('latest'); 
   const [modalVisible, setModalVisible] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
   const handleSearch = async () => {
     navigation.navigate('SearchResults', { searchQuery });
   };
@@ -26,29 +25,33 @@ const HomeScreen = () => {
     setModalVisible(true);
   };
 
+  const openFilterModal = () => {
+    setFilterModalVisible(true);
+  };
+
   const handleSortingOptionChange = (option) => {
     setSortingOption(option);
     setModalVisible(false); 
   };
 
- 
+  const handleViewFollowings = () => {
+    navigation.navigate('followings');
+    setFilterModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Logo */}
         <View style={styles.logoContainer}>
           <Image source={require('../../assets/images/logo.jpeg')} style={styles.logo} />
         </View>
 
-        {/* filter and sorting */}
         <View style={styles.iconsContainer}>
-          <Icon name="filter" size={30} color="black" onPress={() => console.log('Filter pressed')} />
+          <Icon name="filter" size={30} color="black" onPress={openFilterModal} />
           <Icon name="sort" size={30} color="black" onPress={openSortModal} />
         </View>
 
-       {/* Search Bar */}
-       <View style={styles.searchContainer}>
+        <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
             <TextInput
               placeholder="Search..."
@@ -62,20 +65,16 @@ const HomeScreen = () => {
           </View>
         </View>
 
-        
         <View style={styles.categoriesAndChefsContainer}>
-          {/* Categories */}
           <View style={styles.categoriesContainer}>
             <Text style={styles.boldText}>Categories</Text>
             <TouchableOpacity onPress={() => navigation.navigate('ViewAllCategories')}>
               <Text style={styles.boldText}>View All</Text>
             </TouchableOpacity>
           </View>
-
           <Categories />
         </View>
 
-        {/* Chefs */}
         <View style={styles.chefsContainer}>
           <View style={styles.categoriesContainer}>
             <Text style={styles.boldText}>Chefs</Text>
@@ -86,13 +85,11 @@ const HomeScreen = () => {
           <Chefs />
         </View>
 
-         {/* Latest Recipes */}
-         <View style={styles.latestRecipesContainer}>
+        <View style={styles.latestRecipesContainer}>
           <LatestRecipes sortingOption={sortingOption} />
         </View>
       </ScrollView>
 
-      {/* Sort Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -116,7 +113,7 @@ const HomeScreen = () => {
               <TouchableOpacity onPress={() => handleSortingOptionChange('prepTime')}>
                 <Text style={styles.sortOption}>Preparation Time</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSortingOptionChange('latest')}>
+              <TouchableOpacity onPress={() => handleSortingOptionChange('newest')}>
                 <Text style={styles.sortOption}>Newest</Text>
               </TouchableOpacity>
             </View>
@@ -124,7 +121,25 @@ const HomeScreen = () => {
         </TouchableWithoutFeedback>
       </Modal>
 
-      {/* Footer */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={filterModalVisible}
+        onRequestClose={() => {
+          setFilterModalVisible(!filterModalVisible);
+        }}>
+        <TouchableWithoutFeedback onPress={() => setFilterModalVisible(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity onPress={handleViewFollowings}>
+                <Text style={styles.sortOption}>View my followings</Text>
+              </TouchableOpacity>
+              {/* Other filter options */}
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+      
       <Footer/>
     </View>
   );
