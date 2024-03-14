@@ -9,6 +9,7 @@ import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { ToastAndroid } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 const ChefsProfileDetails = ({ route }) => {
@@ -18,6 +19,7 @@ const ChefsProfileDetails = ({ route }) => {
   const { getAuthData } = useAuth();
   const { userId , token} = getAuthData();
   const isFocused = useIsFocused();
+  const [error, setError] = useState(null);
 
 
   const handleGoBack = () => {
@@ -62,19 +64,24 @@ const ChefsProfileDetails = ({ route }) => {
     }
   };
 
+  if (error) {
+    return <Text>Error fetching chefs:  {error.message}</Text>;
+  }
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-        <Icon name="arrow-back" size={24} color="black" /> 
+      <View style={styles.topBar}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
+    </View>
 
+      <ChefsProfileInfo chefId={chefId} />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.followButton} onPress={handleFollowPress}>
           <Text style={styles.buttonText}>{followStatus}</Text>
         </TouchableOpacity>
       </View>
-      <ChefsProfileInfo chefId={chefId} />
-   
       <View style={styles.separator} />
       <Text style={styles.recipesText}>Recipes</Text>
       <ChefsRecipes chefId={chefId}/>
@@ -87,13 +94,25 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   buttonContainer:{
     alignItems: 'center',
-    backgroundColor: '#5B4444',
     borderRadius: 3,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    marginTop:30,
+    borderWidth: 2, 
+    borderColor: '#5B4444'
   },
+  buttonText: {
+    color: '#5B4444',
+    fontWeight: 'bold', 
+  },
+
   separator: {
     borderBottomWidth: 1,
     borderBottomColor: 'black', 

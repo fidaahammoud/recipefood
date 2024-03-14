@@ -31,9 +31,9 @@ const ChefsRecipes = ({ chefId }) => {
     fetchFavoriteRecipes();
   }, [isFocused]);
 
-  if (error) {
-    return <Text>Error fetching chefs: {error}</Text>;
-  }
+  // if (error) {
+  //   return <Text>Error fetching chefs:  {error.message}</Text>;
+  // }
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });

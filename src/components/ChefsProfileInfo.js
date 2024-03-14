@@ -26,66 +26,53 @@ const ChefsProfileInfo = ({ chefId }) => {
   }, [chefId,isFocused]);
 
   if (error) {
-    return <Text>Error fetching chef's information: {error}</Text>;
+    return <Text>Error fetching chef's information: {error.message}</Text>;
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        {userData && userData.images && (
-          <Image source={{ uri: `${BASE_URL}/storage/${userData.images.image}` }} style={styles.profileImage} />
-        )}
+      <View style={styles.profileContainer}>
+        <Image source={{ uri: `${BASE_URL}/storage/${userData?.images?.image}` }} style={styles.profileImage} />
         <View style={styles.textContainer}>
-          {userData && (
-            <>
-              <Text style={styles.name}>{userData.name}</Text>
-              <Text style={styles.username}>{userData.username}</Text>
-              <Text style={styles.bio}>{userData.bio}</Text>
-
-            </>
-          )}
+          <Text style={styles.name}>{userData?.name}</Text>
+          <Text style={styles.username}>{userData?.username}</Text>
         </View>
       </View>
-
+      <Text style={styles.bio}>{userData?.bio}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      
-       marginTop: 20,
-    },
-    imageContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    profileImage: {
-      width: 60,
-      height: 60,
-      borderRadius: 50,
-      marginRight: 20,
-     
-    },
-    textContainer: {
-      flex: 1,
-    },
-    name: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      textTransform: 'capitalize',
-      marginBottom: 5,
-    },
-    username: {
-      fontStyle: 'italic',
-      marginBottom: 5,
-    },
-    bio: {
-      fontWeight: 'bold',
-      paddingTop:20,
-    },
-  });
-  
-  
+  container: {
+    marginTop: 20,
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    marginRight: 20,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+    marginBottom: 5,
+  },
+  username: {
+    fontStyle: 'italic',
+  },
+  bio: {
+    fontWeight: 'bold',
+  },
+});
 
 export default ChefsProfileInfo;

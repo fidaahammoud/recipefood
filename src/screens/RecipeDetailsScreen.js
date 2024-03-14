@@ -29,24 +29,22 @@ const RecipeDetails = ({ route }) => {
   const [avgRate, setAvgRate] = useState(0);
   const { getTimeDifference } = Utils();
 
-  const fetchRecipeDetails = useCallback(async () => {
-    try {
-      const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
-      setRecipeDetails(response);
-      setTotalLikes(response.totalLikes);
-      setAvgRate(parseFloat(response.avrgRating));
-    } catch (error) {
-      console.error('Error fetching recipe details:', error);
-      setError(error);
-    }
-  }, [recipeId, isFocused]);
-
   useEffect(() => {
-    if (isFocused) {
-      fetchRecipeDetails();
-    }
-  }, [isFocused, fetchRecipeDetails]);
+    const fetchRecipeDetails = async () => {
+      try {
+        const httpService = new HttpService();
+        const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
+        setRecipeDetails(response);
+        setTotalLikes(response.totalLikes);
+        setAvgRate(parseFloat(response.avrgRating));
+      } catch (error) {
+        console.error('Error fetching recipe details:', error.message);
+        setError(error);
+      }
+    };
+
+    fetchRecipeDetails();
+  }, [recipeId, isFocused]);
 
   useEffect(() => {
     const loadFavoriteStatus = async () => {
@@ -75,13 +73,28 @@ const RecipeDetails = ({ route }) => {
     loadLikeStatus();
   }, [recipeId, userId]);
 
+  useEffect(() => {
+    const loadUserRating = async () => {
+      try {
+        const storedRating = await AsyncStorage.getItem(`rating_${userId}_${recipeId}`);
+        if (storedRating !== null) {
+          setUserRating(parseInt(storedRating));
+        }
+      } catch (error) {
+        console.error('Error loading user rating:', error);
+      }
+    };
+
+    loadUserRating();
+  }, [recipeId, userId]);
+
   const handleLikePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
       setTotalLikes(response.nbOfLikes);
       setIsLiked(!isLiked);
-      await AsyncStorage.setItem(`like_${userId}_${recipeId}`, JSON.stringify(true));
+      await AsyncStorage.setItem(`like_${userId}_${recipeId}`, JSON.stringify(!isLiked));
     } catch (error) {
       setError(error.message);
     }
@@ -92,7 +105,7 @@ const RecipeDetails = ({ route }) => {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/addToFavorite`, null, token);
       setIsFavorite(!isFavorite);
-      await AsyncStorage.setItem(`favorite_${userId}_${recipeId}`, JSON.stringify(!isFavorite)); 
+      await AsyncStorage.setItem(`favorite_${userId}_${recipeId}`, JSON.stringify(!isFavorite));
     } catch (error) {
       setError(error.message);
     }
@@ -106,11 +119,11 @@ const RecipeDetails = ({ route }) => {
     try {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/rate/${userRating}`, { rating: userRating }, token);
-      console.log(response.avgRating);
       setAvgRate(parseFloat(response.avgRating));
+      await AsyncStorage.setItem(`rating_${userId}_${recipeId}`, userRating.toString());
     } catch (error) {
-      setError(error.message);
-      console.error('Error submitting rating:', error);
+      setError(error);
+      console.error('Error submitting rating:', error.message);
     }
   };
 
@@ -124,6 +137,7 @@ const RecipeDetails = ({ route }) => {
   const navigateToViewComments = () => {
     navigation.navigate('RecipeComments', { recipeId });
   };
+
 
   return (
     <View style={styles.container}>
@@ -415,14 +429,19 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   ingredient: {
-    fontSize: 18,
     flexDirection: 'row',
     alignItems: 'center',
   },
+  ingredientText: {
+    fontSize:20,
+  },
   step: {
-    fontSize: 18,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  stepText: {
+    fontSize:20,
+
   },
 
 });

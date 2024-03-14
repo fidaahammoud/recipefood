@@ -35,7 +35,8 @@ const FetchSameCategoryRecipes = () => {
         setError('Invalid response format: recipes array not found');
       }
     } catch (error) {
-      setError(error.message);
+      console.error('Error fetching recipes for this category:', error);
+      setError(error);
     } 
   };
   useEffect(() => {
@@ -43,7 +44,7 @@ const FetchSameCategoryRecipes = () => {
   }, [isFocused]);
 
   if (error) {
-    return <Text>Error fetching latest recipes: {error}</Text>;
+    return <Text>Error fetching recipes for this category: {error.message}</Text>;
   }
 
   const handleRecipePress = (recipeId) => {
