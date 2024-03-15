@@ -23,6 +23,7 @@ import RecipesForSpecificCategoryScreen from '../screens/RecipesForSpecificCateg
 import EditRecipeScreen from '../screens/EditRecipeScreen'; 
 import SearchResultScreen from '../screens/SearchResultScreen'; 
 import FollowingsScreen from "../screens/FollowingsSreen";
+import NotificationScreen from "../screens/NotificationScreen";
 
 
 
@@ -57,7 +58,10 @@ export default function AppNavigation() {
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
                 <Stack.Screen name="EditRecipe" component={EditRecipeScreen} />
                 <Stack.Screen name="SearchResults" component={SearchResultScreen} />
-                <Stack.Screen name="followings" component={FollowingsScreen} />
+                <Stack.Screen name="Followings" component={FollowingsScreen} />
+
+                <Stack.Screen name="Notification" component={NotificationScreen} />
+
 
 
             </Stack.Navigator>

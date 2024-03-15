@@ -18,7 +18,7 @@ const Footer = () => {
     navigation.navigate('Home');
   }; 
   const handleNotificationPress = () => {
-    //navigation.navigate('Notificatio');
+    navigation.navigate('Notification');
   }; 
 
 
@@ -32,7 +32,7 @@ const Footer = () => {
         <Icon name="upload" size={30} color="black" />
         <Text>Upload</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity style={styles.iconContainer} onPress={handleNotificationPress}>
         <Icon name="bell" size={30} color="black" />
         <Text>Notifications</Text>
       </TouchableOpacity>

@@ -30,7 +30,7 @@ const ChefsProfileDetails = ({ route }) => {
   useEffect(() => {
     const getFollowStatus = async () => {
       try {
-        const savedStatus = await AsyncStorage.getItem(`follow_${userId}_${chefId}`);
+        const savedStatus = await AsyncStorage.getItem(`followUser_${userId}_${chefId}`);
         if (savedStatus !== null) {
           // Return 'Unfollow' if the saved status is true, otherwise return 'Follow'
           setFollowStatus(JSON.parse(savedStatus) ? 'Unfollow' : 'Follow');
@@ -52,11 +52,11 @@ const ChefsProfileDetails = ({ route }) => {
 
       if (response.message.includes('unfollowed')) {
         setFollowStatus('Follow'); 
-        await AsyncStorage.removeItem(`follow_${userId}_${chefId}`);
+        await AsyncStorage.removeItem(`followUser_${userId}_${chefId}`);
         ToastAndroid.show(response.message, ToastAndroid.SHORT);
       } else if (response.message.includes('following')) {
         setFollowStatus('Unfollow'); 
-        await AsyncStorage.setItem(`follow_${userId}_${chefId}`, JSON.stringify(true));
+        await AsyncStorage.setItem(`followUser_${userId}_${chefId}`, JSON.stringify(true));
         ToastAndroid.show(response.message, ToastAndroid.SHORT);
       }
     } catch (error) {

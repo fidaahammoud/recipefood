@@ -35,7 +35,7 @@ const HomeScreen = () => {
   };
 
   const handleViewFollowings = () => {
-    navigation.navigate('followings');
+    navigation.navigate('Followings');
     setFilterModalVisible(false);
   };
 
