@@ -21,30 +21,30 @@ const NotificationScreen = ({ navigation }) => {
   // Track notification read status individually
   const [seenNotifications, setSeenNotifications] = useState(new Set());
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/notifications`, token);
-        const updatedNotifications = response.notifications.map(notification => ({
-          ...notification,
-          read: false // Assuming all notifications are initially unread
-        }));
-        setNotifications(updatedNotifications);
+  const fetchNotifications = async () => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.get(`${API_HOST}/notifications`, token);
+      const updatedNotifications = response.notifications.map(notification => ({
+        ...notification,
+        read: false // Assuming all notifications are initially unread
+      }));
+      setNotifications(updatedNotifications);
 
-        // Load seen notifications from AsyncStorage
-        const seenNotificationsStr = await AsyncStorage.getItem('seenNotifications');
-        if (seenNotificationsStr) {
-          const seenNotificationsArr = JSON.parse(seenNotificationsStr);
-          setSeenNotifications(new Set(seenNotificationsArr));
-        }
-      } catch (error) {
-        setError(error);
+      // Load seen notifications from AsyncStorage
+      const seenNotificationsStr = await AsyncStorage.getItem('seenNotifications');
+      if (seenNotificationsStr) {
+        const seenNotificationsArr = JSON.parse(seenNotificationsStr);
+        setSeenNotifications(new Set(seenNotificationsArr));
       }
-    };
+    } catch (error) {
+      setError(error);
+    }
+  };
 
+  useEffect(() => {
     fetchNotifications();
-
+    setInterval(fetchNotifications, 10000);
     // Clear seen notifications when navigating away from the screen
     const unsubscribe = navigation.addListener('blur', () => {
       setSeenNotifications(new Set()); // Reset seen notifications on blur

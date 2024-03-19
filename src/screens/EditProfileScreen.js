@@ -1,171 +1,152 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { API_HOST } from "@env";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, ImageBackground, Image } from 'react-native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
+import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
 
 const EditProfileScreen = () => {
+  const httpService = new HttpService();
+
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const route = useRoute();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
-  const imageUriRef = useRef(null);
-  const [error, setError] = useState(null);
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
-  const [storedImageUri, setStoredImageUri] = useState(null);
-  const [submitDisabled, setSubmitDisabled] = useState(true); 
+  
+  const [imageId, setImageId] = useState('');
+  const [image, setImage] = useState(null);
+  const [imageUri, setImageUri] = useState(null); // New state to manage image URI
+
+  const [isFormValid, setIsFormValid] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPersonalInformation = async () => {
-      try {
-        const httpService = new HttpService();
-        console.log(`${API_HOST}/users/${userId}`);
-        const response = await httpService.get(`${API_HOST}/users/${userId}`, token);
-        setName(response.name);
-        setUsername(response.username);
-        setBio(response.bio);
-      } catch (error) {
-        setError(error);
-      }
-    };
-  
-    fetchPersonalInformation();
+    fetchUserDetails();
   }, [isFocused]);
 
- 
-
-  const postData = async (data) => {
+  const fetchUserDetails = async () => {
     try {
-      const httpService = new HttpService();
-      console.log(`${API_HOST}/updatePersonalInformation/${userId}`);
-      const response = await httpService.put(`${API_HOST}/updatePersonalInformation/${userId}`, data, token);
-      if (response && response.message === 'Personal information updated successfully' ) {
-      navigation.navigate('Profile');
+      const response = await httpService.get(`${API_HOST}/users/${userId}`, token);
+      const userData = response; 
+      setName(userData.name);
+      setUsername(userData.username);
+      setBio(userData.bio);
+      setImageId(userData.image_id.toString());
+      // Set image URI if available
+      if (userData.image_id) {
+        setImageUri(`${API_HOST}/image/${userId}/image/${userData.image_id}`);
       }
-    }
-    catch (error) {
-      console.error('Error posting data:', error);
-      setError(error);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
     }
   };
-
-  const handleSubmit = async () => {
-    const data = {};
-  
-    if (name) {
-      data.name = name;
-    }
-    if (username) {
-      data.username = username;
-    }
-    data.bio = bio !== '' ? bio : null;
-  
-    setSubmitDisabled(true);
-  
-    await postData(data);
-  
-    setSubmitDisabled(false);
-  };
-  
 
   useEffect(() => {
-    setStoredImageUri(imageUriRef.current);
-    if (username && name) {
-      setSubmitDisabled(false);
-    } else {
-      setSubmitDisabled(true);
-    }
-  }, [username, name, storedImageUri]);
+    validateForm();
+  }, [imageId, isFocused]);
 
-  const setImage = (uri) => {
-    imageUriRef.current = uri;
-    setStoredImageUri(uri);
+  const validateForm = () => {
+    if (
+      name.trim() !== '' &&
+      username.trim() !== '' &&
+      imageId.toString().trim() !== '' 
+    ) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
   };
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const httpService = new HttpService();
-      const apiUrl = `${API_HOST}/image/${userId}`;
+      const apiUrl = `${API_HOST}/image/${userId}/image`;
+      
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
         name: 'profile_image.jpg',
         type: 'image/jpg',
       });
-      const response = await httpService.uploadImage(apiUrl, formData, token);
-      console.log('Image upload response:', response);
+
+      const resp = await httpService.uploadImage(apiUrl, formData, token);
+      setImageId(resp.id);
+      setImageUri(selectedImage.uri); // Set image URI after upload
     } catch (error) {
       console.error('Error during image upload:', error);
-      setError(error);
     }
   };
 
+  const handleSave = async () => {
+    if (isFormValid) {
+      const userData = {
+        name,
+        username,
+        bio,
+        image_id: imageId
+      };
+      try {
+        const response = await httpService.put(`${API_HOST}/updatePersonalInformation/${userId}`, userData, token);
+        await fetchUserDetails();
+        navigation.navigate('Home');
+      } catch (error) {
+        setError(error);
+      }
+    }
+  };
+  
   const handleCancel = () => {
-    navigation.navigate('Profile');
+    navigation.navigate('Home');
   };
 
-  return (
+
+   return (
     <ImageBackground
       source={require('../../assets/images/completeProfileBackground.jpg')}
       style={styles.backgroundImage}
     >
-      <View style={styles.container}>
-        <View style={styles.formContainer}>
-        {storedImageUri && (
-          <Image source={{ uri: storedImageUri }} style={styles.photoPreview} />
+      <View style={styles.formContainer}>
+        {imageUri && (
+          <Image source={{ uri: imageUri }} style={styles.photoPreview} />
         )}
-          <View style={styles.labelInputContainer}>
-            <Text style={styles.label}>Full name</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder="Full name"
-            />
-          </View>
-          <View style={styles.labelInputContainer}>
-            <Text style={styles.label}>Username</Text>
-            <TextInput
-              style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Username"
-            />
-          </View>
-          <View style={styles.labelInputContainer}>
-            <Text style={styles.label}>Bio</Text>
-            <TextInput
-              style={[styles.input, styles.bioInput]}
-              value={bio}
-              onChangeText={setBio}
-              placeholder="Bio"
-              multiline
-            />
-          </View>
-          <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-            {!submitDisabled && (
-              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Done</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+        <TextInput
+          style={styles.input}
+          placeholder="name"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={[styles.input, styles.aboutMeInput]}
+          placeholder="About me"
+          value={bio}
+          multiline
+          numberOfLines={4}
+          onChangeText={setBio}
+        />
+        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+        <View style={styles.buttonContainer}>
+        <Button title="Cancle" onPress={handleCancel} color="grey"  />
+          <Button title="Submit" onPress={handleSave} color="#5B4444"  />
+
         </View>
       </View>
     </ImageBackground>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
+    resizeMode: 'cover',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -173,63 +154,38 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 10,
-    width: 400, 
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
+    width: '80%',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  labelInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  label: {
-    flex: 1, 
   },
   input: {
-    flex: 3, 
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    borderColor: '#8B4513',
     borderWidth: 1,
-    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingLeft: 20,
+    color: '#333',
+    backgroundColor: '#fff',
+    width: '100%',
   },
-  bioInput: {
-    height: 80,
+  aboutMeInput: {
+    height: 100,
     textAlignVertical: 'top',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#5B4444',
-    borderRadius: 3,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: 'gray',
-    borderRadius: 3,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   photoPreview: {
     width: 80,
     height: 80,
     borderRadius: 40,
     marginBottom: 10,
-    alignSelf: 'center'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    width: '100%',
+  },
+  button: {
+    width: '48%', // Adjust width as needed for spacing
   },
 });
 

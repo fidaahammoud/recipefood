@@ -80,8 +80,7 @@ const EditRecipeForm = () => {
       selectedCategory !== null &&
       ingredients.every(ingredient => ingredient.name.trim() !== '' && ingredient.measurementUnit.trim() !== '') && 
       steps.every(step => step.trim() !== '') && 
-      preparationTime.trim() !== '' &&
-      comments.trim() !== ''
+      preparationTime.trim() !== '' 
     ) {
       setIsFormValid(true);
     } else {
