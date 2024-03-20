@@ -20,14 +20,14 @@ const EditProfileScreen = () => {
   
   const [imageId, setImageId] = useState('');
   const [image, setImage] = useState(null);
-  const [imageUri, setImageUri] = useState(null); // New state to manage image URI
+  const [imageUri, setImageUri] = useState(null); 
 
   const [isFormValid, setIsFormValid] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchUserDetails();
-  }, [isFocused]);
+  }, [isFocused,imageId]);
 
   const fetchUserDetails = async () => {
     try {
@@ -37,10 +37,7 @@ const EditProfileScreen = () => {
       setUsername(userData.username);
       setBio(userData.bio);
       setImageId(userData.image_id.toString());
-      // Set image URI if available
-      if (userData.image_id) {
-        setImageUri(`${API_HOST}/image/${userId}/image/${userData.image_id}`);
-      }
+      
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
@@ -48,8 +45,9 @@ const EditProfileScreen = () => {
 
   useEffect(() => {
     validateForm();
-  }, [imageId, isFocused]);
+  }, [imageId,isFocused]);
 
+  
   const validateForm = () => {
     if (
       name.trim() !== '' &&
@@ -65,17 +63,19 @@ const EditProfileScreen = () => {
   const saveImageToDatabase = async (selectedImage) => {
     try {
       const apiUrl = `${API_HOST}/image/${userId}/image`;
-      
+  
       const formData = new FormData();
       formData.append('image', {
         uri: selectedImage.uri,
         name: 'profile_image.jpg',
         type: 'image/jpg',
       });
-
+  
       const resp = await httpService.uploadImage(apiUrl, formData, token);
       setImageId(resp.id);
-      setImageUri(selectedImage.uri); // Set image URI after upload
+      // Update imageUri after successful upload
+      setImageUri(selectedImage.uri);
+  
     } catch (error) {
       console.error('Error during image upload:', error);
     }
@@ -113,18 +113,21 @@ const EditProfileScreen = () => {
         {imageUri && (
           <Image source={{ uri: imageUri }} style={styles.photoPreview} />
         )}
+         <Text style={styles.label}>Full Name</Text>
         <TextInput
           style={styles.input}
           placeholder="name"
           value={name}
           onChangeText={setName}
         />
+         <Text style={styles.label}>Username</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
         />
+         <Text style={styles.label}>About Me</Text>
         <TextInput
           style={[styles.input, styles.aboutMeInput]}
           placeholder="About me"
@@ -157,6 +160,12 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
+  label: {
+    marginBottom: 5,
+    fontWeight: 'bold',
+
+    color: '#333',
+  },
   input: {
     height: 50,
     borderColor: '#8B4513',
@@ -185,7 +194,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    width: '48%', // Adjust width as needed for spacing
+    width: '48%', 
   },
 });
 

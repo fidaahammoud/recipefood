@@ -17,6 +17,9 @@ const CompleteProfile = () => {
   const [aboutMe, setAboutMe] = useState('');
   const [storedImageUri, setStoredImageUri] = useState(null);
   const imageUriRef = useRef(null);
+  const [imageId, setImageId] = useState('');
+  const [image, setImage] = useState(null);
+  const [imageUri, setImageUri] = useState(null); 
   const [loading, setLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true); 
 
@@ -40,31 +43,30 @@ const CompleteProfile = () => {
   };
 
   const handleSubmit = async () => {
+    if (submitDisabled) return; // Prevent submitting if the button is disabled
+  
     const data = {
-        username,
-        name: fullName,
-        bio: aboutMe,
+      username,
+      name: fullName,
+      bio: aboutMe,
+      image_id: imageId
     };
     postData(data);
   };
-
+  
   useEffect(() => {
-    setStoredImageUri(imageUriRef.current);
-    if (username && fullName && storedImageUri) {
+    if (username && fullName && imageUri) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
     }
-  }, [username, fullName, storedImageUri,isFocused]);
-
-  const setImage = (uri) => {
-    imageUriRef.current = uri;
-    setStoredImageUri(uri);
-  };
+  }, [username, fullName, imageUri]);
+  
+ 
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const apiUrl = `${API_HOST}/image/${userId}`;
+      const apiUrl = `${API_HOST}/image/${userId}/image`;
       
       const formData = new FormData();
       formData.append('image', {
@@ -73,7 +75,9 @@ const CompleteProfile = () => {
         type: 'image/jpg',
       });
 
-      await httpService.uploadImage(apiUrl, formData, token);
+      const resp = await httpService.uploadImage(apiUrl, formData, token);
+      setImageId(resp.id);
+      setImageUri(selectedImage.uri); 
     } catch (error) {
       console.error('Error during image upload:', error);
     }
@@ -85,8 +89,8 @@ const CompleteProfile = () => {
       style={styles.backgroundImage}
     >
       <View style={styles.formContainer}>
-        {storedImageUri && (
-          <Image source={{ uri: storedImageUri }} style={styles.photoPreview} />
+      {imageUri && (
+          <Image source={{ uri: imageUri }} style={styles.photoPreview} />
         )}
         <TextInput
           style={styles.input}
