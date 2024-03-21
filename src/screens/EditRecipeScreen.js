@@ -28,7 +28,9 @@ const EditRecipeForm = () => {
   const [isFormValid, setIsFormValid] = useState(true);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
+  const [imageUri, setImageUri] = useState(null); 
 
   useEffect(() => {
     fetchRecipeDetails();
@@ -70,7 +72,7 @@ const EditRecipeForm = () => {
   useEffect(() => {
     validateForm();
     
-  }, [imageId,isFocused]);
+  }, [imageId,image,isFocused]);
 
   const validateForm = () => {
     if (
@@ -102,13 +104,17 @@ const EditRecipeForm = () => {
       const resp = await httpService.uploadImage(apiUrl, formData, token);
       console.log("new image id "+ resp.id);
       setImageId(resp.id);
+      setImageUri(selectedImage.uri); 
     } catch (error) {
       console.error('Error during image upload:', error);
+      setImageUri(null); 
+
     }
   };
 
   const handleSave = async () => {
     if (isFormValid) {
+
     const recipeData = {
       title,
       description,

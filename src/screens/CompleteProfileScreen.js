@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { useNavigation, useRoute ,useIsFocused} from '@react-navigation/native';
+import { useNavigation ,useIsFocused} from '@react-navigation/native';
 
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
@@ -15,8 +15,6 @@ const CompleteProfile = () => {
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
-  const [storedImageUri, setStoredImageUri] = useState(null);
-  const imageUriRef = useRef(null);
   const [imageId, setImageId] = useState('');
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null); 
@@ -43,7 +41,7 @@ const CompleteProfile = () => {
   };
 
   const handleSubmit = async () => {
-    if (submitDisabled) return; // Prevent submitting if the button is disabled
+    if (submitDisabled) return; 
   
     const data = {
       username,
