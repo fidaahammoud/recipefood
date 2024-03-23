@@ -110,7 +110,7 @@ const CompleteProfile = () => {
           numberOfLines={4}
           onChangeText={setAboutMe}
         />
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase}  buttonTitle="Add a Profile Photo"/>
         <View style={styles.buttonContainer}>
           <Button title="Submit" onPress={handleSubmit} color="#5B4444" disabled={submitDisabled} />
           {loading && <ActivityIndicator size="small" color="#5B4444" />}

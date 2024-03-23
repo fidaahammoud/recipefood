@@ -5,6 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useAuth } from './AuthProvider';
 import HttpService from './HttpService'; 
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
@@ -15,19 +16,16 @@ const PersonalInformationComponent = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     const fetchPersonalInformation = async () => {
       try {
         const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/users/${userId}`,token);
         setUserData(response);
-  
       } catch (error) {
         setError(error);
       }
     };
-  
     fetchPersonalInformation();
   }, [isFocused]);
 
@@ -37,6 +35,7 @@ const PersonalInformationComponent = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.name}>{userData?.name}</Text>
       <View style={styles.imageContainer}>
         {userData && userData.images && (
           <Image source={{ uri: `${BASE_URL}/storage/${userData.images.image}` }} style={styles.profileImage} />
@@ -44,23 +43,24 @@ const PersonalInformationComponent = () => {
         <View style={styles.textContainer}>
           {userData && (
             <>
-              <Text style={styles.name}>{userData.name}</Text>
               <Text style={styles.username}>{userData.username}</Text>
               <Text style={styles.bio}>{userData.bio}</Text>
-
             </>
           )}
         </View>
       </View>
-
+      <View style={styles.likesContainer}>
+        <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
+        <Text style={styles.likesText}>{userData?.totalFollowers}</Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    
-     marginTop: 20,
+    marginTop: 20,
+    alignItems: 'center',
   },
   imageContainer: {
     flexDirection: 'row',
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 50,
     marginRight: 20,
-   
   },
   textContainer: {
     flex: 1,
@@ -83,14 +82,23 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   username: {
+    fontSize:18,
     fontStyle: 'italic',
-    marginBottom: 5,
+    fontWeight: 'bold',
   },
   bio: {
-    fontWeight: 'bold',
-    paddingTop:20,
+    paddingTop: 10,
+  },
+  likesContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  likesIcon: {
+    marginRight: 5,
+  },
+  likesText: {
+    fontSize: 16,
   },
 });
-
 
 export default PersonalInformationComponent;

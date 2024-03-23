@@ -251,7 +251,7 @@ const RecipeForm = () => {
         multiline
       />
       <View style={styles.imagePicker}>
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} buttonTitle="Add a Recipe Photo"/>
       </View>
       <View style={styles.buttonContainer}>
         <Button title="Cancel" onPress={handleCancel} color="#FF0000" />

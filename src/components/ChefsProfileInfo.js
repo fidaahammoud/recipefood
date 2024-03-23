@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import HttpService from './HttpService'; 
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
@@ -35,9 +36,15 @@ const ChefsProfileInfo = ({ chefId }) => {
         <Image source={{ uri: `${BASE_URL}/storage/${userData?.images?.image}` }} style={styles.profileImage} />
         <View style={styles.textContainer}>
           <Text style={styles.name}>{userData?.name}</Text>
-          <Text style={styles.username}>{userData?.username}</Text>
+
+          <View style={styles.likesContainer}>
+              <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
+              <Text style={styles.likesText}>{userData?.totalFollowers}</Text>
+        </View>
+        
         </View>
       </View>
+      <Text style={styles.username}>{userData?.username}</Text>
       <Text style={styles.bio}>{userData?.bio}</Text>
     </View>
   );
@@ -68,10 +75,24 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   username: {
+    fontSize:18,
     fontStyle: 'italic',
+    fontWeight: 'bold',
   },
   bio: {
-    fontWeight: 'bold',
+   marginTop:10
+  },
+
+  likesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom:10
+  },
+  likesIcon: {
+    marginRight: 5,
+  },
+  likesText: {
+    fontSize: 16,
   },
 });
 

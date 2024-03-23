@@ -68,9 +68,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   categoryImage: {
-    width: 220,
-    height: 220, // Set the height equal to the width to make the image square
-    borderRadius: 30, // Optional: add border radius for rounded corners
+    width: 320,
+    height: 220, 
+    borderRadius: 10, 
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
   },
   categoryName: {
     marginTop: 5,

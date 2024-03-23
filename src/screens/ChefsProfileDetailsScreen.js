@@ -21,12 +21,6 @@ const ChefsProfileDetails = ({ route }) => {
   const isFocused = useIsFocused();
   const [error, setError] = useState(null);
 
-
-  const handleGoBack = () => {
-    navigation.goBack(); 
-  };
-
-
   useEffect(() => {
     const getFollowStatus = async () => {
       try {
@@ -76,7 +70,7 @@ const ChefsProfileDetails = ({ route }) => {
       </TouchableOpacity>
     </View>
 
-      <ChefsProfileInfo chefId={chefId} />
+      <ChefsProfileInfo chefId={chefId}  />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.followButton} onPress={handleFollowPress}>
           <Text style={styles.buttonText}>{followStatus}</Text>

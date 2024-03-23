@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-const ImagePickerComponent = ({ setImage, saveImageToDatabase }) => {
+const ImagePickerComponent = ({ setImage, saveImageToDatabase,buttonTitle }) => {
 
   
   const pickImage = async () => {
@@ -23,7 +23,7 @@ const ImagePickerComponent = ({ setImage, saveImageToDatabase }) => {
 
   return (
     <>
-      <Button title="Upload a photo" onPress={pickImage} color="#5B4444" />
+      <Button title={buttonTitle} onPress={pickImage} color="#5B4444" />
     </>
   );
 };

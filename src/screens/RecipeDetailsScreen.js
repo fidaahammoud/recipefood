@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView  } from 'react-native';
-import Slider from '@react-native-community/slider';
 import { FontAwesome } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -169,7 +168,7 @@ const RecipeDetails = ({ route }) => {
     <View style={styles.likeAndRatingContainer}>
       <TouchableOpacity style={styles.likeContainer} onPress={() => handleLikePress(recipeDetails.id)}>
         <View style={styles.likesContainer}>
-        <Icon name="thumbs-o-up" size={20} color={isLiked ? 'green' : 'grey'} style={styles.likesIcon} />
+        <Icon name="thumbs-o-up" size={20} color={isLiked ? 'red' : 'grey'} style={styles.likesIcon} />
           <Text style={styles.likesText}>{totalLikes}</Text>
         </View>
       </TouchableOpacity>

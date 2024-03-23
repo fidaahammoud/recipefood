@@ -89,7 +89,7 @@ const RecipeOfUser = () => {
           <View style={styles.recipeDetails}>
             <View >
               <View style={styles.likesContainer}>
-                <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
+                <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
                 <Text style={styles.likesText}>{recipe.totalLikes}</Text>
               </View>
             </View>

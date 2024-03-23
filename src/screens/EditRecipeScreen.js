@@ -31,6 +31,7 @@ const EditRecipeForm = () => {
   const [loading, setLoading] = useState(false);
 
   const [imageUri, setImageUri] = useState(null); 
+  
 
   useEffect(() => {
     fetchRecipeDetails();
@@ -264,10 +265,10 @@ const EditRecipeForm = () => {
         multiline
       />
     <View style={styles.imagePicker}>
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase}   buttonTitle="Update Your Recipe Photo"/>
       </View>
       <View style={styles.buttonContainer}>
-        <Button title="Cancel" onPress={handleCancel}  />
+        <Button title="Cancel" onPress={handleCancel}  color="#888"/>
         <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
       </View>
 

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet,TouchableOpacity } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
+import { useAuth } from './AuthProvider';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
 
@@ -10,14 +13,17 @@ const ViewAllChefs = () => {
   const isFocused = useIsFocused();
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
+  const { getAuthData } = useAuth();
+  const { userId } = getAuthData();
 
   useEffect(() => {
     const fetchChefs = async () => {
       try {
         const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/users`, null);
-        setChefs(response.data);
-
+        //setChefs(response.data);
+        const filteredChefs = response.data.filter(chef => chef.id !== userId);
+        setChefs(filteredChefs);
       } catch (error) {
         setError(error.message);
       }
@@ -51,6 +57,12 @@ const ViewAllChefs = () => {
              onError={(error) => console.error('Image loading error:', error)}
            />
            <Text style={styles.chefName}>{chef.name}</Text>
+
+           <View style={styles.likesContainer}>
+            <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
+            <Text style={styles.likesText}>{chef.totalFollowers}</Text>
+          </View>
+
          </TouchableOpacity>
         ))}
       </View>
@@ -69,14 +81,18 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   chefImage: {
-    width: 220,
+    width: 320,
     height: 220, 
-    borderRadius: 30, 
+    borderRadius: 10, 
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
   },
   chefName: {
     marginTop: 5,
     fontSize: 16,
     textAlign: 'center',
+    
   },
   errorContainer: {
     alignItems: 'center',
@@ -84,6 +100,18 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
+    fontSize: 16,
+  },
+
+  likesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom:10
+  },
+  likesIcon: {
+    marginRight: 5,
+  },
+  likesText: {
     fontSize: 16,
   },
 });

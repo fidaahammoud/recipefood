@@ -132,13 +132,17 @@ const EditProfileScreen = () => {
           numberOfLines={4}
           onChangeText={setAboutMe}
         />
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} />
+        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} buttonTitle="Update Your Profile Photo"/>
         <View style={styles.buttonContainer}>
-        <Button title="Cancle" onPress={handleCancel} color="#5B4444"  />
-
+        <View style={styles.buttonWrapper}>
+          <Button title="Cancel" onPress={handleCancel} color="#888" />
+        </View>
+        <View style={styles.buttonWrapper}>
           <Button title="Submit" onPress={handleSubmit} color="#5B4444" disabled={submitDisabled} />
           {loading && <ActivityIndicator size="small" color="#5B4444" />}
         </View>
+      </View>
+
       </View>
     </ImageBackground>
   );
@@ -181,8 +185,15 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: '100%',
   },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
 });
+
 
 export default EditProfileScreen;
