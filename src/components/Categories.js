@@ -13,6 +13,7 @@ const Categories = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    //async function fetchCategories(){}
     const fetchCategories = async () => {
       try {
         const httpService = new HttpService();

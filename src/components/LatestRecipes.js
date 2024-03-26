@@ -14,7 +14,7 @@ const LatestRecipes = ({ sortingOption }) => {
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
-  const { token } = getAuthData();
+  const { token, userId } = getAuthData();
   const [error, setError] = useState(null);
 
   const { getTimeDifference } = Utils();
@@ -50,6 +50,14 @@ const LatestRecipes = ({ sortingOption }) => {
     fetchRecipes();
   }, [isFocused, sortingOption]);
 
+  const handleCreatorPress = (creatorId) => {
+    if (creatorId === userId) {
+      navigation.navigate('Profile');
+    } else {
+      navigation.navigate('ViewChefsProfile', { chefId: creatorId });
+    }
+  };
+
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
@@ -62,10 +70,12 @@ const LatestRecipes = ({ sortingOption }) => {
     <ScrollView contentContainerStyle={styles.container}>
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
-          <View style={styles.creatorContainer}>
-            <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
-            <Text style={styles.creatorName}>{recipe.user.name}</Text>
-          </View>
+          <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
+            <View style={styles.creatorContainer}>
+              <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+              <Text style={styles.creatorName}>{recipe.user.name}</Text>
+            </View>
+          </TouchableOpacity>
           <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
@@ -126,6 +136,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
+    textTransform: 'capitalize',
+
   },
   categoryName: {
     fontSize: 16,

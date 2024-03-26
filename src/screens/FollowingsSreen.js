@@ -94,9 +94,13 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
   chefImage: {
-    width: 220,
+    width: 320,
     height: 220, 
     borderRadius: 30, 
+    borderRadius: 10, 
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
   },
   chefName: {
     marginTop: 5,
