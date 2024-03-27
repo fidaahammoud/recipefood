@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { View, Image, TextInput, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -8,6 +8,9 @@ import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
 import Footer from "../components/Footer"; 
 
+import { API_HOST } from "@env";
+import HttpService from '../components/HttpService';
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
@@ -16,6 +19,37 @@ const HomeScreen = () => {
   const [sortingOption, setSortingOption] = useState('latest'); 
   const [modalVisible, setModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+
+  const httpService = new HttpService();
+
+
+  const [dietaryOptions, setDietaryOptions] = useState([]);
+  const [selectedDietary, setSelectedDietary] = useState(null);
+  const [openDietaryModal, setOpenDietaryModal] = useState(false);
+
+useEffect(() => {
+  fetchDietaryOptions();
+}, []);
+
+const fetchDietaryOptions = async () => {
+  try {
+    const response = await httpService.get(`${API_HOST}/dietaries`,null);
+    const data = response;
+    if (data) {
+      setDietaryOptions(data.map(item => ({ label: item.name, value: item.id })));
+    }
+  } catch (error) {
+    console.error('Error fetching dietary options:', error);
+  }
+};
+
+const handleDietaryFilter  = (item) => {
+  setSelectedDietary(item.value);
+  navigation.navigate('ViewRecipesByDietary', { dietaryId: item.value, name: item.label });
+
+  setOpenDietaryModal(false);
+};
 
   const handleSearch = async () => {
     navigation.navigate('SearchResults', { searchQuery });
@@ -125,16 +159,19 @@ const HomeScreen = () => {
         animationType="slide"
         transparent={true}
         visible={filterModalVisible}
-        onRequestClose={() => {
-          setFilterModalVisible(!filterModalVisible);
-        }}>
+        onRequestClose={() => setFilterModalVisible(!filterModalVisible)}>
         <TouchableWithoutFeedback onPress={() => setFilterModalVisible(false)}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <TouchableOpacity onPress={handleViewFollowings}>
                 <Text style={styles.sortOption}>View my followings</Text>
               </TouchableOpacity>
-              {/* Other filter options */}
+              <Text style={styles.modalTitle}>Filter by Dietary:</Text>
+              {dietaryOptions.map(option => (
+                <TouchableOpacity key={option.value} onPress={() => handleDietaryFilter(option)}>
+                  <Text style={styles.sortOption}>{option.label}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         </TouchableWithoutFeedback>

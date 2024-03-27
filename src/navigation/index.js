@@ -25,6 +25,9 @@ import SearchResultScreen from '../screens/SearchResultScreen';
 import FollowingsScreen from "../screens/FollowingsSreen";
 import NotificationScreen from "../screens/NotificationScreen";
 
+import FilterWithSpecificDietaryScreen from "../screens/FilterWithSpecificDietaryScreen";
+
+
 
 
 
@@ -48,6 +51,10 @@ export default function AppNavigation() {
                 <Stack.Screen name="ViewChefsProfile" component={ChefsProfileDetailsScreen} />
                 <Stack.Screen name="ViewAllChefs" component={ViewAllChefsScreen} />
                 <Stack.Screen name="ViewAllCategories" component={ViewAllCategoriesScreen} />
+
+                <Stack.Screen name="ViewRecipesByDietary" component={FilterWithSpecificDietaryScreen} />
+
+
                 <Stack.Screen name="RecipesOfSpecificCategory" component={RecipesForSpecificCategoryScreen} />
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="AddRecipe" component={AddRecipeScreen} />

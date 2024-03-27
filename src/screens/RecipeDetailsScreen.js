@@ -196,6 +196,11 @@ const RecipeDetails = ({ route }) => {
       {recipeDetails.category.name}
     </Text> 
 
+    <Text style={styles.dietary}>
+      <Text style={styles.title}>Dietary Preference: </Text>
+      {recipeDetails.dietary.name}
+    </Text> 
+
     <Text style={styles.preparationTime}>
       <Text style={styles.title}>Preparation Time: </Text>
       {recipeDetails.preparationTime} mins
@@ -316,6 +321,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   category: {
+    marginTop: 15,
+    fontSize: 22,
+    marginBottom: 10,
+
+  },
+
+  dietary: {
     marginTop: 15,
     fontSize: 22,
     marginBottom: 10,

@@ -28,6 +28,37 @@ const RecipeForm = () => {
   const [items, setItems] = useState([]);
   const httpService = new HttpService();
 
+
+  const [dietaryOptions, setDietaryOptions] = useState([]);
+  const [selectedDietary, setSelectedDietary] = useState(null);
+  const [openDietaryModal, setOpenDietaryModal] = useState(false);
+  
+// Fetch dietary options on component mount
+useEffect(() => {
+  fetchDietaryOptions();
+}, []);
+
+// Function to fetch dietary options
+const fetchDietaryOptions = async () => {
+  try {
+    const response = await httpService.get(`${API_HOST}/dietaries`,null);
+    const data = response;
+    if (data) {
+      setDietaryOptions(data.map(item => ({ label: item.name, value: item.id })));
+    }
+  } catch (error) {
+    console.error('Error fetching dietary options:', error);
+  }
+};
+
+// Function to handle dietary change
+const handleDietaryChange = (item) => {
+  setSelectedDietary(item.value);
+  setOpenDietaryModal(false);
+};
+
+  
+
   useEffect(() => {
     fetchDropdownOptions();
   }, []);
@@ -64,6 +95,7 @@ const RecipeForm = () => {
       description.trim() !== '' &&
       imageId.toString().trim() !== '' &&
       selectedValue.toString().trim() !== '' &&
+      selectedDietary.toString().trim() !== '' &&
       ingredients.every(ingredient => ingredient.trim() !== '') && 
       measurementUnits.every(unit => unit.trim() !== '') && 
       steps.every(step => step.trim() !== '') && 
@@ -99,6 +131,7 @@ const RecipeForm = () => {
           title,
           description,
           category_id: selectedValue,
+          dietary_id: selectedDietary,
           preparationTime: parseInt(preparationTime),
           comment: comments,
           ingredients: ingredients.map((ingredient, index) => ({ ingredientName: ingredient, measurementUnit: measurementUnits[index] })),
@@ -191,6 +224,12 @@ const RecipeForm = () => {
         <Text style={styles.dropdownValue}>{selectedValue ? items.find(item => item.value === selectedValue)?.label : 'Click to select a category'}</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpenDietaryModal(true)}>
+        <Text style={styles.label}>Dietary:</Text>
+        <Text style={styles.dropdownValue}>{selectedDietary ? dietaryOptions.find(item => item.value === selectedDietary)?.label : 'Click to select a dietary option'}</Text>
+      </TouchableOpacity>
+
+
       <Text style={styles.label}>Steps:</Text>
       {steps.map((step, index) => (
         <View key={index} style={styles.stepRow}>
@@ -270,6 +309,26 @@ const RecipeForm = () => {
                   key={item.value}
                   style={styles.dropdownItem}
                   onPress={() => handleCategoryChange(item)}>
+                  <Text>{item.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        visible={openDietaryModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setOpenDietaryModal(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <ScrollView>
+              {dietaryOptions.map(item => (
+                <TouchableOpacity
+                  key={item.value}
+                  style={styles.dropdownItem}
+                  onPress={() => handleDietaryChange(item)}>
                   <Text>{item.label}</Text>
                 </TouchableOpacity>
               ))}
