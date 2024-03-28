@@ -29,7 +29,6 @@ const RecipesWithSameDietary = () => {
     try {
       const httpService = new HttpService();
       const response = await httpService.get(`${API_HOST}/dietaries/${dietaryId}`, null);
-      console.log(response);
       setDietaryName(response.name); 
       if (Array.isArray(response.recipes)) { 
         setRecipes(response.recipes);

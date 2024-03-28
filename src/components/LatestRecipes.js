@@ -63,7 +63,7 @@ const LatestRecipes = ({ sortingOption }) => {
   };
 
   if (error) {
-    return <Text>Error fetching recipes: {error}</Text>;
+    return <Text>Error fetching recipes: {error.message}</Text>;
   }
 
   return (

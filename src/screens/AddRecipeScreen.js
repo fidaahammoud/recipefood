@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Modal, TouchableOpacity,TouchableWithoutFeedback } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
@@ -301,40 +301,44 @@ const handleDietaryChange = (item) => {
         transparent={true}
         animationType="fade"
         onRequestClose={() => setOpen(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <ScrollView>
-              {items.map(item => (
-                <TouchableOpacity
-                  key={item.value}
-                  style={styles.dropdownItem}
-                  onPress={() => handleCategoryChange(item)}>
-                  <Text>{item.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+        <TouchableWithoutFeedback onPress={() => setOpen(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <ScrollView>
+                {items.map(item => (
+                  <TouchableOpacity
+                    key={item.value}
+                    style={styles.dropdownItem}
+                    onPress={() => handleCategoryChange(item)}>
+                    <Text>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
       <Modal
         visible={openDietaryModal}
         transparent={true}
         animationType="fade"
         onRequestClose={() => setOpenDietaryModal(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <ScrollView>
-              {dietaryOptions.map(item => (
-                <TouchableOpacity
-                  key={item.value}
-                  style={styles.dropdownItem}
-                  onPress={() => handleDietaryChange(item)}>
-                  <Text>{item.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+        <TouchableWithoutFeedback onPress={() => setOpenDietaryModal(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <ScrollView>
+                {dietaryOptions.map(item => (
+                  <TouchableOpacity
+                    key={item.value}
+                    style={styles.dropdownItem}
+                    onPress={() => handleDietaryChange(item)}>
+                    <Text>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </ScrollView>
   );

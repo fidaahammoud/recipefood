@@ -13,7 +13,7 @@ const ProfileScreen = () => {
   const { Navigator, Screen } = createMaterialTopTabNavigator();
 
   const handleSettingsPress = () => {
-    // navigation.navigate('Settings');
+     navigation.navigate('Settings');
   };
 
   const handleEditProfilePress = () => {
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
+    marginTop:20
   },
   buttonContainer: {
     alignItems: 'center',

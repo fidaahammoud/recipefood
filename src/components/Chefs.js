@@ -21,7 +21,6 @@ const Chefs = () => {
       try {
         const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/users`, null);
-        //setChefs(response.data);
         const filteredChefs = response.data.filter(chef => chef.id !== userId);
         setChefs(filteredChefs);
       } catch (error) {
@@ -33,7 +32,7 @@ const Chefs = () => {
   }, [isFocused]);
 
   if (error) {
-    return <Text>Error fetching chefs: {error}</Text>;
+    return <Text>Error fetching chefs: {error.message}</Text>;
   }
 
   const handleChefPress = (chefId) => {

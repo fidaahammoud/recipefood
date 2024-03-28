@@ -30,7 +30,7 @@ const FollowingsScreen = () => {
   }, [isFocused]);
 
   if (error) {
-    return <Text>Error fetching chefs: {error}</Text>;
+    return <Text>Error fetching chefs: {error.message}</Text>;
   }
 
   const handleChefPress = (chefId) => {

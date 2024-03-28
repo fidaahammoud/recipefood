@@ -3,15 +3,12 @@ import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'rea
 import { useNavigation,useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useAuth } from '../components/AuthProvider'; 
 import HttpService from './HttpService';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const ChefsRecipes = ({ chefId }) => {
   const navigation = useNavigation();
- // const { getAuthData } = useAuth();
-  //const { userId } = getAuthData();
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
@@ -31,15 +28,13 @@ const ChefsRecipes = ({ chefId }) => {
     fetchFavoriteRecipes();
   }, [isFocused]);
 
-  // if (error) {
-  //   return <Text>Error fetching chefs:  {error.message}</Text>;
-  // }
-
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
-
+  if (error) {
+    return <Text>Error fetching chef's recipes: {error.message}</Text>;
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

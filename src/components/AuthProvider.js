@@ -15,8 +15,14 @@ export const AuthProvider = ({ children }) => {
     return { token, userId };
   };
 
+  const logout = () => {
+    // Clear the authentication data
+    setToken(null);
+    setUserId(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ saveAuthData, getAuthData }}>
+    <AuthContext.Provider value={{ saveAuthData, getAuthData,logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -27,6 +27,7 @@ import NotificationScreen from "../screens/NotificationScreen";
 
 import FilterWithSpecificDietaryScreen from "../screens/FilterWithSpecificDietaryScreen";
 
+import SettingsScreen from "../screens/SettingsScreen";
 
 
 
@@ -68,6 +69,8 @@ export default function AppNavigation() {
                 <Stack.Screen name="Followings" component={FollowingsScreen} />
 
                 <Stack.Screen name="Notification" component={NotificationScreen} />
+
+                <Stack.Screen name="Settings" component={SettingsScreen} />
 
 
 

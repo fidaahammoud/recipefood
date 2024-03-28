@@ -162,21 +162,22 @@ const handleDietaryFilter  = (item) => {
         onRequestClose={() => setFilterModalVisible(!filterModalVisible)}>
         <TouchableWithoutFeedback onPress={() => setFilterModalVisible(false)}>
           <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
+            <View style={styles.smallModalContent}>
               <TouchableOpacity onPress={handleViewFollowings}>
                 <Text style={styles.sortOption}>View my followings</Text>
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Filter by Dietary:</Text>
-              {dietaryOptions.map(option => (
-                <TouchableOpacity key={option.value} onPress={() => handleDietaryFilter(option)}>
-                  <Text style={styles.sortOption}>{option.label}</Text>
-                </TouchableOpacity>
-              ))}
+              <ScrollView style={styles.dietaryOptionsContainer}>
+                {dietaryOptions.map(option => (
+                  <TouchableOpacity key={option.value} onPress={() => handleDietaryFilter(option)}>
+                    <Text style={styles.sortOption}>{option.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      
       <Footer/>
     </View>
   );
@@ -260,6 +261,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
+
+  smallModalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    maxHeight: '70%', // Set maximum height for the modal
+    justifyContent: 'flex-start', // Align content at the start
+  },
+  dietaryOptionsContainer: {
+    flexGrow: 1, // Allow the container to grow to fill the available space
+  },
+  
 });
 
 export default HomeScreen;

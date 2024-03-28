@@ -2,14 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import ViewAllChefs from "../components/ViewAllChefs";
+import { FontAwesome } from '@expo/vector-icons';
 
 const ViewAllChefsScreen = () => {
   const navigation = useNavigation(); 
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}> Back</Text>
+       <View style={styles.back}></View>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
       <Text style={styles.title}>Chefs</Text>
@@ -27,12 +29,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20, 
   },
+  back: {
+    marginTop:20
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    marginTop: 30,
+    marginTop: 5,
   },
   line: {
     width: '100%',

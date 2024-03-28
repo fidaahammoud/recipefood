@@ -107,17 +107,21 @@ const RecipeOfUser = () => {
         visible={showOptions}
         onRequestClose={() => setShowOptions(false)}
       >
-        <View style={styles.modalContainer}>
+        <Pressable
+          style={styles.modalContainer}
+          onPress={() => setShowOptions(false)}
+        >
           <View style={styles.modalContent}>
-          <Pressable onPress={() => handleEditRecipe(selectedRecipe.id)}>
-            <Text style={styles.modalOption}>Edit Recipe</Text>
-          </Pressable>
+            <Pressable onPress={() => handleEditRecipe(selectedRecipe.id)}>
+              <Text style={styles.modalOption}>Edit Recipe</Text>
+            </Pressable>
             <Pressable onPress={handleDeleteRecipe}>
               <Text style={styles.modalOption}>Delete Recipe</Text>
             </Pressable>
           </View>
-        </View>
+        </Pressable>
       </Modal>
+
     </ScrollView>
   );
 };
