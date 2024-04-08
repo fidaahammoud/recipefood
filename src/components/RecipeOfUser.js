@@ -26,7 +26,7 @@ const RecipeOfUser = () => {
   useEffect(() => {
     const fetchFavoriteRecipes = async () => {
       try {
-        const response = await httpService.get(`${API_HOST}/users/${userId}/recipes?sort=-created_at`);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}/recipes?sort=-created_at`);
         setRecipes(response.data);
 
       } catch (error) {
@@ -57,7 +57,7 @@ const RecipeOfUser = () => {
 
   const handleDeleteRecipe = async () => {
     try {
-      const response = await httpService.delete(`${API_HOST}/recipes/delete/${selectedRecipe.id}`,token);
+      const response = await httpService.delete(`${API_HOST}/api/recipes/delete/${selectedRecipe.id}`,token);
       setShowOptions(false);
       setRecipes(recipes.filter(recipe => recipe.id !== selectedRecipe.id));
       ToastAndroid.show('Recipe deleted successfully!', ToastAndroid.SHORT);
@@ -75,13 +75,13 @@ const RecipeOfUser = () => {
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
-            <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+            <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
             <TouchableOpacity onPress={() => handleOptionsPress(recipe)}>
               <Icon name="ellipsis-h" size={20} color="black" style={styles.optionsIcon} />
             </TouchableOpacity>
           </View>
-          <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             <Text style={styles.categoryName}>{recipe.category.name}</Text>

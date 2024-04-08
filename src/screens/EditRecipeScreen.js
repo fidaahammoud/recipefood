@@ -41,7 +41,7 @@ const EditRecipeForm = () => {
   const fetchRecipeDetails = async () => {
     const recipeId = route.params.recipeId; 
     try {
-      const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`, token);
+      const response = await httpService.get(`${API_HOST}/api/recipes/${recipeId}`, token);
       const recipeData = response; 
     
       setTitle(recipeData.title);
@@ -59,7 +59,7 @@ const EditRecipeForm = () => {
 
   const fetchDropdownOptions = async () => {
     try {
-      const response = await httpService.get(`${API_HOST}/categories`, null);
+      const response = await httpService.get(`${API_HOST}/api/categories`, null);
       const data = response.data; 
 
       if (data) {
@@ -93,7 +93,7 @@ const EditRecipeForm = () => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const apiUrl = `${API_HOST}/image/${userId}`;
+      const apiUrl = `${API_HOST}/api/image/${userId}`;
       
       const formData = new FormData();
       formData.append('image', {
@@ -131,7 +131,7 @@ const EditRecipeForm = () => {
     };
   
     try {
-      const response = await httpService.put(`${API_HOST}/recipes/${route.params.recipeId}`, recipeData, token);
+      const response = await httpService.put(`${API_HOST}/api/recipes/${route.params.recipeId}`, recipeData, token);
       console.log(response);
       navigation.navigate('Home');
     } catch (error) {

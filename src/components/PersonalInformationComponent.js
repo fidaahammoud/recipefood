@@ -20,7 +20,7 @@ const PersonalInformationComponent = () => {
     const fetchPersonalInformation = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/users/${userId}`,token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}`,token);
         setUserData(response);
       } catch (error) {
         setError(error);
@@ -38,7 +38,7 @@ const PersonalInformationComponent = () => {
       <Text style={styles.name}>{userData?.name}</Text>
       <View style={styles.imageContainer}>
         {userData && userData.images && (
-          <Image source={{ uri: `${BASE_URL}/storage/${userData.images.image}` }} style={styles.profileImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${userData.images.image}` }} style={styles.profileImage} />
         )}
         <View style={styles.textContainer}>
           {userData && (

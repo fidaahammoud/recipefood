@@ -17,7 +17,7 @@ export default function Login() {
   const postData = async (data) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/login`,data,null);
+      const response = await httpService.post(`${API_HOST}/api/login`,data,null);
       if (response && response.access_token && response.user_id) {
         saveAuthData(response.access_token, response.user_id);
         navigation.navigate('Home');

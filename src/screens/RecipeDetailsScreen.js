@@ -32,7 +32,7 @@ const RecipeDetails = ({ route }) => {
     const fetchRecipeDetails = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`);
+        const response = await httpService.get(`${API_HOST}/api/recipes/${recipeId}`);
         setRecipeDetails(response);
         setTotalLikes(response.totalLikes);
         setAvgRate(parseFloat(response.avrgRating));
@@ -90,7 +90,7 @@ const RecipeDetails = ({ route }) => {
   const handleLikePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/like`, null, token);
+      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/like`, null, token);
       setTotalLikes(response.nbOfLikes);
       setIsLiked(!isLiked);
       await AsyncStorage.setItem(`like_${userId}_${recipeId}`, JSON.stringify(!isLiked));
@@ -102,7 +102,7 @@ const RecipeDetails = ({ route }) => {
   const handleFavoritePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/addToFavorite`, null, token);
+      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/addToFavorite`, null, token);
       setIsFavorite(!isFavorite);
       await AsyncStorage.setItem(`favorite_${userId}_${recipeId}`, JSON.stringify(!isFavorite));
     } catch (error) {
@@ -117,7 +117,7 @@ const RecipeDetails = ({ route }) => {
   const submitRating = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/rate/${userRating}`, { rating: userRating }, token);
+      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/rate/${userRating}`, { rating: userRating }, token);
       setAvgRate(parseFloat(response.avgRating));
       await AsyncStorage.setItem(`rating_${userId}_${recipeId}`, userRating.toString());
     } catch (error) {
@@ -151,13 +151,13 @@ const RecipeDetails = ({ route }) => {
 
     <ScrollView horizantal showsHorizontalScrollIndicator={false}>
     <View style={styles.creatorContainer}>
-      <Image source={{ uri: `${BASE_URL}/storage/${recipeDetails.user.images.image}` }} style={styles.creatorImage} />
+      <Image source={{ uri: `${API_HOST}/storage/${recipeDetails.user.images.image}` }} style={styles.creatorImage} />
       <Text style={styles.creatorName}>{recipeDetails.user.name}</Text>
     </View>
   
     <View style={styles.imageContainer}>
       <Image
-        source={{ uri: `${BASE_URL}/storage/${recipeDetails.images.image}`}}
+        source={{ uri: `${API_HOST}/storage/${recipeDetails.images.image}`}}
         style={styles.image}
       />
       <TouchableOpacity onPress={() => handleFavoritePress(recipeDetails.id)} style={styles.favoriteIconContainer}>

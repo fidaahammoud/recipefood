@@ -29,7 +29,7 @@ const CompleteProfile = () => {
   
   postData = async (data) => {
     try {
-      const response = await httpService.put(`${API_HOST}/completeProfile/${userId}`,data,token);
+      const response = await httpService.put(`${API_HOST}/api/completeProfile/${userId}`,data,token);
       if (response && response.message === 'Profile completed successfully' ) {
       console.log(response.user);
       navigation.navigate('Home');
@@ -64,7 +64,7 @@ const CompleteProfile = () => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const apiUrl = `${API_HOST}/image/${userId}`;
+      const apiUrl = `${API_HOST}/api/image/${userId}`;
       
       const formData = new FormData();
       formData.append('image', {

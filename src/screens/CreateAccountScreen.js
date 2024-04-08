@@ -18,7 +18,7 @@ export default function CreateAccount() {
   postData = async (data) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/register`,data,null);
+      const response = await httpService.post(`${API_HOST}/api/register`,data,null);
       saveAuthData(response.access_token, response.data.id);
       navigation.navigate('CompleteProfile');
     } 

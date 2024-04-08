@@ -24,7 +24,7 @@ const NotificationScreen = ({ navigation }) => {
   const fetchNotifications = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/notifications`, token);
+      const response = await httpService.get(`${API_HOST}/api/notifications`, token);
       const updatedNotifications = response.notifications.map(notification => ({
         ...notification,
         read: false // Assuming all notifications are initially unread
@@ -85,7 +85,7 @@ const NotificationScreen = ({ navigation }) => {
             }}
           >
             <View style={styles.notificationContent}>
-              <Image source={{  uri: `${BASE_URL}/storage/${notification.source_user.images.image}`}} style={styles.userImage} />
+              <Image source={{  uri: `${API_HOST}/storage/${notification.source_user.images.image}`}} style={styles.userImage} />
               <Text
                 style={[
                   styles.notificationText,

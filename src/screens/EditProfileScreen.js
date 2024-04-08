@@ -29,7 +29,7 @@ const EditProfileScreen = () => {
 
     const fetchUserDetails = async () => {
       try {
-        const response = await httpService.get(`${API_HOST}/users/${userId}`, token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}`, token);
         const userData = response; 
         setFullName(userData.name);
         setUsername(userData.username);
@@ -56,7 +56,7 @@ const EditProfileScreen = () => {
   
     console.log(imageId);
       try {
-        const response = await httpService.put(`${API_HOST}/updatePersonalInformation/${userId}`,data,token);
+        const response = await httpService.put(`${API_HOST}/api/updatePersonalInformation/${userId}`,data,token);
         console.log(response.user);
         navigation.navigate('Home');
         
@@ -84,7 +84,7 @@ const EditProfileScreen = () => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const apiUrl = `${API_HOST}/image/${userId}`;
+      const apiUrl = `${API_HOST}/api/image/${userId}`;
       
       const formData = new FormData();
       formData.append('image', {

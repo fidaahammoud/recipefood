@@ -26,19 +26,19 @@ const LatestRecipes = ({ sortingOption }) => {
         let url;
         switch (sortingOption) {
           case 'latest':
-            url = `${API_HOST}/recipes?sort=-created_at`;
+            url = `${API_HOST}/api/recipes?sort=-created_at`;
             break;
           case 'mostLiked':
-            url = `${API_HOST}/recipes?sort=-totalLikes`;
+            url = `${API_HOST}/api/recipes?sort=-totalLikes`;
             break;
           case 'topRated':
-            url = `${API_HOST}/recipes?sort=-avrgRating`;
+            url = `${API_HOST}/api/recipes?sort=-avrgRating`;
             break;
           case 'prepTime':
-            url = `${API_HOST}/recipes?sort=+preparationTime`;
+            url = `${API_HOST}/api/recipes?sort=+preparationTime`;
             break;
           default:
-            url = `${API_HOST}/recipes?sort=-created_at`;
+            url = `${API_HOST}/api/recipes?sort=-created_at`;
         }
         const response = await httpService.get(url, null);
         setRecipes(response.data);
@@ -72,11 +72,11 @@ const LatestRecipes = ({ sortingOption }) => {
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
             <View style={styles.creatorContainer}>
-              <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+              <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
               <Text style={styles.creatorName}>{recipe.user.name}</Text>
             </View>
           </TouchableOpacity>
-          <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             <Text style={styles.categoryName}>{recipe.category.name}</Text>

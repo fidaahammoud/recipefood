@@ -34,7 +34,7 @@ useEffect(() => {
 
 const fetchDietaryOptions = async () => {
   try {
-    const response = await httpService.get(`${API_HOST}/dietaries`,null);
+    const response = await httpService.get(`${API_HOST}/api/dietaries`,null);
     const data = response;
     if (data) {
       setDietaryOptions(data.map(item => ({ label: item.name, value: item.id })));

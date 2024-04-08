@@ -17,7 +17,7 @@ const Categories = () => {
     const fetchCategories = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/categories`,null);
+        const response = await httpService.get(`${API_HOST}/api/categories`,null);
         setCategories(response.data);
   
       } catch (error) {

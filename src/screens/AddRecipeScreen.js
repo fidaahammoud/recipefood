@@ -41,7 +41,7 @@ useEffect(() => {
 // Function to fetch dietary options
 const fetchDietaryOptions = async () => {
   try {
-    const response = await httpService.get(`${API_HOST}/dietaries`,null);
+    const response = await httpService.get(`${API_HOST}/api/dietaries`,null);
     const data = response;
     if (data) {
       setDietaryOptions(data.map(item => ({ label: item.name, value: item.id })));
@@ -65,7 +65,7 @@ const handleDietaryChange = (item) => {
 
   const fetchDropdownOptions = async () => {
     try {
-      const response = await httpService.get(`${API_HOST}/categories`, null);
+      const response = await httpService.get(`${API_HOST}/api/categories`, null);
       const data = response.data; 
 
       if (data) {
@@ -109,7 +109,7 @@ const handleDietaryChange = (item) => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const apiUrl = `${API_HOST}/image/${userId}`;
+      const apiUrl = `${API_HOST}/api/image/${userId}`;
       
       const formData = new FormData();
       formData.append('image', {
@@ -142,7 +142,7 @@ const handleDietaryChange = (item) => {
         try {
           console.log(recipeData);
 
-          const response = await httpService.post(`${API_HOST}/recipes`,recipeData,token);
+          const response = await httpService.post(`${API_HOST}/api/recipes`,recipeData,token);
           const newRecipeId = response.id;
           setRecipeId(newRecipeId);     
           navigation.navigate('Home');

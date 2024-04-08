@@ -26,7 +26,7 @@ const SearchResultScreen = () => {
     const fetchSearchRecipes = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.post(`${API_HOST}/recipes/search`, { query: searchQuery }, null);
+        const response = await httpService.post(`${API_HOST}/api/recipes/search`, { query: searchQuery }, null);
         setRecipes(response.data);
       } catch (error) {
         setError(error.message);
@@ -67,11 +67,11 @@ const SearchResultScreen = () => {
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
             <View style={styles.creatorContainer}>
-              <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+              <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
               <Text style={styles.creatorName}>{recipe.user.name}</Text>
             </View>
           </TouchableOpacity>
-          <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             <Text style={styles.categoryName}>{recipe.category.name}</Text>

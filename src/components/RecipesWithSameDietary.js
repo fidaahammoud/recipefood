@@ -28,7 +28,7 @@ const RecipesWithSameDietary = () => {
   const fetchRecipes = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/dietaries/${dietaryId}`, null);
+      const response = await httpService.get(`${API_HOST}/api/dietaries/${dietaryId}`, null);
       setDietaryName(response.name); 
       if (Array.isArray(response.recipes)) { 
         setRecipes(response.recipes);
@@ -67,11 +67,11 @@ const RecipesWithSameDietary = () => {
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
             <View style={styles.creatorContainer}>
-              <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+              <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
               <Text style={styles.creatorName}>{recipe.user.name}</Text>
             </View>
           </TouchableOpacity>
-          <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             <Text style={styles.categoryName}>{recipe.category.name}</Text>

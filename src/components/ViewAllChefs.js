@@ -20,7 +20,7 @@ const ViewAllChefs = () => {
     const fetchChefs = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/users`, null);
+        const response = await httpService.get(`${API_HOST}/api/users`, null);
         //setChefs(response.data);
         const filteredChefs = response.data.filter(chef => chef.id !== userId);
         setChefs(filteredChefs);
@@ -52,7 +52,7 @@ const ViewAllChefs = () => {
         {chefs.map((chef) => (
            <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
            <Image
-             source={{ uri: `${BASE_URL}/storage/${chef.images.image}`}}
+             source={{ uri: `${API_HOST}/storage/${chef.images.image}`}}
              style={styles.chefImage}
              onError={(error) => console.error('Image loading error:', error)}
            />

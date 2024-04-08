@@ -25,7 +25,7 @@ const ViewComments = ({ route }) => {
     const fetchComments = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/recipes/${recipeId}`, token);
+        const response = await httpService.get(`${API_HOST}/api/recipes/${recipeId}`, token);
         setComments(response.comments);
       } catch (error) {
         setError(error.message);
@@ -43,7 +43,7 @@ const ViewComments = ({ route }) => {
   const handleCommentSubmit = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/recipes/${recipeId}/comments`, data, token);
+      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/comments`, data, token);
       setComments(response.data.comments); 
     
     } catch (error) {
@@ -70,7 +70,7 @@ const ViewComments = ({ route }) => {
         <View key={comment.id} style={styles.commentContainer}>
           <Image
             style={styles.creatorImage}
-            source={{ uri: `${BASE_URL}/storage/${comment.user.images.image}` }}
+            source={{ uri: `${API_HOST}/storage/${comment.user.images.image}` }}
           />
           <Text style={styles.comment}>{comment.content}</Text>
           <Text style={styles.commentAuthor}>- {comment.user.name}</Text>

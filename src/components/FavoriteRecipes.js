@@ -20,7 +20,7 @@ const FavoriteRecipes = () => {
     const fetchFavoriteRecipes= async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/users/${userId}/favorites`,token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}/favorites`,token);
         setRecipes(response.data);
   
       } catch (error) {
@@ -48,10 +48,10 @@ const FavoriteRecipes = () => {
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
-            <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+            <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
           </View>
-          <Image source={{ uri:  `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <Image source={{ uri:  `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>
             <View >

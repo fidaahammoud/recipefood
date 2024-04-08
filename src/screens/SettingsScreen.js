@@ -17,7 +17,7 @@ const SettingsScreen = () => {
 
   const handleLogout = async () => {
       try {
-          const response = await httpService.post(`${API_HOST}/logout`, null, token);
+          const response = await httpService.post(`${API_HOST}/api/logout`, null, token);
           console.log(response);
           logout(); 
           navigation.navigate('Welcome');

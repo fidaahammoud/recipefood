@@ -23,7 +23,7 @@ const ChefsProfileInfo = ({ chefId }) => {
   const fetchUserData = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/users/${chefId}`);
+      const response = await httpService.get(`${API_HOST}/api/users/${chefId}`);
       setUserData(response);
     } catch (error) {
       setError(error);
@@ -51,7 +51,7 @@ const ChefsProfileInfo = ({ chefId }) => {
   const handleFollowPress = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/users/${chefId}/toggleFollow`, null, token);
+      const response = await httpService.post(`${API_HOST}/api/users/${chefId}/toggleFollow`, null, token);
       setTotalFollowers(response.user.totalFollowers);
       setFollowStatus(prevStatus => prevStatus === 'Follow' ? 'Unfollow' : 'Follow');
       await AsyncStorage.setItem(`followUser_${userId}_${chefId}`, JSON.stringify(followStatus === 'Follow'));
@@ -71,7 +71,7 @@ const ChefsProfileInfo = ({ chefId }) => {
       <Text style={styles.name}>{userData?.name}</Text>
       <View style={styles.imageContainer}>
         {userData && userData.images && (
-          <Image source={{ uri: `${BASE_URL}/storage/${userData.images.image}` }} style={styles.profileImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${userData.images.image}` }} style={styles.profileImage} />
         )}
         <View style={styles.textContainer}>
           {userData && (

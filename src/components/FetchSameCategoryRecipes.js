@@ -27,7 +27,7 @@ const FetchSameCategoryRecipes = () => {
   const fetchRecipes = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/categories/${categoryId}`, null);
+      const response = await httpService.get(`${API_HOST}/api/categories/${categoryId}`, null);
       setCategoryName(response.name);
       if (Array.isArray(response.recipes)) {
         setRecipes(response.recipes);
@@ -56,10 +56,10 @@ const FetchSameCategoryRecipes = () => {
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
-            <Image source={{ uri: `${BASE_URL}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+            <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
           </View>
-          <Image source={{ uri: `${BASE_URL}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             <Text style={styles.categoryName}>{categoryName}</Text>

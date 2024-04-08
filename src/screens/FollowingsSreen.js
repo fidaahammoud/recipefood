@@ -19,7 +19,7 @@ const FollowingsScreen = () => {
     const fetchData = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/users/${userId}/followings`, token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}/followings`, token);
         setChefs(response);
       } catch (error) {
         setError(error);
@@ -50,7 +50,7 @@ const FollowingsScreen = () => {
         {chefs.map((chef) => (
           <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
             <Image
-              source={{ uri: `${BASE_URL}/storage/${chef.images.image}`}}
+              source={{ uri: `${API_HOST}/storage/${chef.images.image}`}}
               style={styles.chefImage}
               onError={(error) => console.error('Image loading error:', error)}
             />
