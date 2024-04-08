@@ -6,8 +6,6 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import HttpService from '../components/HttpService';
 import { useAuth } from '../components/AuthProvider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { Utils } from '../components/Utils'; 
 
 const RecipeDetails = ({ route }) => {
@@ -31,11 +29,18 @@ const RecipeDetails = ({ route }) => {
   useEffect(() => {
     const fetchRecipeDetails = async () => {
       try {
+        console.log(userId);
+        console.log(token);
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/api/recipes/${recipeId}`);
+        console.log(`${API_HOST}/api/${userId}/recipes/${recipeId}`);
+        const response = await httpService.get(`${API_HOST}/api/${userId}/recipes/${recipeId}`,token);
         setRecipeDetails(response);
         setTotalLikes(response.totalLikes);
         setAvgRate(parseFloat(response.avrgRating));
+        console.log("recipe is favorite ? : "+response.isFavorite);
+        if(response.isFavorite){
+          setIsFavorite(!isFavorite);
+        }
       } catch (error) {
         console.error('Error fetching recipe details:', error.message);
         setError(error);
@@ -45,47 +50,8 @@ const RecipeDetails = ({ route }) => {
     fetchRecipeDetails();
   }, [recipeId, isFocused]);
 
-  useEffect(() => {
-    const loadFavoriteStatus = async () => {
-      try {
-        const favoriteStatus = await AsyncStorage.getItem(`favorite_${userId}_${recipeId}`);
-        if (favoriteStatus !== null) {
-          setIsFavorite(JSON.parse(favoriteStatus));
-        }
-      } catch (error) {
-        console.error('Error loading favorite status:', error);
-      }
-    };
-
-    const loadLikeStatus = async () => {
-      try {
-        const likeStatus = await AsyncStorage.getItem(`like_${userId}_${recipeId}`);
-        if (likeStatus !== null) {
-          setIsLiked(JSON.parse(likeStatus));
-        }
-      } catch (error) {
-        console.error('Error loading like status:', error);
-      }
-    };
-
-    loadFavoriteStatus();
-    loadLikeStatus();
-  }, [recipeId, userId]);
-
-  useEffect(() => {
-    const loadUserRating = async () => {
-      try {
-        const storedRating = await AsyncStorage.getItem(`rating_${userId}_${recipeId}`);
-        if (storedRating !== null) {
-          setUserRating(parseInt(storedRating));
-        }
-      } catch (error) {
-        console.error('Error loading user rating:', error);
-      }
-    };
-
-    loadUserRating();
-  }, [recipeId, userId]);
+  
+  
 
   const handleLikePress = async (recipeId) => {
     try {
@@ -93,7 +59,6 @@ const RecipeDetails = ({ route }) => {
       const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/like`, null, token);
       setTotalLikes(response.nbOfLikes);
       setIsLiked(!isLiked);
-      await AsyncStorage.setItem(`like_${userId}_${recipeId}`, JSON.stringify(!isLiked));
     } catch (error) {
       setError(error.message);
     }
@@ -102,9 +67,8 @@ const RecipeDetails = ({ route }) => {
   const handleFavoritePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/addToFavorite`, null, token);
+      const response = await httpService.post(`${API_HOST}/api/${userId}/${recipeId}/updateStatusFavorite`, null, token);
       setIsFavorite(!isFavorite);
-      await AsyncStorage.setItem(`favorite_${userId}_${recipeId}`, JSON.stringify(!isFavorite));
     } catch (error) {
       setError(error.message);
     }
@@ -119,7 +83,6 @@ const RecipeDetails = ({ route }) => {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/rate/${userRating}`, { rating: userRating }, token);
       setAvgRate(parseFloat(response.avgRating));
-      await AsyncStorage.setItem(`rating_${userId}_${recipeId}`, userRating.toString());
     } catch (error) {
       setError(error);
       console.error('Error submitting rating:', error.message);
