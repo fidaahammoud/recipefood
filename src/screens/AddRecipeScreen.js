@@ -109,7 +109,7 @@ const handleDietaryChange = (item) => {
 
   const saveImageToDatabase = async (selectedImage) => {
     try {
-      const apiUrl = `${API_HOST}/image/${userId}/recipe`;
+      const apiUrl = `${API_HOST}/image/${userId}`;
       
       const formData = new FormData();
       formData.append('image', {
