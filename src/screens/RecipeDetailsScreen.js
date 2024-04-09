@@ -13,6 +13,7 @@ const RecipeDetails = ({ route }) => {
   const [recipeDetails, setRecipeDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  let isRated = false;
 
   const [showIngredients, setShowIngredients] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
@@ -25,6 +26,34 @@ const RecipeDetails = ({ route }) => {
   const [userRating, setUserRating] = useState(0);
   const [avgRate, setAvgRate] = useState(0);
   const { getTimeDifference } = Utils();
+  const [userRate, setUserRate] = useState(0);
+
+
+  // const getStarIconName = (userRating, star) => {
+  //   console.log('isRated ' + isRated);
+  //   console.log('userRating ' +userRating + ' star '+ star);
+  //   if ( userRating > 1){
+  //     isRated = true;
+  //     return userRating >= star ? "star" : "star-o";
+  //   }
+  //   else if (star == 1  && isRated){
+  //     console.log('xxx');
+  //     return "star-o"
+  //   }
+
+  // };
+  const getStarIconName = (userRating, star) => {
+    if (userRating === 1 && star === 1) {
+      // If the user clicks the first star and the rating is already 1, set rating to 0
+      handleRatingChange(0);
+      return "star-o";
+    } else {
+      // Otherwise, handle the rating as usual
+      return userRating >= star ? "star" : "star-o";
+    }
+  };
+  
+  
 
   useEffect(() => {
     const fetchRecipeDetails = async () => {
@@ -38,9 +67,19 @@ const RecipeDetails = ({ route }) => {
         setTotalLikes(response.totalLikes);
         setAvgRate(parseFloat(response.avrgRating));
         console.log("recipe is favorite ? : "+response.isFavorite);
+        console.log("recipe is liked ? : "+response.isLiked);
+        console.log("user rate: "+ response.rating);
+        console.log(response);
+        setUserRating(response.rating);
+
         if(response.isFavorite){
           setIsFavorite(!isFavorite);
         }
+
+        if(response.isLiked){
+          setIsLiked(!isLiked);
+        }
+
       } catch (error) {
         console.error('Error fetching recipe details:', error.message);
         setError(error);
@@ -56,7 +95,7 @@ const RecipeDetails = ({ route }) => {
   const handleLikePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/like`, null, token);
+      const response = await httpService.put(`${API_HOST}/api/${userId}/${recipeId}/updateStatusLike`, null, token);
       setTotalLikes(response.nbOfLikes);
       setIsLiked(!isLiked);
     } catch (error) {
@@ -67,7 +106,7 @@ const RecipeDetails = ({ route }) => {
   const handleFavoritePress = async (recipeId) => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/api/${userId}/${recipeId}/updateStatusFavorite`, null, token);
+      const response = await httpService.put(`${API_HOST}/api/${userId}/${recipeId}/updateStatusFavorite`, null, token);
       setIsFavorite(!isFavorite);
     } catch (error) {
       setError(error.message);
@@ -81,7 +120,11 @@ const RecipeDetails = ({ route }) => {
   const submitRating = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/rate/${userRating}`, { rating: userRating }, token);
+      const response = await httpService.put(`${API_HOST}/api/${userId}/${recipeId}/${userRating}/updateStatusRate`,null, token);
+      console.log(response);
+      // const avgRating = parseFloat(response.avgRating).toFixed(1);
+      // setAvgRate(avgRating);  
+
       setAvgRate(parseFloat(response.avgRating));
     } catch (error) {
       setError(error);
@@ -206,7 +249,7 @@ const RecipeDetails = ({ route }) => {
           <View style={styles.starsContainer}>
             {[1, 2, 3, 4, 5].map(star => (
               <TouchableOpacity key={star} onPress={() => handleRatingChange(star)}>
-                <Icon name={userRating >= star ? "star" : "star-o"} size={30} color="gold" style={styles.starIcon} />
+                <Icon name={getStarIconName(userRating, star)} size={30} color={ 'gold' } style={styles.starIcon} />
               </TouchableOpacity>
             ))}
           </View>
@@ -220,6 +263,9 @@ const RecipeDetails = ({ route }) => {
     </View>
   );
 };
+
+
+
 
 const styles = StyleSheet.create({
   container: {

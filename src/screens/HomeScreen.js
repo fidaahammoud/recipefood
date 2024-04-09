@@ -195,9 +195,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 90,
-    height: 90,
-    borderRadius: 50,
+    width: 100,
+    height: 100,
+    borderRadius: 60,
   },
   iconsContainer: {
     flexDirection: 'row',

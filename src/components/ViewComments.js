@@ -16,7 +16,7 @@ const ViewComments = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
-  const { token } = getAuthData();
+  const { token ,userId} = getAuthData();
   const [comment, setComment] = useState('');
   
   const { getTimeDifference } = Utils();
@@ -25,7 +25,8 @@ const ViewComments = ({ route }) => {
     const fetchComments = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/api/recipes/${recipeId}`, token);
+        const response = await httpService.get(`${API_HOST}/api/${userId}/recipes/${recipeId}`, token);
+        console.log(response.comments);
         setComments(response.comments);
       } catch (error) {
         setError(error.message);
