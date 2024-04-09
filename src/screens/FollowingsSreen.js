@@ -19,7 +19,7 @@ const FollowingsScreen = () => {
     const fetchData = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/api/users/${userId}/followings`, token);
+        const response = await httpService.get(`${API_HOST}/api/followings/${userId}`, token);
         setChefs(response);
       } catch (error) {
         setError(error);

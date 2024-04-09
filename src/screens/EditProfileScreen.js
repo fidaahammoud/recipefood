@@ -29,7 +29,7 @@ const EditProfileScreen = () => {
 
     const fetchUserDetails = async () => {
       try {
-        const response = await httpService.get(`${API_HOST}/api/users/${userId}`, token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}/${userId}`, token);
         const userData = response; 
         setFullName(userData.name);
         setUsername(userData.username);

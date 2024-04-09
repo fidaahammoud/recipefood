@@ -41,7 +41,7 @@ const EditRecipeForm = () => {
   const fetchRecipeDetails = async () => {
     const recipeId = route.params.recipeId; 
     try {
-      const response = await httpService.get(`${API_HOST}/api/recipes/${recipeId}`, token);
+      const response = await httpService.get(`${API_HOST}/api/${userId}/recipes/${recipeId}`, token);
       const recipeData = response; 
     
       setTitle(recipeData.title);

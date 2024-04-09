@@ -8,7 +8,6 @@ import { useAuth } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid } from 'react-native';
 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const ChefsProfileInfo = ({ chefId }) => {
   const [userData, setUserData] = useState(null);
@@ -23,38 +22,34 @@ const ChefsProfileInfo = ({ chefId }) => {
   const fetchUserData = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/api/users/${chefId}`);
+      const response = await httpService.get(`${API_HOST}/api/users/${userId}/${chefId}`,token);
+      console.log(response);
       setUserData(response);
+
+      if(response.isFollowed){
+        setFollowStatus("Unfollow")
+      }
+      else{
+        setFollowStatus("Follow")
+
+      }
+
     } catch (error) {
       setError(error);
     }
   };
 
-  const getFollowStatus = async () => {
-    try {
-      const savedStatus = await AsyncStorage.getItem(`followUser_${userId}_${chefId}`);
-      if (savedStatus !== null) {
-        setFollowStatus(JSON.parse(savedStatus) ? 'Unfollow' : 'Follow');
-      } else {
-        setFollowStatus('Follow');
-      }
-    } catch (error) {
-      console.error('Error retrieving follow status:', error);
-    }
-  };
+ 
 
   useEffect(() => {
     fetchUserData();
-    getFollowStatus();
-  }, [chefId, isFocused]);
+  }, [chefId,totalFollowers, isFocused]);
 
   const handleFollowPress = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.post(`${API_HOST}/api/users/${chefId}/toggleFollow`, null, token);
-      setTotalFollowers(response.user.totalFollowers);
-      setFollowStatus(prevStatus => prevStatus === 'Follow' ? 'Unfollow' : 'Follow');
-      await AsyncStorage.setItem(`followUser_${userId}_${chefId}`, JSON.stringify(followStatus === 'Follow'));
+      const response = await httpService.put(`${API_HOST}/api/updateStatusFollow/${userId}/${chefId}`, null, token);
+      setTotalFollowers(response.totalFollowers);
       ToastAndroid.show(response.message, ToastAndroid.SHORT);
     } catch (error) {
       console.error('Error toggling follow:', error);

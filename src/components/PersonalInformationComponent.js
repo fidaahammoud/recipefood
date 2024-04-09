@@ -20,7 +20,7 @@ const PersonalInformationComponent = () => {
     const fetchPersonalInformation = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/api/users/${userId}`,token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}/${userId}`,token);
         setUserData(response);
       } catch (error) {
         setError(error);
