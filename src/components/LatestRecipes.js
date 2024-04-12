@@ -41,7 +41,9 @@ const LatestRecipes = ({ sortingOption }) => {
             url = `${API_HOST}/api/recipes?sort=-created_at`;
         }
         const response = await httpService.get(url, null);
-        setRecipes(response.data);
+        const activeRecipes = response.data.filter(recipe => recipe.isActive === 1);
+
+        setRecipes(activeRecipes);
       } catch (error) {
         setError(error.message);
       }
