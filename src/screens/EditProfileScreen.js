@@ -60,8 +60,8 @@ const EditProfileScreen = () => {
         const response = await httpService.put(`${API_HOST}/api/updatePersonalInformation/${userId}`,data,token);
         console.log(response.user);
 
-        if (response && response.message === 'Personal information updated successfully' ) {
-          ToastAndroid.show(response.message, ToastAndroid.SHORT);
+        if (response && response.message ===  'success' ) {
+          ToastAndroid.show('Personal information updated successfully', ToastAndroid.SHORT);
           navigation.navigate('Home');
         }
       } 

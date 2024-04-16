@@ -6,6 +6,7 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import ImagePickerComponent from '../components/ImageHandling';
 import { API_HOST } from "@env";
+import { ToastAndroid } from 'react-native';
 
 const CompleteProfile = () => {
   const navigation = useNavigation();
@@ -30,8 +31,10 @@ const CompleteProfile = () => {
   postData = async (data) => {
     try {
       const response = await httpService.put(`${API_HOST}/api/completeProfile/${userId}`,data,token);
-      if (response && response.message === 'Profile completed successfully' ) {
+      if (response && response.message === 'success' ) {
       console.log(response.user);
+      ToastAndroid.show( 'Profile completed successfully' , ToastAndroid.SHORT);
+
       navigation.navigate('Home');
       }
     } 

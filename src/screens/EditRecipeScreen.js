@@ -170,8 +170,8 @@ const EditRecipeForm = () => {
     try {
       const response = await httpService.put(`${API_HOST}/api/recipes/${route.params.recipeId}`, recipeData, token);
       console.log(response);
-      if (response && response.message === 'Recipe details updated successfully' ) {
-        ToastAndroid.show(response.message, ToastAndroid.SHORT);
+      if (response && response.message === 'success' ) {
+        ToastAndroid.show('Recipe details updated successfully', ToastAndroid.SHORT);
         navigation.navigate('Home');
       }
     } catch (error) {
