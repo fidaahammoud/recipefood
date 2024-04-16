@@ -34,7 +34,7 @@ const ViewComments = ({ route }) => {
     };
 
     fetchComments();
-  }, [recipeId, token,isFocused]);
+  }, [isFocused]);
 
  
   if (error) {

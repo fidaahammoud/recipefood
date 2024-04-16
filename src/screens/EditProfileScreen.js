@@ -6,6 +6,7 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import ImagePickerComponent from '../components/ImageHandling';
 import { API_HOST } from "@env";
+import { ToastAndroid } from 'react-native';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
@@ -58,8 +59,11 @@ const EditProfileScreen = () => {
       try {
         const response = await httpService.put(`${API_HOST}/api/updatePersonalInformation/${userId}`,data,token);
         console.log(response.user);
-        navigation.navigate('Home');
-        
+
+        if (response && response.message === 'Personal information updated successfully' ) {
+          ToastAndroid.show(response.message, ToastAndroid.SHORT);
+          navigation.navigate('Home');
+        }
       } 
       catch (error) {
         setError(error);

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal,TouchableWithoutFeedback } from 'react-native';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
+import { ToastAndroid } from 'react-native';
 
 const EditRecipeForm = () => {
   const httpService = new HttpService();
@@ -21,7 +22,15 @@ const EditRecipeForm = () => {
   const [preparationTime, setPreparationTime] = useState('');
   const [comments, setComments] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
+
   const [categories, setCategories] = useState([]);
+
+  const [dietaryOptions, setDietaryOptions] = useState([]);
+  const [selectedDietary, setSelectedDietary] = useState(null);
+  const [openDietaryModal, setOpenDietaryModal] = useState(false);
+  
+
+
   const [imageId, setImageId] = useState('');
   const [image, setImage] = useState(null);
 
@@ -36,6 +45,7 @@ const EditRecipeForm = () => {
   useEffect(() => {
     fetchRecipeDetails();
     fetchDropdownOptions();
+    fetchDietaryOptions();
   }, [isFocused]);
 
   const fetchRecipeDetails = async () => {
@@ -43,7 +53,6 @@ const EditRecipeForm = () => {
     try {
       const response = await httpService.get(`${API_HOST}/api/${userId}/recipes/${recipeId}`, token);
       const recipeData = response; 
-    
       setTitle(recipeData.title);
       setDescription(recipeData.description);
       setSteps(recipeData.steps.map(step => step.stepDescription));
@@ -51,6 +60,14 @@ const EditRecipeForm = () => {
       setPreparationTime(recipeData.preparationTime.toString());
       setComments(recipeData.comment);
       setSelectedCategory(recipeData.category_id.toString());
+      setSelectedDietary(recipeData.dietary.id.toString());
+      console.log("category:  "+recipeData.category_id.toString());
+
+      console.log("dietary:  "+recipeData.dietary_id.toString());
+
+
+      console.log("dietary:  "+recipeData.dietary.name);
+
       setImageId(recipeData.image_id.toString());
     } catch (error) {
       console.error('Error fetching recipe details:', error);
@@ -70,6 +87,24 @@ const EditRecipeForm = () => {
     }
   };
 
+
+
+  const fetchDietaryOptions = async () => {
+    try {
+      const response = await httpService.get(`${API_HOST}/api/dietaries`, null);
+      const data = response;
+  
+      if (data) {
+        setDietaryOptions(data.map(item => ({ label: item.name, value: item.id.toString() })));
+      }
+    } catch (error) {
+      console.error('Error fetching dietary options:', error);
+    }
+  };
+  
+  
+
+
   useEffect(() => {
     validateForm();
     
@@ -81,6 +116,7 @@ const EditRecipeForm = () => {
       description.trim() !== '' &&
       imageId.toString().trim() !== '' &&
       selectedCategory !== null &&
+      selectedDietary !== null &&
       ingredients.every(ingredient => ingredient.name.trim() !== '' && ingredient.measurementUnit.trim() !== '') && 
       steps.every(step => step.trim() !== '') && 
       preparationTime.trim() !== '' 
@@ -120,6 +156,7 @@ const EditRecipeForm = () => {
       title,
       description,
       category_id: selectedCategory,
+      dietary_id: selectedDietary,
       preparationTime: parseInt(preparationTime),
       comment: comments,
       ingredients: ingredients.map(ingredient => ({ 
@@ -133,7 +170,10 @@ const EditRecipeForm = () => {
     try {
       const response = await httpService.put(`${API_HOST}/api/recipes/${route.params.recipeId}`, recipeData, token);
       console.log(response);
-      navigation.navigate('Home');
+      if (response && response.message === 'Recipe details updated successfully' ) {
+        ToastAndroid.show(response.message, ToastAndroid.SHORT);
+        navigation.navigate('Home');
+      }
     } catch (error) {
       setError(error);
     }
@@ -204,6 +244,13 @@ const EditRecipeForm = () => {
       <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpen(true)}>
         <Text style={styles.dropdownValue}>{selectedCategory ? categories.find(cat => cat.value === selectedCategory)?.label : 'Select Category'}</Text>
       </TouchableOpacity>
+
+      <Text style={styles.label}>Dietary:</Text>
+      <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpenDietaryModal(true)}>
+        <Text style={styles.dropdownValue}>{selectedDietary ? dietaryOptions.find(dietary => dietary.value === selectedDietary)?.label : 'Select Dietary'}</Text>
+      </TouchableOpacity>
+
+
 
       <Text style={styles.label}>Steps:</Text>
       {steps.map((step, index) => (
@@ -296,6 +343,34 @@ const EditRecipeForm = () => {
           </View>
         </View>
       </Modal>
+
+
+      {/* Modal for Dietary selection */}
+      <Modal
+        visible={openDietaryModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setOpenDietaryModal(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <ScrollView>
+              {dietaryOptions.map(dietary => (
+                <TouchableOpacity
+                  key={dietary.value}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedDietary(dietary.value);
+                    setOpenDietaryModal(false);
+                  }}>
+                  <Text>{dietary.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      
     </ScrollView>
   );
 };
