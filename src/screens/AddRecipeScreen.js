@@ -6,6 +6,9 @@ import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
 
+import { ToastAndroid } from 'react-native';
+
+
 const RecipeForm = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
@@ -33,12 +36,8 @@ const RecipeForm = () => {
   const [selectedDietary, setSelectedDietary] = useState(null);
   const [openDietaryModal, setOpenDietaryModal] = useState(false);
   
-// Fetch dietary options on component mount
-useEffect(() => {
-  fetchDietaryOptions();
-}, []);
 
-// Function to fetch dietary options
+
 const fetchDietaryOptions = async () => {
   try {
     const response = await httpService.get(`${API_HOST}/api/dietaries`,null);
@@ -51,16 +50,10 @@ const fetchDietaryOptions = async () => {
   }
 };
 
-// Function to handle dietary change
-const handleDietaryChange = (item) => {
-  setSelectedDietary(item.value);
-  setOpenDietaryModal(false);
-};
-
-  
-
   useEffect(() => {
     fetchDropdownOptions();
+    fetchDietaryOptions();
+
   }, []);
 
   const fetchDropdownOptions = async () => {
@@ -74,6 +67,11 @@ const handleDietaryChange = (item) => {
     } catch (error) {
       console.error('Error fetching dropdown options:', error);
     }
+  };
+
+  const handleDietaryChange = (item) => {
+    setSelectedDietary(item.value);
+    setOpenDietaryModal(false);
   };
 
   const handleCategoryChange = (item) => {
@@ -144,8 +142,13 @@ const handleDietaryChange = (item) => {
 
           const response = await httpService.post(`${API_HOST}/api/recipes`,recipeData,token);
           const newRecipeId = response.id;
-          setRecipeId(newRecipeId);     
-          navigation.navigate('Home');
+          setRecipeId(newRecipeId);   
+          
+          if (response && response.message === 'success' ) {
+            ToastAndroid.show('Recipe added successfully', ToastAndroid.SHORT);
+            navigation.navigate('Home');
+          }
+
         } 
         catch (error) {
           setError(error);

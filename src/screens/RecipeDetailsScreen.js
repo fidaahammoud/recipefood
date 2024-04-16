@@ -122,10 +122,9 @@ const RecipeDetails = ({ route }) => {
       const httpService = new HttpService();
       const response = await httpService.put(`${API_HOST}/api/${userId}/${recipeId}/${userRating}/updateStatusRate`,null, token);
       console.log(response);
-      // const avgRating = parseFloat(response.avgRating).toFixed(1);
-      // setAvgRate(avgRating);  
-
-      setAvgRate(parseFloat(response.avgRating));
+      
+      const formattedRating = parseFloat(response.avgRating).toFixed(1);  
+      setAvgRate(formattedRating);
     } catch (error) {
       setError(error);
       console.error('Error submitting rating:', error.message);
