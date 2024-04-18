@@ -68,13 +68,12 @@ class HttpService extends Component {
         console.log('Response status:', response.status);
         console.log('Response body:', responseBody);
   
-        if (response.status === 400) {
-          // Check if the message field exists in the response body
-          const errorMessage = Array.isArray(responseBody.message) ? responseBody.message.join(', ') : responseBody.message;
-          // Join multiple error messages if they are in an array
-          ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+        if (response.status === 422) {
+          //it's not working !! status 422 here 
+          console.log(responseBody.message);
+          ToastAndroid.show(responseBody.message, ToastAndroid.SHORT);
         } else {
-          throw new Error('Network response was not ok');
+          ToastAndroid.show(responseBody.message, ToastAndroid.SHORT);
         }
       }
       return responseBody;
@@ -116,13 +115,18 @@ class HttpService extends Component {
         },
       });
 
+      console.log(response);
       if (!response.ok) {
         throw new Error('Network response was not ok');
+        //ToastAndroid.show("please try again", ToastAndroid.SHORT);
+
       }
       return await response.json();
     } catch (error) {
       console.error('Error:', error);
       throw error;
+      //ToastAndroid.show("please try again", ToastAndroid.SHORT);
+
     }
   }
 

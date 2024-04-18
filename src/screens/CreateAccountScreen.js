@@ -19,7 +19,7 @@ export default function CreateAccount() {
     try {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/api/register`,data,null);
-      saveAuthData(response.access_token, response.data.id);
+      saveAuthData(response.access_token, response.user.id);
       navigation.navigate('CompleteProfile');
     } 
     catch (error) {
