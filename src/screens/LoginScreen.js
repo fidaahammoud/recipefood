@@ -7,7 +7,7 @@ import HttpService from '../components/HttpService';
 
 export default function Login() {
   const navigation = useNavigation();
-  const { saveAuthData } = useAuth(); 
+  const { saveAuthData,saveStatusOfRecieveNotification  } = useAuth(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginDisabled, setLoginDisabled] = useState(true); 
@@ -20,6 +20,9 @@ export default function Login() {
       const response = await httpService.post(`${API_HOST}/api/login`,data,null);
       if (response && response.access_token && response.user_id) {
         saveAuthData(response.access_token, response.user_id);
+        const isNotificationActive = response.user.isNotificationActive === 1; 
+        console.log(isNotificationActive);
+        saveStatusOfRecieveNotification(isNotificationActive);
         navigation.navigate('Home');
       } 
     } 

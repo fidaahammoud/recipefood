@@ -7,10 +7,10 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService'; 
 import Footer from '../components/Footer';
 
-const NotificationScreen = () => {
+const NotificationScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
   const { getAuthData } = useAuth();
-  const { userId, token } = getAuthData();
+  const { userId, token, recieveNotification } = getAuthData();
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
 
@@ -29,14 +29,16 @@ const NotificationScreen = () => {
   };
 
   useEffect(() => {
-    fetchNotifications();
-    setInterval(fetchNotifications, 10000);
-
-  }, [isFocused]);
+    if (recieveNotification) {
+      fetchNotifications();
+      const intervalId = setInterval(fetchNotifications, 10000);
+      return () => clearInterval(intervalId);
+    }
+  }, [isFocused, recieveNotification]);
 
   const markNotificationAsRead = async (notificationId) => {
     const httpService = new HttpService();
-    const response = await httpService.put(`${API_HOST}/api/updateStatusNotification/${userId}/${notificationId}`,null, token);
+    const response = await httpService.put(`${API_HOST}/api/updateStatusNotification/${userId}/${notificationId}`, null, token);
     console.log(response);
     fetchNotifications();
   };
@@ -48,6 +50,11 @@ const NotificationScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Notifications</Text>
+      {!recieveNotification && (
+        <Text style={styles.updateStatusText} onPress={() => navigation.navigate('Settings')}>
+          Update notification status
+        </Text>
+      )}
       <ScrollView style={styles.scrollView}>
         {notifications.map((notification, index) => (
           <TouchableOpacity
@@ -56,8 +63,8 @@ const NotificationScreen = () => {
               markNotificationAsRead(notification.id);
             }}
           >
-            <View style={[styles.notificationContainer, notification.isRead ? styles.notificationRead : null]}>
-              <Image source={{  uri: `${API_HOST}/storage/${notification.source_user.images.image}`}} style={styles.userImage} />
+            <View style={[styles.notificationContainer, notification.isRead ? null:styles.notificationNotRead ]}>
+              <Image source={{ uri: `${API_HOST}/storage/${notification.source_user.images.image}` }} style={styles.userImage} />
               <Text style={styles.notificationText}>
                 {notification.content}
               </Text>
@@ -82,6 +89,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
+  updateStatusText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
+    textDecorationLine: 'underline',
+  },
   scrollView: {
     width: '100%',
   },
@@ -91,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  notificationRead: {
+  notificationNotRead: {
     backgroundColor: '#ccc',
   },
   userImage: {

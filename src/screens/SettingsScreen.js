@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Switch, TouchableWithoutFeedback } from 'react-native';
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import { API_HOST } from "@env";
@@ -8,10 +8,13 @@ import { FontAwesome } from '@expo/vector-icons';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const { getAuthData, logout } = useAuth(); 
-  const { userId, token } = getAuthData();
+  const { getAuthData, logout ,saveStatusOfRecieveNotification} = useAuth(); 
+
+  const { userId, token ,recieveNotification} = getAuthData();
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  const [isNotificationEnabled, setIsNotificationEnabled] = useState(recieveNotification); 
 
   const httpService = new HttpService();
 
@@ -43,6 +46,20 @@ const SettingsScreen = () => {
       setShowModal(false);
   };
 
+  const toggleNotification = async () => {
+    try {
+      const httpService = new HttpService();
+      const response = await httpService.put(`${API_HOST}/api/updateIsActiveNotification/${userId}`, null, token);
+      setIsNotificationEnabled(!isNotificationEnabled);
+      console.log(response.isNotificationActive);
+      saveStatusOfRecieveNotification(!isNotificationEnabled);
+
+
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.back}></View>
@@ -54,6 +71,20 @@ const SettingsScreen = () => {
       <View style={styles.line} />
   
       <View style={styles.topBar}>
+        {/* Notification Toggle */}
+        <View style={styles.notificationContainer}>
+          <Text style={styles.notificationText}>Notifications</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={isNotificationEnabled ? "#f5dd4b" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleNotification}
+            value={isNotificationEnabled}
+          />
+
+
+        </View>
+  
         <TouchableOpacity onPress={handleLogoutConfirmation} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
@@ -63,7 +94,7 @@ const SettingsScreen = () => {
         visible={showModal}
         animationType="slide"
         transparent={true}
-        onRequestClose={handleModalClose} // Handle modal close when user taps outside
+        onRequestClose={handleModalClose}
       >
         <TouchableWithoutFeedback onPress={handleModalClose}>
           <View style={styles.modalContainer}>
@@ -85,7 +116,6 @@ const SettingsScreen = () => {
       </Modal>
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
@@ -133,6 +163,16 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: 'white',
+    fontWeight: 'bold',
+  },
+  notificationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  notificationText: {
+    fontSize: 18,
     fontWeight: 'bold',
   },
   modalContainer: {

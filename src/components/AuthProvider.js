@@ -5,14 +5,20 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [recieveNotification, setRecieveNotification] = useState(true);
 
   const saveAuthData = (newToken, newUserId) => {
     setToken(newToken);
     setUserId(newUserId);
   };
 
+  const saveStatusOfRecieveNotification = (status) => {
+    setRecieveNotification(status);
+  };
+
+
   const getAuthData = () => {
-    return { token, userId };
+    return { token, userId,recieveNotification };
   };
 
   const logout = () => {
@@ -22,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ saveAuthData, getAuthData,logout }}>
+    <AuthContext.Provider value={{ saveAuthData, getAuthData,logout,saveStatusOfRecieveNotification }}>
       {children}
     </AuthContext.Provider>
   );
