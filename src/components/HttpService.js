@@ -103,7 +103,39 @@ class HttpService extends Component {
     }
   }
 
+  // async uploadImage(url, data, token) {
+  //   try {
+  //     const response = await fetch(url, {
+  //       method: 'POST',
+  //       body: data,
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'Content-Type': 'multipart/form-data',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       //throw new Error('Network response was not ok');
+  //       ToastAndroid.show("please try again in HttpService response not ok ", ToastAndroid.SHORT);
+  //       console.error("please try again in HttpService response not ok ", error);
+
+  //     }
+  //     return await response.json();
+  //   } catch (error) {
+  //     console.error("Error in httpservice  ", error);
+  //     //throw error;
+  //     ToastAndroid.show("Error in httpservice  ", ToastAndroid.SHORT);
+
+  //   }
+  // }
+
+
   async uploadImage(url, data, token) {
+    console.log("url:  "+url);
+    console.log(data);
+    console.log("token:  "+token);
+
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -114,21 +146,23 @@ class HttpService extends Component {
           Authorization: `Bearer ${token}`,
         },
       });
+      const responseBody = await response.json();
 
-      console.log(response);
+      console.log("toto");
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
-        //ToastAndroid.show("please try again", ToastAndroid.SHORT);
-
       }
-      return await response.json();
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-      //ToastAndroid.show("please try again", ToastAndroid.SHORT);
+      console.log("titi");
 
+      return responseBody;
+    } catch (error) {
+      console.error("Error in httpservice  ", error);
+      throw error;
     }
   }
+
+  
 
   render() {
     return null; 

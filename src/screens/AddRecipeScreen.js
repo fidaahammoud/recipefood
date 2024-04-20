@@ -115,9 +115,11 @@ const fetchDietaryOptions = async () => {
         name: 'profile_image.jpg',
         type: 'image/jpg',
       });
-
+      console.log("apiUrl: "+apiUrl);
       const resp = await httpService.uploadImage(apiUrl, formData, token);
       setImageId(resp.id);
+      console.log('Image uploaded successfully. Image ID:', resp.id);
+
     } catch (error) {
       console.error('Error during image upload:', error);
     }

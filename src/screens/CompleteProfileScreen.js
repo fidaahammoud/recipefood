@@ -75,14 +75,21 @@ const CompleteProfile = () => {
         name: 'profile_image.jpg',
         type: 'image/jpg',
       });
-
+  
       const resp = await httpService.uploadImage(apiUrl, formData, token);
-      setImageId(resp.id);
-      setImageUri(selectedImage.uri); 
+      if (resp && resp.id) {
+        setImageId(resp.id);
+        setImageUri(selectedImage.uri);
+      } else {
+        console.error('Error: Invalid response from server');
+        ToastAndroid.show("please try again", ToastAndroid.SHORT)
+      }
     } catch (error) {
       console.error('Error during image upload:', error);
+      ToastAndroid.show("please try again", ToastAndroid.SHORT)
     }
   };
+  
 
   return (
     <ImageBackground
