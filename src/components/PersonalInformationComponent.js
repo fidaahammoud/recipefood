@@ -35,7 +35,15 @@ const PersonalInformationComponent = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>{userData?.name}</Text>
+      <View style={styles.nameContainer}>
+        <Text style={styles.name}>{userData?.name}</Text>
+        {userData?.isVerified === 1 && (
+          <Image
+            source={require("../../assets/Verification-Logo.png")}
+            style={styles.verificationIcon}
+          />
+        )}
+      </View>
       <View style={styles.imageContainer}>
         {userData && userData.images && (
           <Image source={{ uri: `${API_HOST}/storage/${userData.images.image}` }} style={styles.profileImage} />
@@ -62,6 +70,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
   },
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
   imageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -79,7 +92,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textTransform: 'capitalize',
-    marginBottom: 5,
   },
   username: {
     fontSize:18,
@@ -98,6 +110,11 @@ const styles = StyleSheet.create({
   },
   likesText: {
     fontSize: 16,
+  },
+  verificationIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
   },
 });
 

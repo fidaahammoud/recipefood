@@ -76,6 +76,12 @@ const LatestRecipes = ({ sortingOption }) => {
             <View style={styles.creatorContainer}>
               <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
               <Text style={styles.creatorName}>{recipe.user.name}</Text>
+              {recipe.user?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
             </View>
           </TouchableOpacity>
           <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
@@ -175,6 +181,14 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 5,
   },
+ 
+  verificationIcon: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    marginLeft: 5,
+  },
+  
 });
 
 export default LatestRecipes;

@@ -4,7 +4,6 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from '../components/HttpService';
 import { useAuth } from '../components/AuthProvider';
 import { FontAwesome } from '@expo/vector-icons';
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
 
 const FollowingsScreen = () => {
@@ -13,7 +12,7 @@ const FollowingsScreen = () => {
   const [chefs, setChefs] = useState([]);
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
-  const { userId , token} = getAuthData();
+  const { userId, token } = getAuthData();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +24,7 @@ const FollowingsScreen = () => {
         setError(error);
       }
     };
-  
+
     fetchData();
   }, [isFocused]);
 
@@ -39,22 +38,30 @@ const FollowingsScreen = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.topBar}>
+      <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FontAwesome name="arrow-left" size={24} color="black" />
+          <FontAwesome name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
-        </View>
+      </View>
       <View style={styles.container}>
         <Text style={styles.title}>Followings</Text>
         <View style={styles.line} />
         {chefs.map((chef) => (
           <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
             <Image
-              source={{ uri: `${API_HOST}/storage/${chef.images.image}`}}
+              source={{ uri: `${API_HOST}/storage/${chef.images.image}` }}
               style={styles.chefImage}
               onError={(error) => console.error('Image loading error:', error)}
             />
-            <Text style={styles.chefName}>{chef.name}</Text>
+            <View style={styles.nameContainer}>
+              <Text style={styles.chefName}>{chef.name}</Text>
+              {chef?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
+            </View>
           </TouchableOpacity>
         ))}
       </View>
@@ -73,14 +80,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 5,
-    marginLeft:20,
-    marginTop:20
+    marginLeft: 20,
+    marginTop: 20
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    marginTop:10,
+    marginTop: 10,
   },
   line: {
     width: '80%',
@@ -91,21 +98,26 @@ const styles = StyleSheet.create({
   chefContainer: {
     alignItems: 'center',
     marginVertical: 10,
-    marginTop:20,
+    marginTop: 20,
   },
   chefImage: {
     width: 320,
-    height: 220, 
-    borderRadius: 30, 
-    borderRadius: 10, 
+    height: 220,
+    borderRadius: 30,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: 5,
   },
-  chefName: {
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 5,
+  },
+  chefName: {
     fontSize: 16,
     textAlign: 'center',
+    textTransform: 'capitalize',
   },
   errorContainer: {
     alignItems: 'center',
@@ -115,7 +127,12 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
   },
+  verificationIcon: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    marginLeft: 5,
+  },
 });
-
 
 export default FollowingsScreen;

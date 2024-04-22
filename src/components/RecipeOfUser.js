@@ -22,13 +22,11 @@ const RecipeOfUser = () => {
   const httpService = new HttpService();
   const { getTimeDifference } = Utils();
 
-
   useEffect(() => {
     const fetchFavoriteRecipes = async () => {
       try {
         const response = await httpService.get(`${API_HOST}/api/users/${userId}/recipes?sort=-created_at`);
         setRecipes(response.data);
-
       } catch (error) {
         setError(error);
       }
@@ -38,7 +36,7 @@ const RecipeOfUser = () => {
   }, [isFocused]);
 
   if (error) {
-    return <Text>Error fetching chefs: {error}</Text>;
+    return <Text>Error fetching recipes: {error}</Text>;
   }
 
   const handleRecipePress = (recipeId) => {
@@ -61,11 +59,9 @@ const RecipeOfUser = () => {
       setShowOptions(false);
       setRecipes(recipes.filter(recipe => recipe.id !== selectedRecipe.id));
       ToastAndroid.show('Recipe deleted successfully!', ToastAndroid.SHORT);
-
     } catch (error) {
       console.error('Error deleting recipe:', error);
       ToastAndroid.show('Failed to delete recipe. Please try again later.', ToastAndroid.SHORT);
-
     }
   };
 
@@ -76,7 +72,15 @@ const RecipeOfUser = () => {
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
             <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
-            <Text style={styles.creatorName}>{recipe.user.name}</Text>
+            <View style={styles.creatorTextContainer}>
+              <Text style={styles.creatorName}>{recipe.user.name}</Text>
+              {recipe.user?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
+            </View>
             <TouchableOpacity onPress={() => handleOptionsPress(recipe)}>
               <Icon name="ellipsis-h" size={20} color="black" style={styles.optionsIcon} />
             </TouchableOpacity>
@@ -121,7 +125,6 @@ const RecipeOfUser = () => {
           </View>
         </Pressable>
       </Modal>
-
     </ScrollView>
   );
 };
@@ -138,6 +141,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  creatorTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   creatorImage: {
     width: 40,
     height: 40,
@@ -145,7 +153,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   creatorName: {
-    flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -217,6 +224,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
     marginTop: 5,
+  },
+  verificationIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
   },
 });
 

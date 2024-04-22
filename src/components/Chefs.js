@@ -4,8 +4,6 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
 import { useAuth } from './AuthProvider';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 import { API_HOST } from "@env";
 
 const Chefs = () => {
@@ -76,8 +74,15 @@ const Chefs = () => {
               style={styles.chefImage}
               onError={(error) => console.error('Image loading error:', error)}
             />
-            <Text style={styles.chefName}>{chef.name}</Text>
-
+            <View style={styles.nameContainer}>
+              <Text style={styles.chefName}>{chef.name}</Text>
+              {chef?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
+            </View>
             <View style={styles.likesContainer}>
               <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
               <Text style={styles.likesText}>{chef.totalFollowers}</Text>
@@ -113,8 +118,12 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
   },
-  chefName: {
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 5,
+  },
+  chefName: {
     fontSize: 12,
     textTransform: 'capitalize',
   },
@@ -144,6 +153,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 50,
     padding: 8,
+  },
+  verificationIcon: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    marginLeft: 5,
   },
 });
 

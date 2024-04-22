@@ -50,6 +50,12 @@ const FavoriteRecipes = () => {
           <View style={styles.creatorContainer}>
             <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
+            {recipe.user?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
           </View>
           <Image source={{ uri:  `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
@@ -133,6 +139,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
     marginTop: 5,
+  },
+  verificationIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
   },
 });
 

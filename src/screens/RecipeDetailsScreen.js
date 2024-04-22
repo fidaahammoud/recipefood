@@ -158,6 +158,12 @@ const RecipeDetails = ({ route }) => {
     <View style={styles.creatorContainer}>
       <Image source={{ uri: `${API_HOST}/storage/${recipeDetails.user.images.image}` }} style={styles.creatorImage} />
       <Text style={styles.creatorName}>{recipeDetails.user.name}</Text>
+      {recipeDetails.user?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
     </View>
   
     <View style={styles.imageContainer}>
@@ -461,6 +467,13 @@ const styles = StyleSheet.create({
   stepText: {
     fontSize:20,
 
+  },
+ 
+  verificationIcon: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    marginLeft: 5,
   },
 
 });
