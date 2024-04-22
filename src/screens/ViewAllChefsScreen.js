@@ -1,24 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import ViewAllChefs from "../components/ViewAllChefs";
 import { FontAwesome } from '@expo/vector-icons';
+import Footer from "../components/Footer"; 
 
 const ViewAllChefsScreen = () => {
   const navigation = useNavigation(); 
 
   return (
     <View style={styles.container}>
-       <View style={styles.back}></View>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Chefs</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Chefs</Text>
+      </View>
 
       <View style={styles.line} />
 
       <ViewAllChefs />
+      <Footer/>
+
     </View>
   );
 };
@@ -30,14 +34,16 @@ const styles = StyleSheet.create({
     paddingTop: 20, 
   },
   back: {
-    marginTop:20
+    marginTop: 30, 
+  },
+  titleContainer: {
+    marginTop: 20, 
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    marginTop: 5,
   },
   line: {
     width: '100%',
@@ -50,11 +56,6 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 1,
-  },
-  backButtonText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: 'black'
   },
 });
 

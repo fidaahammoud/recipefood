@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation,useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../components/AuthProvider'; 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
+
+const BASE_URL = 'http://192.168.56.10:80/laravel';
+
 const FavoriteRecipes = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -17,12 +19,11 @@ const FavoriteRecipes = () => {
   const { getTimeDifference } = Utils();
 
   useEffect(() => {
-    const fetchFavoriteRecipes= async () => {
+    const fetchFavoriteRecipes = async () => {
       try {
         const httpService = new HttpService();
-        const response = await httpService.get(`${API_HOST}/api/users/${userId}/favorites`,token);
+        const response = await httpService.get(`${API_HOST}/api/users/${userId}/favorites`, token);
         setRecipes(response.data);
-  
       } catch (error) {
         setError(error);
       }
@@ -35,19 +36,20 @@ const FavoriteRecipes = () => {
     return <Text>Error fetching chefs: {error.message}</Text>;
   }
 
-
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
-  
+  const handleChefPress = (chefId) => {
+    navigation.navigate('ViewChefsProfile', { chefId });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {error && <Text>Error fetching recipes: {error}</Text>}
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
-          <View style={styles.creatorContainer}>
+          <TouchableOpacity onPress={() => handleChefPress(recipe.user.id)} style={styles.creatorContainer}>
             <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
             {recipe.user?.isVerified === 1 && (
@@ -56,7 +58,7 @@ const FavoriteRecipes = () => {
                   style={styles.verificationIcon}
                 />
               )}
-          </View>
+          </TouchableOpacity>
           <Image source={{ uri:  `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <Text style={styles.recipeTitle}>{recipe.title}</Text>
           <View style={styles.recipeDetails}>

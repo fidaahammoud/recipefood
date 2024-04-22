@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation ,useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
-//import { BASE_URL } from "@env";
 import { useRoute } from '@react-navigation/native';
+import { useAuth } from '../components/AuthProvider';
+import HttpService from './HttpService';
+import { Utils } from './Utils';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
 
-import { useAuth } from '../components/AuthProvider';
-import HttpService from './HttpService';
-import { Utils } from './Utils'; 
 const FetchSameCategoryRecipes = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
+  const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
   const [categoryName, setCategoryName] = useState('');
-  const route = useRoute(); 
+  const route = useRoute();
   const { categoryId } = route.params;
-
   const { getTimeDifference } = Utils();
 
   const fetchRecipes = async () => {
@@ -37,8 +35,9 @@ const FetchSameCategoryRecipes = () => {
     } catch (error) {
       console.error('Error fetching recipes for this category:', error);
       setError(error);
-    } 
+    }
   };
+
   useEffect(() => {
     fetchRecipes();
   }, [isFocused]);
@@ -49,22 +48,26 @@ const FetchSameCategoryRecipes = () => {
 
   const handleRecipePress = (recipeId) => {
     navigation.navigate('RecipeDetails', { recipeId });
-  }
+  };
+
+  const handleChefPress = (chefId) => {
+    navigation.navigate('ViewChefsProfile', { chefId });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
-          <View style={styles.creatorContainer}>
+          <TouchableOpacity onPress={() => handleChefPress(recipe.user.id)} style={styles.creatorContainer}>
             <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
             <Text style={styles.creatorName}>{recipe.user.name}</Text>
             {recipe.user?.isVerified === 1 && (
-                <Image
-                  source={require("../../assets/Verification-Logo.png")}
-                  style={styles.verificationIcon}
-                />
-              )}
-          </View>
+              <Image
+                source={require("../../assets/Verification-Logo.png")}
+                style={styles.verificationIcon}
+              />
+            )}
+          </TouchableOpacity>
           <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
           <View style={styles.titleContainer}>
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
@@ -92,11 +95,6 @@ const FetchSameCategoryRecipes = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   recipeItem: {
     marginBottom: 16,
@@ -128,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   recipeTitle: {
-    flex: 1, 
+    flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
   },

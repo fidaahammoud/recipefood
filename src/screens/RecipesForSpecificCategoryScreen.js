@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation ,useRoute } from '@react-navigation/native'; 
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native'; 
 import FetchSameCategoryRecipes from "../components/FetchSameCategoryRecipes";
+import { FontAwesome } from '@expo/vector-icons';
+import Footer from "../components/Footer"; 
 
 const RecipesForSpecificCategoryScreen = () => {
   const navigation = useNavigation();
@@ -11,14 +13,17 @@ const RecipesForSpecificCategoryScreen = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}> Back</Text>
+        <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>{categoryName}</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{categoryName}</Text>
+      </View>
 
       <View style={styles.line} />
 
       <FetchSameCategoryRecipes />
+      <Footer/>
     </View>
   );
 };
@@ -29,12 +34,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20, 
   },
+  titleContainer: {
+    marginTop: 20, 
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    marginTop: 30,
   },
   line: {
     width: '100%',
@@ -47,11 +54,6 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 1,
-  },
-  backButtonText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: 'black'
   },
 });
 

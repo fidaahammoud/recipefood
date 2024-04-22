@@ -6,6 +6,7 @@ import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService'; 
 import Footer from '../components/Footer';
+import { FontAwesome } from '@expo/vector-icons';
 
 const NotificationScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -49,7 +50,12 @@ const NotificationScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
+      </TouchableOpacity>
       <Text style={styles.title}>Notifications</Text>
+      <View style={styles.line} />
+
       {!recieveNotification && (
         <Text style={styles.updateStatusText} onPress={() => navigation.navigate('Settings')}>
           Update notification status
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
+    marginTop:20,
   },
   updateStatusText: {
     fontSize: 16,
@@ -121,6 +128,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     marginVertical: 5,
+  },
+  line: {
+    width: '80%',
+    height: 1,
+    backgroundColor: 'black',
+    marginBottom: 10,
+    alignItems: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+  
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 1,
   },
 });
 

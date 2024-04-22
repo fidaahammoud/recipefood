@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native'; 
 import RecipesWithSameDietary from "../components/RecipesWithSameDietary";
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Footer from "../components/Footer"; 
 
 const FilterWithSpecificDietaryScreen = () => {
   const navigation = useNavigation(); 
@@ -10,8 +12,8 @@ const FilterWithSpecificDietaryScreen = () => {
   
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}> Back</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
       <Text style={styles.title}>{name}</Text>
@@ -19,6 +21,7 @@ const FilterWithSpecificDietaryScreen = () => {
       <View style={styles.line} />
 
       <RecipesWithSameDietary  />
+      <Footer/>
     </View>
   );
 };
@@ -47,11 +50,12 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  backButtonText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: 'black'
+  
+  back: {
+    marginTop:20
   },
 });
 

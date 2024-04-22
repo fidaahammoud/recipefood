@@ -147,7 +147,7 @@ const RecipeDetails = ({ route }) => {
     <View style={styles.container}>
     <View style={styles.topBar}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <FontAwesome name="arrow-left" size={24} color="black" />
+        <FontAwesome style={styles.backButton} name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
     </View>
     
@@ -303,6 +303,8 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     textAlign: 'center',
     marginBottom: 10,
+    
+
   },
 
   creatorContainer: {
@@ -328,6 +330,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'black',
     marginBottom: 10,
+  },
+  backButton: {
+    marginTop:10,
   },
   description: {
     marginTop: 15,

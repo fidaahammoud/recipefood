@@ -40,11 +40,13 @@ const FollowingsScreen = () => {
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <FontAwesome name="arrow-left" size={24} color="black" />
+          <FontAwesome style={styles.backButton} name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
+      <View style={styles.titleContainer}>
         <Text style={styles.title}>Followings</Text>
+      </View>
         <View style={styles.line} />
         {chefs.map((chef) => (
           <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
@@ -73,7 +75,6 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
   },
   topBar: {
     flexDirection: 'row',
@@ -81,16 +82,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
     marginLeft: 20,
-    marginTop: 20
+    marginTop: 25,  
+   
+  },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 5,
+    zIndex: 1,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    marginTop: 10,
+  },
+  titleContainer: {
+    marginTop: 20, 
   },
   line: {
-    width: '80%',
+    width: '90%',
     borderBottomWidth: 1,
     borderBottomColor: 'black',
     marginBottom: 10,
@@ -119,14 +129,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'capitalize',
   },
-  errorContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
-  },
+  
   verificationIcon: {
     width: 15,
     height: 15,

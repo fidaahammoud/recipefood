@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ChefsProfileInfo from '../components/ChefsProfileInfo'; 
 import ChefsRecipes from '../components/ChefsRecipes'; 
 import { useNavigation } from '@react-navigation/native';
+import Footer from "../components/Footer"; 
 
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -14,7 +15,7 @@ const ChefsProfileDetails = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
     </View>
@@ -24,6 +25,7 @@ const ChefsProfileDetails = ({ route }) => {
       <View style={styles.separator} />
       <Text style={styles.recipesText}>Recipes</Text>
       <ChefsRecipes chefId={chefId}/>
+      <Footer/>
     </View>
   );
 };
@@ -37,8 +39,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    
   },
-
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   separator: {
     borderBottomWidth: 1,
     borderBottomColor: 'black', 

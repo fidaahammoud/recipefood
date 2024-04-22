@@ -41,7 +41,7 @@ const ProfileScreen = () => {
         <Screen name="My Recipes" component={RecipeOfUser} />
         <Screen name="Favorite Recipes" component={FavoriteRecipes} />
       </Navigator>
-      <Footer />
+      <Footer/>
     </View>
   );
 };
@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
-    marginTop:20
   },
   buttonContainer: {
     alignItems: 'center',
@@ -73,6 +72,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     textAlign: 'center',
+  },
+  footerContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
 });
 

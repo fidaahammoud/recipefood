@@ -7,6 +7,7 @@ import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
 import Footer from "../components/Footer"; 
+import { ToastAndroid } from 'react-native';
 
 import { API_HOST } from "@env";
 import HttpService from '../components/HttpService';
@@ -51,9 +52,15 @@ const handleDietaryFilter  = (item) => {
   setOpenDietaryModal(false);
 };
 
-  const handleSearch = async () => {
-    navigation.navigate('SearchResults', { searchQuery });
-  };
+const handleSearch = async () => {
+  if (!searchQuery.trim()) {
+    ToastAndroid.show('Empty Search Query, Please enter a search query.', ToastAndroid.SHORT);
+    return;
+  }
+  
+  navigation.navigate('SearchResults', { searchQuery });
+};
+
 
   const openSortModal = () => {
     setModalVisible(true);
