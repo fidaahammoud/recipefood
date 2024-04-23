@@ -48,7 +48,12 @@ const FollowingsScreen = () => {
         <Text style={styles.title}>Followings</Text>
       </View>
         <View style={styles.line} />
-        {chefs.map((chef) => (
+        {chefs.length === 0 ? (
+        <View style={styles.noRecipes}>
+          <Text style={styles.noRecipesText}>There are no Following chefs !</Text>
+        </View>
+      ) : (
+        chefs.map((chef) => (
           <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
             <Image
               source={{ uri: `${API_HOST}/storage/${chef.images.image}` }}
@@ -65,7 +70,8 @@ const FollowingsScreen = () => {
               )}
             </View>
           </TouchableOpacity>
-        ))}
+        ))
+      )}
       </View>
     </ScrollView>
   );
@@ -75,6 +81,15 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  noRecipes: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noRecipesText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   topBar: {
     flexDirection: 'row',

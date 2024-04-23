@@ -5,6 +5,7 @@ import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
+import { FontAwesome } from '@expo/vector-icons';
 
 import { ToastAndroid } from 'react-native';
 
@@ -207,151 +208,195 @@ const fetchDietaryOptions = async () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Title:</Text>
-      <TextInput
-        value={title}
-        onChangeText={setTitle}
-        onBlur={validateForm}
-        style={styles.input}
-        placeholder="Enter title"
-      />
-      <Text style={styles.label}>Description:</Text>
-      <TextInput
-        value={description}
-        onChangeText={setDescription}
-        onBlur={validateForm}
-        style={styles.input}
-        placeholder="Enter description"
-      />
-      <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpen(true)}>
-        <Text style={styles.label}>Category:</Text>
-        <Text style={styles.dropdownValue}>{selectedValue ? items.find(item => item.value === selectedValue)?.label : 'Click to select a category'}</Text>
+    <View style={styles.container}>
+     
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpenDietaryModal(true)}>
-        <Text style={styles.label}>Dietary:</Text>
-        <Text style={styles.dropdownValue}>{selectedDietary ? dietaryOptions.find(item => item.value === selectedDietary)?.label : 'Click to select a dietary option'}</Text>
-      </TouchableOpacity>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Add Recipe</Text>
+      </View>
 
-
-      <Text style={styles.label}>Steps:</Text>
-      {steps.map((step, index) => (
-        <View key={index} style={styles.stepRow}>
-          <TextInput
-            value={step}
-            onChangeText={(text) => handleStepChange(text, index)}
-            style={[styles.input, styles.multiline, styles.stepInput]}
-            placeholder={`Enter step ${index + 1}`}
-            multiline
-          />
-          <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
-            <Text style={styles.removeButtonText}>-</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity onPress={handleAddStep} style={styles.addButton}>
-        <Text style={styles.buttonText}>+ Add Step</Text>
-      </TouchableOpacity>
-
-      <View>
-        <Text style={styles.label}>Ingredients:</Text>
-        {ingredients.map((ingredient, index) => (
-          <View key={index} style={styles.ingredientRow}>
+      <View style={styles.line} />
+      
+     
+      <ScrollView contentContainerStyle={styles.formContainer}>
+        <Text style={styles.label}>Title:</Text>
+        <TextInput
+          value={title}
+          onChangeText={setTitle}
+          onBlur={validateForm}
+          style={styles.input}
+          placeholder="Enter title"
+        />
+        <Text style={styles.label}>Description:</Text>
+        <TextInput
+          value={description}
+          onChangeText={setDescription}
+          onBlur={validateForm}
+          style={styles.input}
+          placeholder="Enter description"
+        />
+        <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpen(true)}>
+          <Text style={styles.label}>Category:</Text>
+          <Text style={styles.dropdownValue}>{selectedValue ? items.find(item => item.value === selectedValue)?.label : 'Click to select a category'}</Text>
+        </TouchableOpacity>
+  
+        <TouchableOpacity style={styles.dropdownContainer} onPress={() => setOpenDietaryModal(true)}>
+          <Text style={styles.label}>Dietary:</Text>
+          <Text style={styles.dropdownValue}>{selectedDietary ? dietaryOptions.find(item => item.value === selectedDietary)?.label : 'Click to select a dietary option'}</Text>
+        </TouchableOpacity>
+  
+        <Text style={styles.label}>Steps:</Text>
+        {steps.map((step, index) => (
+          <View key={index} style={styles.stepRow}>
             <TextInput
-              value={ingredient}
-              onChangeText={(text) => handleIngredientChange(text, index)}
-              style={[styles.input, styles.ingredientInput]}
-              placeholder="Enter ingredient"
+              value={step}
+              onChangeText={(text) => handleStepChange(text, index)}
+              style={[styles.input, styles.multiline, styles.stepInput]}
+              placeholder={`Enter step ${index + 1}`}
+              multiline
             />
-            <TextInput
-              value={measurementUnits[index]}
-              onChangeText={(text) => handleMeasurementUnitChange(text, index)}
-              style={[styles.input, styles.measurementInput]}
-              placeholder="Unit"
-            />
-            <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
+            <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
               <Text style={styles.removeButtonText}>-</Text>
             </TouchableOpacity>
           </View>
         ))}
-        <TouchableOpacity onPress={handleAddIngredient} style={styles.addButton}>
-          <Text style={styles.buttonText}>+ Add Ingredient</Text>
+        <TouchableOpacity onPress={handleAddStep} style={styles.addButton}>
+          <Text style={styles.buttonText}>+ Add Step</Text>
         </TouchableOpacity>
-      </View>
-      <Text style={styles.label}>Preparation Time:</Text>
-      <TextInput
-        value={preparationTime}
-        onChangeText={setPreparationTime}
-        style={styles.input}
-        placeholder="Enter preparation time"
-      />
-      <Text style={styles.label}>Comments:</Text>
-      <TextInput
-        value={comments}
-        onChangeText={setComments}
-        style={[styles.input, styles.multiline]}
-        placeholder="Enter comments"
-        multiline
-      />
-      <View style={styles.imagePicker}>
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} buttonTitle="Add a Recipe Photo"/>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Cancel" onPress={handleCancel} color="#FF0000" />
-        <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
-      </View>
-      <Modal
-        visible={open}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setOpen(false)}>
-        <TouchableWithoutFeedback onPress={() => setOpen(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <ScrollView>
-                {items.map(item => (
-                  <TouchableOpacity
-                    key={item.value}
-                    style={styles.dropdownItem}
-                    onPress={() => handleCategoryChange(item)}>
-                    <Text>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+  
+        <View>
+          <Text style={styles.label}>Ingredients:</Text>
+          {ingredients.map((ingredient, index) => (
+            <View key={index} style={styles.ingredientRow}>
+              <TextInput
+                value={ingredient}
+                onChangeText={(text) => handleIngredientChange(text, index)}
+                style={[styles.input, styles.ingredientInput]}
+                placeholder="Enter ingredient"
+              />
+              <TextInput
+                value={measurementUnits[index]}
+                onChangeText={(text) => handleMeasurementUnitChange(text, index)}
+                style={[styles.input, styles.measurementInput]}
+                placeholder="Unit"
+              />
+              <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
+                <Text style={styles.removeButtonText}>-</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-      <Modal
-        visible={openDietaryModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setOpenDietaryModal(false)}>
-        <TouchableWithoutFeedback onPress={() => setOpenDietaryModal(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <ScrollView>
-                {dietaryOptions.map(item => (
-                  <TouchableOpacity
-                    key={item.value}
-                    style={styles.dropdownItem}
-                    onPress={() => handleDietaryChange(item)}>
-                    <Text>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+          ))}
+          <TouchableOpacity onPress={handleAddIngredient} style={styles.addButton}>
+            <Text style={styles.buttonText}>+ Add Ingredient</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.label}>Preparation Time:</Text>
+        <TextInput
+          value={preparationTime}
+          onChangeText={setPreparationTime}
+          style={styles.input}
+          placeholder="Enter preparation time"
+        />
+        <Text style={styles.label}>Comments:</Text>
+        <TextInput
+          value={comments}
+          onChangeText={setComments}
+          style={[styles.input, styles.multiline]}
+          placeholder="Enter comments"
+          multiline
+        />
+        <View style={styles.imagePicker}>
+          <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} buttonTitle="Add a Recipe Photo"/>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button title="Cancel" onPress={handleCancel} color="#888" />
+          <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
+        </View>
+        <Modal
+          visible={open}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setOpen(false)}>
+          <TouchableWithoutFeedback onPress={() => setOpen(false)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <ScrollView>
+                  {items.map(item => (
+                    <TouchableOpacity
+                      key={item.value}
+                      style={styles.dropdownItem}
+                      onPress={() => handleCategoryChange(item)}>
+                      <Text>{item.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-    </ScrollView>
+          </TouchableWithoutFeedback>
+        </Modal>
+        <Modal
+          visible={openDietaryModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setOpenDietaryModal(false)}>
+          <TouchableWithoutFeedback onPress={() => setOpenDietaryModal(false)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <ScrollView>
+                  {dietaryOptions.map(item => (
+                    <TouchableOpacity
+                      key={item.value}
+                      style={styles.dropdownItem}
+                      onPress={() => handleDietaryChange(item)}>
+                      <Text>{item.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </ScrollView>
+    </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 30,
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  back: {
+    marginTop: 30,
+  },
+  titleContainer: {
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  line: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'black',
+    marginBottom: 10,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 1,
+  },
+  
+  formContainer: {
+    padding: 20,
   },
   label: {
     marginBottom: 5,
@@ -374,13 +419,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 20, 
   },
   dropdownContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   dropdownValue: {
     color: '#333',
@@ -448,5 +494,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+
+
 
 export default RecipeForm;

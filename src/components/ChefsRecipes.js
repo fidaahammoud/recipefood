@@ -39,7 +39,12 @@ const ChefsRecipes = ({ chefId }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {error && <Text>Error fetching recipes: {error}</Text>}
-      {recipes.map((recipe) => (
+      {recipes.length === 0 ? (
+        <View style={styles.noRecipes}>
+          <Text style={styles.noRecipesText}>There are no recipes !</Text>
+        </View>
+      ) : (
+      recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <View style={styles.creatorContainer}>
             <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
@@ -63,7 +68,8 @@ const ChefsRecipes = ({ chefId }) => {
             </View>
           </View>
         </TouchableOpacity>
-      ))}
+     ))
+    )}
     </ScrollView>
   );
 };
@@ -71,6 +77,15 @@ const ChefsRecipes = ({ chefId }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  noRecipes: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noRecipesText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   recipeItem: {
     marginBottom: 16,

@@ -56,38 +56,44 @@ const FetchSameCategoryRecipes = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {recipes.map((recipe) => (
-        <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
-          <TouchableOpacity onPress={() => handleChefPress(recipe.user.id)} style={styles.creatorContainer}>
-            <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
-            <Text style={styles.creatorName}>{recipe.user.name}</Text>
-            {recipe.user?.isVerified === 1 && (
-              <Image
-                source={require("../../assets/Verification-Logo.png")}
-                style={styles.verificationIcon}
-              />
-            )}
-          </TouchableOpacity>
-          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
-          <View style={styles.titleContainer}>
-            <Text style={styles.recipeTitle}>{recipe.title}</Text>
-            <Text style={styles.categoryName}>{categoryName}</Text>
-          </View>
-          <View style={styles.recipeDetails}>
-            <View>
-              <View style={styles.likesContainer}>
-                <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
-                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
+      {recipes.length === 0 ? (
+        <View style={styles.noRecipes}>
+          <Text style={styles.noRecipesText}>There are no recipes in  {categoryName} !</Text>
+        </View>
+      ) : (
+        recipes.map((recipe) => (
+          <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
+            <TouchableOpacity onPress={() => handleChefPress(recipe.user.id)} style={styles.creatorContainer}>
+              <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+              <Text style={styles.creatorName}>{recipe.user.name}</Text>
+              {recipe.user?.isVerified === 1 && (
+                <Image
+                  source={require("../../assets/Verification-Logo.png")}
+                  style={styles.verificationIcon}
+                />
+              )}
+            </TouchableOpacity>
+            <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+            <View style={styles.titleContainer}>
+              <Text style={styles.recipeTitle}>{recipe.title}</Text>
+              <Text style={styles.categoryName}>{categoryName}</Text>
+            </View>
+            <View style={styles.recipeDetails}>
+              <View>
+                <View style={styles.likesContainer}>
+                  <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
+                  <Text style={styles.likesText}>{recipe.totalLikes}</Text>
+                </View>
+              </View>
+              <View style={styles.ratingContainer}>
+                <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
+                <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
               </View>
             </View>
-            <View style={styles.ratingContainer}>
-              <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
-              <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
-            </View>
-          </View>
-          <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
-        </TouchableOpacity>
-      ))}
+            <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
+          </TouchableOpacity>
+        ))
+      )}
     </ScrollView>
   );
 };
@@ -95,6 +101,15 @@ const FetchSameCategoryRecipes = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  noRecipes: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noRecipesText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   recipeItem: {
     marginBottom: 16,

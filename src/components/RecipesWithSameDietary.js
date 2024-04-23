@@ -63,7 +63,12 @@ const RecipesWithSameDietary = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {recipes.map((recipe) => (
+      {recipes.length === 0 ? (
+        <View style={styles.noRecipes}>
+          <Text style={styles.noRecipesText}>There are no recipes in  {dietaryName} !</Text>
+        </View>
+      ) : (
+      recipes.map((recipe) => (
         <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
           <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
             <View style={styles.creatorContainer}>
@@ -94,7 +99,8 @@ const RecipesWithSameDietary = () => {
           </View>
           <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
         </TouchableOpacity>
-      ))}
+       ))
+      )}
     </ScrollView>
   );
 };
@@ -102,6 +108,15 @@ const RecipesWithSameDietary = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  noRecipes: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noRecipesText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   loadingContainer: {
     flex: 1,

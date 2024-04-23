@@ -6,6 +6,7 @@ import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
 import HttpService from '../components/HttpService';
 import { ToastAndroid } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 const EditRecipeForm = () => {
   const httpService = new HttpService();
@@ -223,7 +224,18 @@ const EditRecipeForm = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      {/* Header */}
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
+      </TouchableOpacity>
+
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Edit Recipe</Text>
+      </View>
+
+      <View style={styles.line} />
+    <ScrollView contentContainerStyle={styles.formContainer}>
       <Text style={styles.label}>Title:</Text>
       <TextInput
         value={title}
@@ -372,12 +384,40 @@ const EditRecipeForm = () => {
 
       
     </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  formContainer: {
+    padding: 10,
+
+  },
   container: {
-    padding: 20,
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 1,
+  },
+  titleContainer: {
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  line: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'black',
+    marginBottom: 10,
   },
   label: {
     fontWeight: 'bold',

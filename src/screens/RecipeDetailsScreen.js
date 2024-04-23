@@ -142,6 +142,13 @@ const RecipeDetails = ({ route }) => {
     navigation.navigate('RecipeComments', { recipeId });
   };
 
+  const handleCreatorPress = (creatorId) => {
+    if (creatorId === userId) {
+      navigation.navigate('Profile');
+    } else {
+      navigation.navigate('ViewChefsProfile', { chefId: creatorId });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -155,6 +162,8 @@ const RecipeDetails = ({ route }) => {
     <View style={styles.line} />
 
     <ScrollView horizantal showsHorizontalScrollIndicator={false}>
+    <TouchableOpacity onPress={() => handleCreatorPress(recipeDetails.user.id)}>
+
     <View style={styles.creatorContainer}>
       <Image source={{ uri: `${API_HOST}/storage/${recipeDetails.user.images.image}` }} style={styles.creatorImage} />
       <Text style={styles.creatorName}>{recipeDetails.user.name}</Text>
@@ -165,7 +174,7 @@ const RecipeDetails = ({ route }) => {
                 />
               )}
     </View>
-  
+    </TouchableOpacity>
     <View style={styles.imageContainer}>
       <Image
         source={{ uri: `${API_HOST}/storage/${recipeDetails.images.image}`}}
@@ -179,7 +188,7 @@ const RecipeDetails = ({ route }) => {
     <View style={styles.likeAndRatingContainer}>
       <TouchableOpacity style={styles.likeContainer} onPress={() => handleLikePress(recipeDetails.id)}>
         <View style={styles.likesContainer}>
-        <Icon name="thumbs-o-up" size={20} color={isLiked ? 'red' : 'grey'} style={styles.likesIcon} />
+        <Icon name="thumbs-o-up" size={20} color={isLiked ? 'blue' : 'grey'} style={styles.likesIcon} />
           <Text style={styles.likesText}>{totalLikes}</Text>
         </View>
       </TouchableOpacity>

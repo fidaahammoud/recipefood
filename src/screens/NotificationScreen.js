@@ -50,44 +50,67 @@ const NotificationScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
       <Text style={styles.title}>Notifications</Text>
       <View style={styles.line} />
-
-      {!recieveNotification && (
-        <Text style={styles.updateStatusText} onPress={() => navigation.navigate('Settings')}>
-          Update notification status
-        </Text>
-      )}
-      <ScrollView style={styles.scrollView}>
-        {notifications.map((notification, index) => (
-          <TouchableOpacity
-            key={notification.id}
-            onPress={() => {
-              markNotificationAsRead(notification.id);
-            }}
-          >
-            <View style={[styles.notificationContainer, notification.isRead ? null:styles.notificationNotRead ]}>
-              <Image source={{ uri: `${API_HOST}/storage/${notification.source_user.images.image}` }} style={styles.userImage} />
-              <Text style={styles.notificationText}>
-                {notification.content}
-              </Text>
-            </View>
-            {index !== notifications.length - 1 && <View style={styles.horizontalLine} />}
+  
+      <View style={styles.content}>
+        {!recieveNotification ? (
+          <TouchableOpacity style={styles.updateStatusTextContainer} onPress={() => navigation.navigate('Settings')}>
+            <Text style={styles.updateStatusText}>
+              Update notification status
+            </Text>
+            <Image source={require('../../assets/images/notification_logo.jpg')} style={styles.notificationIcon} />
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+        ) : notifications.length === 0 ? (
+          <View style={styles.noRecipes}>
+            <Text style={styles.noRecipesText}>There are no notifications !</Text>
+          </View>
+        ) : (
+          <ScrollView style={styles.scrollView}>
+            {notifications.map((notification, index) => (
+              <TouchableOpacity
+                key={notification.id}
+                onPress={() => {
+                  markNotificationAsRead(notification.id);
+                }}
+              >
+                <View style={[styles.notificationContainer, notification.isRead ? null : styles.notificationNotRead]}>
+                  <Image source={{ uri: `${API_HOST}/storage/${notification.source_user.images.image}` }} style={styles.userImage} />
+                  <Text style={styles.notificationText}>
+                    {notification.content}
+                  </Text>
+                </View>
+                {index !== notifications.length - 1 && <View style={styles.horizontalLine} />}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+      </View>
+  
       <Footer />
     </View>
-  );
-};
+  );  
+}  
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
+  },
+  content: {
+    flex: 1,
+  },
+  noRecipes: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noRecipesText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 20,
@@ -97,12 +120,26 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
   updateStatusText: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: 'bold', 
     textAlign: 'center',
-    marginTop: 20,
     textDecorationLine: 'underline',
   },
+  updateStatusTextContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  notificationIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 80,
+    marginTop: 30, 
+  },
+
   scrollView: {
+    flex: 1,
     width: '100%',
   },
   notificationContainer: {
@@ -144,6 +181,11 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 1,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
 });
 
