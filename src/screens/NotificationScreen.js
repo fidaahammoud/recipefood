@@ -18,7 +18,7 @@ const NotificationScreen = ({ navigation }) => {
   const fetchNotifications = async () => {
     try {
       const httpService = new HttpService();
-      const response = await httpService.get(`${API_HOST}/api/notifications`, token);
+      const response = await httpService.get(`${API_HOST}/api/notifications/${userId}`, token);
       const updatedNotifications = response.notifications.map(notification => ({
         ...notification,
         isRead: notification.isRead
