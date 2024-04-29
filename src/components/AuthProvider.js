@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Clear the authentication data
     setToken(null);
     setUserId(null);
   };

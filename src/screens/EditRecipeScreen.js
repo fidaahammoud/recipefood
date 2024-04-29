@@ -262,50 +262,56 @@ const EditRecipeForm = () => {
         <Text style={styles.dropdownValue}>{selectedDietary ? dietaryOptions.find(dietary => dietary.value === selectedDietary)?.label : 'Select Dietary'}</Text>
       </TouchableOpacity>
 
+      <Text style={styles.label}>Ingredients:</Text>
+      {ingredients.map((ingredient, index) => (
+      <View key={index} style={styles.ingredientRow}>
+        <TextInput
+          value={ingredient.name}
+          onChangeText={(text) => handleIngredientChange(text, index)}
+          style={[styles.input, styles.ingredientInput]}
+          placeholder={`Enter ingredient ${index + 1}`}
+        />
+        <TextInput
+          value={ingredient.measurementUnit}
+          onChangeText={(text) => handleMeasurementUnitChange(text, index)}
+          style={[styles.input, styles.measurementInput]}
+          placeholder="Unit"
+        />
+        {ingredients.length > 1 && (
+          <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
+            <Text style={styles.removeButtonText}>-</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    ))}
+
+      <TouchableOpacity onPress={handleAddIngredient} style={styles.addButton}>
+        <Text style={styles.buttonText}>+ Add Ingredient</Text>
+      </TouchableOpacity>
 
 
       <Text style={styles.label}>Steps:</Text>
       {steps.map((step, index) => (
-        <View key={index} style={styles.stepRow}>
-          <TextInput
-            value={step}
-            onChangeText={(text) => handleStepChange(text, index)}
-            style={[styles.input, styles.multiline, styles.stepInput]}
-            placeholder={`Enter step ${index + 1}`}
-            multiline
-          />
+      <View key={index} style={styles.stepRow}>
+        <TextInput
+          value={step}
+          onChangeText={(text) => handleStepChange(text, index)}
+          style={[styles.input, styles.multiline, styles.stepInput]}
+          placeholder={`Enter step ${index + 1}`}
+          multiline
+        />
+        {steps.length > 1 && (
           <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
             <Text style={styles.removeButtonText}>-</Text>
           </TouchableOpacity>
-        </View>
-      ))}
+        )}
+      </View>
+    ))}
+
       <TouchableOpacity onPress={handleAddStep} style={styles.addButton}>
         <Text style={styles.buttonText}>+ Add Step</Text>
       </TouchableOpacity>
 
-      <Text style={styles.label}>Ingredients:</Text>
-      {ingredients.map((ingredient, index) => (
-        <View key={index} style={styles.ingredientRow}>
-          <TextInput
-            value={ingredient.name}
-            onChangeText={(text) => handleIngredientChange(text, index)}
-            style={[styles.input, styles.ingredientInput]}
-            placeholder={`Enter ingredient ${index + 1}`}
-          />
-          <TextInput
-            value={ingredient.measurementUnit}
-            onChangeText={(text) => handleMeasurementUnitChange(text, index)}
-            style={[styles.input, styles.measurementInput]}
-            placeholder="Unit"
-          />
-          <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
-            <Text style={styles.removeButtonText}>-</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity onPress={handleAddIngredient} style={styles.addButton}>
-        <Text style={styles.buttonText}>+ Add Ingredient</Text>
-      </TouchableOpacity>
 
       <Text style={styles.label}>Preparation Time:</Text>
       <TextInput

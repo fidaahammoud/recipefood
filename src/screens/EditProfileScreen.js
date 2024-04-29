@@ -66,7 +66,7 @@ const EditProfileScreen = () => {
         }
       } 
       catch (error) {
-        setError(error);
+        setError(error.message);
       }
     
   };
