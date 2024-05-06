@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Modal, TouchableOpacity,TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Modal, Image,TouchableOpacity,TouchableWithoutFeedback } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
@@ -14,7 +14,6 @@ const RecipeForm = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
-  const [image, setImage] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [steps, setSteps] = useState(['']); 
@@ -32,6 +31,7 @@ const RecipeForm = () => {
   const [items, setItems] = useState([]);
   const httpService = new HttpService();
 
+  const [imageUri, setImageUri] = useState(null); 
 
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [selectedDietary, setSelectedDietary] = useState(null);
@@ -103,26 +103,6 @@ const fetchDietaryOptions = async () => {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
-    }
-  };
-
-  const saveImageToDatabase = async (selectedImage) => {
-    try {
-      const apiUrl = `${API_HOST}/api/image/${userId}`;
-      
-      const formData = new FormData();
-      formData.append('image', {
-        uri: selectedImage.uri,
-        name: 'profile_image.jpg',
-        type: 'image/jpg',
-      });
-      console.log("apiUrl: "+apiUrl);
-      const resp = await httpService.uploadImage(apiUrl, formData, token);
-      setImageId(resp.id);
-      console.log('Image uploaded successfully. Image ID:', resp.id);
-
-    } catch (error) {
-      console.error('Error during image upload:', error);
     }
   };
 
@@ -209,7 +189,7 @@ const fetchDietaryOptions = async () => {
 
   return (
     <View style={styles.container}>
-     
+      
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
@@ -222,6 +202,7 @@ const fetchDietaryOptions = async () => {
       
      
       <ScrollView contentContainerStyle={styles.formContainer}>
+      
         <Text style={styles.label}>Title:</Text>
         <TextInput
           value={title}
@@ -316,7 +297,18 @@ const fetchDietaryOptions = async () => {
           multiline
         />
         <View style={styles.imagePicker}>
-          <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} buttonTitle="Add a Recipe Photo"/>
+          <ImagePickerComponent 
+            buttonTitle="Add a Recipe Photo"
+            setImageId={setImageId}
+            imageId={imageId}
+            setImageUri={setImageUri}
+            imageUri={imageUri}
+          />
+        </View>
+        <View style={styles.imageContainer}>
+          {imageUri && (
+            <Image source={{ uri: imageUri }} style={styles.photoPreview} />
+          )}
         </View>
         <View style={styles.buttonContainer}>
           <Button title="Cancel" onPress={handleCancel} color="#888" />
@@ -366,6 +358,8 @@ const fetchDietaryOptions = async () => {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
+
+       
       </ScrollView>
     </View>
   );
@@ -423,6 +417,15 @@ const styles = StyleSheet.create({
   },
   imagePicker: {
     marginBottom: 20,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  photoPreview: {
+    width: '100%', 
+    height: 200, 
+    borderRadius: 0, 
   },
   buttonContainer: {
     flexDirection: 'row',

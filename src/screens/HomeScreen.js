@@ -1,12 +1,12 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, TextInput, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
-import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import Categories from "../components/Categories";
 import Chefs from "../components/Chefs";
 import LatestRecipes from "../components/LatestRecipes";
-import Footer from "../components/Footer"; 
+import Footer from "../components/Footer";
 import { ToastAndroid } from 'react-native';
 
 import { API_HOST } from "@env";
@@ -17,50 +17,46 @@ const HomeScreen = () => {
   const { getAuthData } = useAuth();
   const { userId } = getAuthData();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortingOption, setSortingOption] = useState('latest'); 
+  const [sortingOption, setSortingOption] = useState('latest');
   const [modalVisible, setModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
 
-
   const httpService = new HttpService();
-
 
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [selectedDietary, setSelectedDietary] = useState(null);
   const [openDietaryModal, setOpenDietaryModal] = useState(false);
 
-useEffect(() => {
-  fetchDietaryOptions();
-}, []);
+  useEffect(() => {
+    fetchDietaryOptions();
+  }, []);
 
-const fetchDietaryOptions = async () => {
-  try {
-    const response = await httpService.get(`${API_HOST}/api/dietaries`,null);
-    const data = response;
-    if (data) {
-      setDietaryOptions(data.map(item => ({ label: item.name, value: item.id })));
+  const fetchDietaryOptions = async () => {
+    try {
+      const response = await httpService.get(`${API_HOST}/api/dietaries`, null);
+      const data = response;
+      if (data) {
+        setDietaryOptions(data.map(item => ({ label: item.name, value: item.id })));
+      }
+    } catch (error) {
+      console.error('Error fetching dietary options:', error);
     }
-  } catch (error) {
-    console.error('Error fetching dietary options:', error);
-  }
-};
+  };
 
-const handleDietaryFilter  = (item) => {
-  setSelectedDietary(item.value);
-  navigation.navigate('ViewRecipesByDietary', { dietaryId: item.value, name: item.label });
+  const handleDietaryFilter = (item) => {
+    setSelectedDietary(item.value);
+    navigation.navigate('ViewRecipesByDietary', { dietaryId: item.value, name: item.label });
+    setFilterModalVisible(false); // Close filter modal after navigation
+  };
 
-  setOpenDietaryModal(false);
-};
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      ToastAndroid.show('Empty Search Query, Please enter a search query.', ToastAndroid.SHORT);
+      return;
+    }
 
-const handleSearch = async () => {
-  if (!searchQuery.trim()) {
-    ToastAndroid.show('Empty Search Query, Please enter a search query.', ToastAndroid.SHORT);
-    return;
-  }
-  
-  navigation.navigate('SearchResults', { searchQuery });
-};
-
+    navigation.navigate('SearchResults', { searchQuery });
+  };
 
   const openSortModal = () => {
     setModalVisible(true);
@@ -72,13 +68,20 @@ const handleSearch = async () => {
 
   const handleSortingOptionChange = (option) => {
     setSortingOption(option);
-    setModalVisible(false); 
+    setModalVisible(false);
   };
 
   const handleViewFollowings = () => {
     navigation.navigate('Followings');
     setFilterModalVisible(false);
   };
+
+  // Use focus effect to handle modal visibility when screen regains focus
+  useFocusEffect(
+    React.useCallback(() => {
+      setFilterModalVisible(false); // Close filter modal when screen regains focus
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -185,7 +188,7 @@ const handleSearch = async () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <Footer/>
+      <Footer />
     </View>
   );
 };
@@ -280,7 +283,7 @@ const styles = StyleSheet.create({
   dietaryOptionsContainer: {
     flexGrow: 1, // Allow the container to grow to fill the available space
   },
-  
+
 });
 
 export default HomeScreen;

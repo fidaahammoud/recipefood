@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Image, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { Button, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { ToastAndroid } from 'react-native';
+import { API_HOST } from "@env";
+import { useAuth } from '../components/AuthProvider';
+import HttpService from '../components/HttpService';
+import {LogBox} from 'react-native';
 
-const ImagePickerComponent = ({ setImage, saveImageToDatabase, buttonTitle }) => {
+LogBox.ignoreAllLogs();
+
+const ImagePickerComponent = ({ buttonTitle, setImageId, imageId, setImageUri ,imageUri}) => {
+  const { getAuthData } = useAuth();
+  const { userId, token } = getAuthData();
 
   useEffect(() => {
     (async () => {
@@ -14,6 +22,12 @@ const ImagePickerComponent = ({ setImage, saveImageToDatabase, buttonTitle }) =>
     })();
   }, []);
 
+  useEffect(() => {
+    if (imageUri) {
+      saveImageToDatabase(imageUri); 
+    }
+  }, [imageUri]);
+
   const pickImage = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -23,24 +37,45 @@ const ImagePickerComponent = ({ setImage, saveImageToDatabase, buttonTitle }) =>
         quality: 1,
       });
 
-      console.log(result);
-
       if (!result.cancelled && result.assets && result.assets.length > 0 && result.assets[0].uri) {
-        setImage(result.assets[0].uri);
-        saveImageToDatabase(result.assets[0]);
+        await setImageUri(result.assets[0].uri);
       }
     } catch (error) {
-      console.error('Error picking image:in imageHandling ', error);
-     // Alert.alert('Error', 'Failed to pick image. Please try again.');
-      ToastAndroid.show( 'Error picking image, please try again in imageHandling' , ToastAndroid.SHORT);
-
+      console.error('Error picking image:', error);
+      ToastAndroid.show('Error picking image, please try again', ToastAndroid.SHORT);
     }
   };
 
+  const saveImageToDatabase = async (imageUri) => {
+    try {
+      const localHttpService = new HttpService();
+      const apiUrl = `${API_HOST}/api/image/${userId}`;
+      
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        name: 'profile_image.jpg',
+        type: 'image/jpg',
+      });
+  
+      const resp = await localHttpService.uploadImage(apiUrl, formData, token);
+      if (resp && resp.id) {
+        console.log("image id: " + resp.id);
+        setImageId(resp.id);
+        setImageUri(imageUri);
+      } else {
+        console.error('Error: Invalid response from server');
+        ToastAndroid.show('Error uploading image, please try again', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error('Error during image upload:', error.message);
+      ToastAndroid.show('Error uploading image, please try again', ToastAndroid.SHORT);
+    }
+  };
+  
+
   return (
-    <>
-      <Button title={buttonTitle} onPress={pickImage} color="#5B4444" />
-    </>
+    <Button title={buttonTitle} onPress={pickImage} color="#5B4444" />
   );
 };
 

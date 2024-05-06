@@ -5,6 +5,7 @@ import HttpService from '../components/HttpService';
 import { useAuth } from '../components/AuthProvider';
 import { FontAwesome } from '@expo/vector-icons';
 import { API_HOST } from "@env";
+import Footer from '../components/Footer';
 
 const FollowingsScreen = () => {
   const navigation = useNavigation();
@@ -37,53 +38,59 @@ const FollowingsScreen = () => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <FontAwesome style={styles.backButton} name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Followings</Text>
-      </View>
-        <View style={styles.line} />
-        {chefs.length === 0 ? (
-        <View style={styles.noRecipes}>
-          <Text style={styles.noRecipesText}>There are no Following chefs !</Text>
-        </View>
-      ) : (
-        chefs.map((chef) => (
-          <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
-            <Image
-              source={{ uri: `${API_HOST}/storage/${chef.images.image}` }}
-              style={styles.chefImage}
-              onError={(error) => console.error('Image loading error:', error)}
-            />
-            <View style={styles.nameContainer}>
-              <Text style={styles.chefName}>{chef.name}</Text>
-              {chef?.isVerified === 1 && (
-                <Image
-                  source={require("../../assets/Verification-Logo.png")}
-                  style={styles.verificationIcon}
-                />
-              )}
-            </View>
+    <View style={styles.container}>
+       <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FontAwesome style={styles.backButton} name="arrow-left" size={24} color="black" />
           </TouchableOpacity>
-        ))
-      )}
-      </View>
-    </ScrollView>
+        </View>
+        <View style={styles.titleContainer}>
+            <Text style={styles.title}>Followings</Text>
+          </View>
+          <View style={styles.line} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+       
+        <View style={styles.contentContainer}>
+          
+          {chefs.length === 0 ? (
+            <View style={styles.noRecipes}>
+              <Text style={styles.noRecipesText}>There are no Following chefs !</Text>
+            </View>
+          ) : (
+            chefs.map((chef) => (
+              <TouchableOpacity key={chef.id} style={styles.chefContainer} onPress={() => handleChefPress(chef.id)}>
+                <Image
+                  source={{ uri: `${API_HOST}/storage/${chef.images.image}` }}
+                  style={styles.chefImage}
+                  onError={(error) => console.error('Image loading error:', error)}
+                />
+                <View style={styles.nameContainer}>
+                  <Text style={styles.chefName}>{chef.name}</Text>
+                  {chef?.isVerified === 1 && (
+                    <Image
+                      source={require("../../assets/Verification-Logo.png")}
+                      style={styles.verificationIcon}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </View>
+      </ScrollView>
+      <Footer />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
   },
   noRecipes: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -97,8 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
     marginLeft: 20,
-    marginTop: 25,  
-   
+    marginTop: 25,
   },
   backButton: {
     position: 'absolute',
@@ -112,10 +118,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   titleContainer: {
-    marginTop: 20, 
+    marginTop: 20,
+    alignItems: 'center',
+
   },
   line: {
-    width: '90%',
+    width: '100%',
     borderBottomWidth: 1,
     borderBottomColor: 'black',
     marginBottom: 10,

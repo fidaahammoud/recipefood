@@ -55,8 +55,7 @@ const SearchResultScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
 
@@ -64,6 +63,8 @@ const SearchResultScreen = () => {
           <Text style={styles.searchCriteriaText}>Search For : {searchQuery}</Text>
           <View style={styles.line} />
         </View>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+       
 
         {recipes.length === 0 ? (
         <View style={styles.noRecipes}>

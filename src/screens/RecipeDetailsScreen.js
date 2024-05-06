@@ -43,14 +43,15 @@ const RecipeDetails = ({ route }) => {
 
   // };
   const getStarIconName = (userRating, star) => {
-    if (userRating === 1 && star === 1) {
-      // If the user clicks the first star and the rating is already 1, set rating to 0
-      handleRatingChange(0);
-      return "star-o";
-    } else {
-      // Otherwise, handle the rating as usual
-      return userRating >= star ? "star" : "star-o";
-    }
+    // if (userRating === 1 && star === 1) {
+    //   // If the user clicks the first star and the rating is already 1, set rating to 0
+    //   //handleRatingChange(1);
+    //   return "star-o";
+    // } else {
+    //   // Otherwise, handle the rating as usual
+    //   return userRating >= star ? "star" : "star-o";
+    // }
+    return userRating >= star ? "star" : "star-o";
   };
   
   

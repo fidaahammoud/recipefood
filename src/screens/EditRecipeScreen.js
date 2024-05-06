@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal,TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image,TouchableOpacity, Modal,TouchableWithoutFeedback } from 'react-native';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
@@ -128,27 +128,7 @@ const EditRecipeForm = () => {
     }
   };
 
-  const saveImageToDatabase = async (selectedImage) => {
-    try {
-      const apiUrl = `${API_HOST}/api/image/${userId}`;
-      
-      const formData = new FormData();
-      formData.append('image', {
-        uri: selectedImage.uri,
-        name: 'profile_image.jpg',
-        type: 'image/jpg',
-      });
-
-      const resp = await httpService.uploadImage(apiUrl, formData, token);
-      console.log("new image id "+ resp.id);
-      setImageId(resp.id);
-      setImageUri(selectedImage.uri); 
-    } catch (error) {
-      console.error('Error during image upload:', error);
-      setImageUri(null); 
-
-    }
-  };
+  
 
   const handleSave = async () => {
     if (isFormValid) {
@@ -330,8 +310,19 @@ const EditRecipeForm = () => {
         multiline
       />
     <View style={styles.imagePicker}>
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase}   buttonTitle="Update Your Recipe Photo"/>
+      <ImagePickerComponent 
+              buttonTitle="Edit Recipe Photo"
+              setImageId={setImageId}
+              imageId={imageId}
+              setImageUri={setImageUri}
+              imageUri={imageUri}
+        />      
       </View>
+      <View style={styles.imageContainer}>
+          {imageUri && (
+            <Image source={{ uri: imageUri }} style={styles.photoPreview} />
+          )}
+        </View>
       <View style={styles.buttonContainer}>
         <Button title="Cancel" onPress={handleCancel}  color="#888"/>
         <Button title="Submit" onPress={handleSave} disabled={!isFormValid} color="#5B4444" />
@@ -507,6 +498,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     marginBottom: 10,
+  },
+  imagePicker: {
+    marginBottom: 20,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  photoPreview: {
+    width: '100%', 
+    height: 200, 
+    borderRadius: 0, 
   },
   buttonText: {
     color: 'white',

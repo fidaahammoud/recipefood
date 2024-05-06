@@ -4,28 +4,30 @@ import ChefsProfileInfo from '../components/ChefsProfileInfo';
 import ChefsRecipes from '../components/ChefsRecipes'; 
 import { useNavigation } from '@react-navigation/native';
 import Footer from "../components/Footer"; 
-
 import { FontAwesome } from '@expo/vector-icons';
 
-
 const ChefsProfileDetails = ({ route }) => {
-  const { chefId } = route.params; 
   const navigation = useNavigation();
+  const { chefId } = route.params; 
   
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <FontAwesome name="arrow-left" size={24} color="black" />
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <FontAwesome name="arrow-left" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
 
       <ChefsProfileInfo chefId={chefId}  />
 
       <View style={styles.separator} />
       <Text style={styles.recipesText}>Recipes</Text>
       <ChefsRecipes chefId={chefId}/>
-      <Footer/>
+      
+      {/* Move the Footer to the bottom using absolute positioning */}
+      <View style={styles.footerContainer}>
+        <Footer/>
+      </View>
     </View>
   );
 };
@@ -34,12 +36,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    position: 'relative', // Ensure relative positioning
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    
   },
   backButton: {
     position: 'absolute',
@@ -58,6 +60,12 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  footerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 

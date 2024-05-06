@@ -17,35 +17,27 @@ const CompleteProfile = () => {
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [imageId, setImageId] = useState('');
-  const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null); 
-  const [loading, setLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true); 
 
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
 
-
-  const [error, setError] = useState(null);
-  
-  postData = async (data) => {
+  const postData = async (data) => {
     try {
-      const response = await httpService.put(`${API_HOST}/api/completeProfile/${userId}`,data,token);
+      const response = await httpService.put(`${API_HOST}/api/completeProfile/${userId}`, data, token);
       if (response && response.message === 'success' ) {
-      console.log(response.user);
-      ToastAndroid.show( 'Profile completed successfully' , ToastAndroid.SHORT);
-
-      navigation.navigate('Home');
+        console.log(response.user);
+        ToastAndroid.show( 'Profile completed successfully' , ToastAndroid.SHORT);
+        navigation.navigate('Home');
       }
-    } 
-    catch (error) {
-      setError(error);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   const handleSubmit = async () => {
     if (submitDisabled) return; 
-  
     const data = {
       username,
       name: fullName,
@@ -54,6 +46,8 @@ const CompleteProfile = () => {
     };
     postData(data);
   };
+
+  
   
   useEffect(() => {
     if (username && fullName && imageUri) {
@@ -63,41 +57,13 @@ const CompleteProfile = () => {
     }
   }, [username, fullName, imageUri]);
   
- 
-
-  const saveImageToDatabase = async (selectedImage) => {
-    try {
-      const apiUrl = `${API_HOST}/api/image/${userId}`;
-      
-      const formData = new FormData();
-      formData.append('image', {
-        uri: selectedImage.uri,
-        name: 'profile_image.jpg',
-        type: 'image/jpg',
-      });
-  
-      const resp = await httpService.uploadImage(apiUrl, formData, token);
-      if (resp && resp.id) {
-        setImageId(resp.id);
-        setImageUri(selectedImage.uri);
-      } else {
-        console.error('Error: Invalid response from server');
-        ToastAndroid.show("please try again", ToastAndroid.SHORT)
-      }
-    } catch (error) {
-      console.error('Error during image upload:', error);
-      ToastAndroid.show("please try again", ToastAndroid.SHORT)
-    }
-  };
-  
-
   return (
     <ImageBackground
       source={require('../../assets/images/completeProfileBackground.jpg')}
       style={styles.backgroundImage}
     >
       <View style={styles.formContainer}>
-      {imageUri && (
+        {imageUri && (
           <Image source={{ uri: imageUri }} style={styles.photoPreview} />
         )}
         <TextInput
@@ -120,10 +86,15 @@ const CompleteProfile = () => {
           numberOfLines={4}
           onChangeText={setAboutMe}
         />
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase}  buttonTitle="Add a Profile Photo"/>
+        <ImagePickerComponent
+          buttonTitle="Add a Profile Photo"
+          setImageId={setImageId}
+          imageId={imageId}
+          setImageUri={setImageUri}
+          imageUri={imageUri}
+        />
         <View style={styles.buttonContainer}>
           <Button title="Submit" onPress={handleSubmit} color="#5B4444" disabled={submitDisabled} />
-          {loading && <ActivityIndicator size="small" color="#5B4444" />}
         </View>
       </View>
     </ImageBackground>

@@ -83,73 +83,7 @@ const EditProfileScreen = () => {
       setSubmitDisabled(true);
     }
   }, [username, fullName,aboutMe,imageId,isFocused]);
-  
-  const saveImageToDatabase = async (selectedImage) => {
-    try {
-      const apiUrl = `${API_HOST}/api/image/${userId}`;
-      
-      const formData = new FormData();
-      formData.append('image', {
-        uri: selectedImage.uri,
-        name: 'profile_image.jpg',
-        type: 'image/jpg',
-      });
-  
-      const resp = await httpService.uploadImage(apiUrl, formData, token);
-      if (resp && resp.id) {
-        setImageId(resp.id);
-        setImageUri(selectedImage.uri);
-      } else {
-        console.error('Error: Invalid response from server');
-        ToastAndroid.show("please try again", ToastAndroid.SHORT)
-      }
-    } catch (error) {
-      console.error('Error during image upload:', error);
-      ToastAndroid.show("please try again", ToastAndroid.SHORT)
-    }
-  };
- 
-
-  // const saveImageToDatabase = async (selectedImage) => {
-  //   if (!selectedImage || !selectedImage.uri) {
-  //     ToastAndroid.show('Error profile', ToastAndroid.SHORT);
-  //     console.log('Error profile');
-  //     return;
-  //   }
-  
-  //   console.log("Selected Image:", selectedImage);
-    
-  //   try {
-  //     const apiUrl = `${API_HOST}/api/image/${userId}`;
-  
-  //     const formData = new FormData();
-  //     formData.append('image', {
-  //       uri: selectedImage.uri,
-  //       name: 'profile_image.jpg',
-  //       type: 'image/jpg',
-  //     });
-  
-  //     console.log("FormData:", formData);
-      
-  //     const resp = await httpService.uploadImage(apiUrl, formData, token);
-  //     console.log("Response:", resp);
-  
-  //     if (resp && resp.id) {
-  //       console.log("new image id : " + resp.id);
-  //       setImageId(resp.id.toString());
-  //       setImageUri(selectedImage.uri);
-  //     } else {
-  //       throw new Error('Failed to upload image');
-  //     }
-  //   } catch (error) {
-  //     ToastAndroid.show('Error picking image, please try again in edit profile', ToastAndroid.SHORT);
-  //     console.error('Error picking image, please try again in edit profile', error);
-  //     console.log("Full Error Response:", error.response); // Add this line
-  //     setImageUri(selectedImage.uri); 
-  //   }
-  // };
-  
-  
+   
   return (
     <ImageBackground
       source={require('../../assets/images/completeProfileBackground.jpg')}
@@ -179,15 +113,21 @@ const EditProfileScreen = () => {
           numberOfLines={4}
           onChangeText={setAboutMe}
         />
-        <ImagePickerComponent setImage={setImage} saveImageToDatabase={saveImageToDatabase} buttonTitle="Update Your Profile Photo"/>
+          <ImagePickerComponent 
+            buttonTitle="Edit Profie Photo"
+            setImageId={setImageId}
+            imageId={imageId}
+            setImageUri={setImageUri}
+            imageUri={imageUri}
+          />
         <View style={styles.buttonContainer}>
-        <View style={styles.buttonWrapper}>
-          <Button title="Cancel" onPress={handleCancel} color="#888" />
-        </View>
-        <View style={styles.buttonWrapper}>
-          <Button title="Submit" onPress={handleSubmit} color="#5B4444" disabled={submitDisabled} />
-          {loading && <ActivityIndicator size="small" color="#5B4444" />}
-        </View>
+          <View style={styles.buttonWrapper}>
+            <Button title="Cancel" onPress={handleCancel} color="#888" />
+          </View>
+          <View style={styles.buttonWrapper}>
+            <Button title="Submit" onPress={handleSubmit} color="#5B4444" disabled={submitDisabled} />
+            {loading && <ActivityIndicator size="small" color="#5B4444" />}
+          </View>
       </View>
 
       </View>

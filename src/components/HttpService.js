@@ -103,39 +103,7 @@ class HttpService extends Component {
     }
   }
 
-  // async uploadImage(url, data, token) {
-  //   try {
-  //     const response = await fetch(url, {
-  //       method: 'POST',
-  //       body: data,
-  //       headers: {
-  //         Accept: 'application/json',
-  //         'Content-Type': 'multipart/form-data',
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       //throw new Error('Network response was not ok');
-  //       ToastAndroid.show("please try again in HttpService response not ok ", ToastAndroid.SHORT);
-  //       console.error("please try again in HttpService response not ok ", error);
-
-  //     }
-  //     return await response.json();
-  //   } catch (error) {
-  //     console.error("Error in httpservice  ", error);
-  //     //throw error;
-  //     ToastAndroid.show("Error in httpservice  ", ToastAndroid.SHORT);
-
-  //   }
-  // }
-
-
-  async uploadImage(url, data, token) {
-    console.log("url:  "+url);
-    console.log(data);
-    console.log("token:  "+token);
-
+  async uploadImage(url, data, token, retries = 3) {
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -146,23 +114,22 @@ class HttpService extends Component {
           Authorization: `Bearer ${token}`,
         },
       });
-      const responseBody = await response.json();
-
-      console.log("toto");
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      console.log("titi");
-
-      return responseBody;
+  
+      return await response.json();
     } catch (error) {
-      console.error("Error in httpservice  ", error);
-      throw error;
+      if (retries > 0) {
+        console.error('Error:', error);
+        console.log(`Retrying ${retries} more times...`);
+        return await this.uploadImage(url, data, token, retries - 1); // Recursive call
+      } else {
+        throw new Error('Maximum number of retries exceeded');
+      }
     }
   }
-
-  
 
   render() {
     return null; 
