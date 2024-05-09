@@ -76,7 +76,9 @@ const ChefsRecipes = ({ chefId }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingBottom: 35,
+    paddingRight: 25,
+    paddingLeft: 25,
   },
   noRecipes: {
     flex: 1,
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   recipeItem: {
-    marginBottom: 16,
+   marginBottom: 15,
   },
   creatorContainer: {
     flexDirection: 'row',

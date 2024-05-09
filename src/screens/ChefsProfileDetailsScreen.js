@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    position: 'relative', // Ensure relative positioning
+    position: 'relative', 
+    
   },
   topBar: {
     flexDirection: 'row',

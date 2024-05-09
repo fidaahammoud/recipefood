@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
   chefContainer: {
     alignItems: 'center',
     marginVertical: 10,
+    marginBottom:60
   },
   chefImage: {
     width: 320,

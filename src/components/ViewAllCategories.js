@@ -66,6 +66,8 @@ const styles = StyleSheet.create({
   categoryContainer: {
     alignItems: 'center',
     marginVertical: 10,
+    marginBottom:60
+
   },
   categoryImage: {
     width: 320,
