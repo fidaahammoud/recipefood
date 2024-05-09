@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Modal, Image,TouchableOpacity,TouchableWithoutFeedback } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
 import ImagePickerComponent from '../components/ImageHandling';
@@ -13,7 +13,7 @@ import { ToastAndroid } from 'react-native';
 const RecipeForm = () => {
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
-  const { userId, token } = getAuthData();
+  const { token } = getAuthData();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [steps, setSteps] = useState(['']); 

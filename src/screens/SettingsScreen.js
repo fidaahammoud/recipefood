@@ -4,46 +4,47 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import { API_HOST } from "@env";
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons'; // Import FontAwesome5
+import Footer from '../components/Footer';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const { getAuthData, logout ,saveStatusOfRecieveNotification} = useAuth(); 
+  const { getAuthData, logout, saveStatusOfRecieveNotification } = useAuth();
 
-  const { userId, token ,recieveNotification} = getAuthData();
+  const { userId, token, recieveNotification } = getAuthData();
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const [isNotificationEnabled, setIsNotificationEnabled] = useState(recieveNotification); 
+  const [isNotificationEnabled, setIsNotificationEnabled] = useState(recieveNotification);
 
   const httpService = new HttpService();
 
   const handleLogout = async () => {
-      try {
-          const response = await httpService.post(`${API_HOST}/api/logout`, null, token);
-          console.log(response);
-          logout(); 
-          navigation.navigate('Welcome');
-      } catch (error) {
-          setError(error);
-      }
+    try {
+      const response = await httpService.post(`${API_HOST}/api/logout`, null, token);
+      console.log(response);
+      logout();
+      navigation.navigate('Welcome');
+    } catch (error) {
+      setError(error);
+    }
   };
 
   const handleLogoutConfirmation = () => {
-      setShowModal(true);
+    setShowModal(true);
   };
 
   const handleConfirmLogout = () => {
-      handleLogout();
-      setShowModal(false);
+    handleLogout();
+    setShowModal(false);
   };
 
   const handleCancelLogout = () => {
-      setShowModal(false);
+    setShowModal(false);
   };
 
   const handleModalClose = () => {
-      setShowModal(false);
+    setShowModal(false);
   };
 
   const toggleNotification = async () => {
@@ -62,18 +63,28 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.back}></View>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <FontAwesome name="arrow-left" size={24} color="black" />
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <FontAwesome5 name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
       <Text style={styles.title}>Settings</Text>
-  
+
       <View style={styles.line} />
-  
+
+      <View style={styles.settingsContainer}>
+        <TouchableOpacity style={styles.settingsIcon} onPress={() => {/* Handle settings icon press */}}>
+          <FontAwesome5 name="cog" size={50} color="black" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.settingsDescription}>
+      <Text style={styles.settingsDescriptionText}>You can log out from here.</Text>
+      <Text style={styles.settingsDescriptionText}>Toggle notifications to receive updates.</Text>
+
+      </View>
+
       <View style={styles.topBar}>
-        {/* Notification Toggle */}
         <View style={styles.notificationContainer}>
-          <Text style={styles.notificationText}>Notifications</Text>
+          <Text style={styles.notificationText}>Receive Notifications</Text>
           <Switch
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isNotificationEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -81,15 +92,13 @@ const SettingsScreen = () => {
             onValueChange={toggleNotification}
             value={isNotificationEnabled}
           />
-
-
         </View>
-  
-        <TouchableOpacity onPress={handleLogoutConfirmation} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Log Out</Text>
+
+        <TouchableOpacity onPress={handleLogoutConfirmation} style={styles.logoutText}>
+          <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
       </View>
-  
+
       <Modal
         visible={showModal}
         animationType="slide"
@@ -98,7 +107,7 @@ const SettingsScreen = () => {
       >
         <TouchableWithoutFeedback onPress={handleModalClose}>
           <View style={styles.modalContainer}>
-            <TouchableWithoutFeedback onPress={() => {}}>
+            <TouchableWithoutFeedback onPress={() => { }}>
               <View style={styles.modalContent}>
                 <Text>Are you sure you want to logout?</Text>
                 <View style={styles.buttonContainer}>
@@ -114,6 +123,9 @@ const SettingsScreen = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+      <View style={styles.footerContainer}>
+        <Footer/>
+      </View>
     </View>
   );
 };
@@ -122,10 +134,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20, 
+    paddingTop: 20,
   },
   back: {
-    marginTop:20
+    marginTop: 20
   },
   title: {
     fontSize: 24,
@@ -153,17 +165,17 @@ const styles = StyleSheet.create({
   },
   topBar: {
     alignItems: 'center',
-  },
-  logoutButton: {
-    marginTop: 20,
-    backgroundColor: '#5B4444',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    marginTop: 15,
   },
   logoutText: {
-    color: 'white',
+    marginTop: 20,
+
+  },
+  logoutButtonText: {
+    color: '#5B4444',
     fontWeight: 'bold',
+    fontSize: 20,
+
   },
   notificationContainer: {
     flexDirection: 'row',
@@ -201,6 +213,36 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  settingsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginRight: 10,
+  },
+  settingsIcon: {
+    marginLeft: 10,
+  },
+  settingsDescription: {
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop:10,
+
+  },
+  settingsDescriptionText: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+  },
+  footerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 

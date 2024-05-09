@@ -21,7 +21,9 @@ const ViewAllChefsScreen = () => {
       <View style={styles.line} />
 
       <ViewAllChefs />
-      <Footer/>
+      <View style={styles.footerContainer}>
+        <Footer/>
+      </View>
 
     </View>
   );
@@ -56,6 +58,12 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 1,
+  },
+  footerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 

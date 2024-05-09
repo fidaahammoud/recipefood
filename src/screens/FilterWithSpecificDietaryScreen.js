@@ -21,7 +21,9 @@ const FilterWithSpecificDietaryScreen = () => {
       <View style={styles.line} />
 
       <RecipesWithSameDietary  />
-      <Footer/>
+      <View style={styles.footerContainer}>
+        <Footer/>
+      </View>
     </View>
   );
 };
@@ -56,6 +58,12 @@ const styles = StyleSheet.create({
   
   back: {
     marginTop:20
+  },
+  footerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 
