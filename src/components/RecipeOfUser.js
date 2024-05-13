@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Modal, Pressable ,ToastAndroid } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Modal, Pressable, ActivityIndicator, ToastAndroid } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from './AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
@@ -15,6 +15,7 @@ const RecipeOfUser = () => {
   const { getAuthData } = useAuth();
   const { userId , token} = getAuthData();
   const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
@@ -24,16 +25,27 @@ const RecipeOfUser = () => {
 
   useEffect(() => {
     const fetchFavoriteRecipes = async () => {
+      setLoading(true); 
       try {
         const response = await httpService.get(`${API_HOST}/api/users/${userId}/recipes?sort=-created_at`);
         setRecipes(response.data);
+        setLoading(false); 
       } catch (error) {
         setError(error);
+        setLoading(false); 
       }
     };
 
     fetchFavoriteRecipes();
   }, [isFocused]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   if (error) {
     return <Text>Error fetching recipes: {error}</Text>;
@@ -67,7 +79,6 @@ const RecipeOfUser = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {error && <Text>Error fetching recipes: {error}</Text>}
       {recipes.length === 0 ? (
         <View style={styles.noRecipes}>
           <Text style={styles.noRecipesText}>There are no recipes !</Text>
@@ -138,6 +149,11 @@ const RecipeOfUser = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   noRecipes: {
     flex: 1,

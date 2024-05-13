@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
 import { API_HOST } from "@env";
@@ -12,6 +12,7 @@ const Categories = () => {
   const [error, setError] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollViewRef = useRef(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -21,11 +22,21 @@ const Categories = () => {
         setCategories(response.data);
       } catch (error) {
         setError(error.message);
+      } finally {
+        setLoading(false); 
       }
     };
 
     fetchCategories();
   }, [isFocused]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   if (error) {
     return <Text style={styles.errorText}>Error fetching categories: {error}</Text>;
@@ -95,6 +106,11 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   navigationLeft: {
     position: 'absolute',
     top: '20%',
@@ -112,7 +128,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,  
     padding: 8,  
   },
-  
 });
 
 export default Categories;

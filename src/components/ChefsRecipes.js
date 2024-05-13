@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation,useIsFocused } from '@react-navigation/native';
-import { API_HOST } from "@env";
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { API_HOST } from "@env";
 import HttpService from './HttpService';
 
 const BASE_URL = 'http://192.168.56.10:80/laravel';
@@ -12,19 +12,23 @@ const ChefsRecipes = ({ chefId }) => {
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
-  
+  const [loading, setLoading] = useState(true); 
+
   useEffect(() => {
-    const fetchFavoriteRecipes= async () => {
+    const fetchFavoriteRecipes = async () => {
       try {
         const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/api/users/${chefId}/recipes?sort=-created_at`);
         setRecipes(response.data);
-  
+        setLoading(false); 
+
       } catch (error) {
         setError(error);
+      } finally {
+        setLoading(false); 
       }
     };
-  
+
     fetchFavoriteRecipes();
   }, [isFocused]);
 
@@ -32,44 +36,51 @@ const ChefsRecipes = ({ chefId }) => {
     navigation.navigate('RecipeDetails', { recipeId });
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   if (error) {
     return <Text>Error fetching chef's recipes: {error.message}</Text>;
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {error && <Text>Error fetching recipes: {error}</Text>}
       {recipes.length === 0 ? (
         <View style={styles.noRecipes}>
           <Text style={styles.noRecipesText}>There are no recipes !</Text>
         </View>
       ) : (
-      recipes.map((recipe) => (
-        <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
-          <View style={styles.creatorContainer}>
-            <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
-            <Text style={styles.creatorName}>{recipe.user.name}</Text>
-          </View>
-          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
-          <View style={styles.titleContainer}>
-          <Text style={styles.recipeTitle}>{recipe.title}</Text>
-          <Text style={styles.categoryName}>{recipe.category.name}</Text>
-        </View>
-          <View style={styles.recipeDetails}>
-            <View >
-              <View style={styles.likesContainer}>
-                <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
-                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
+        recipes.map((recipe) => (
+          <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
+            <View style={styles.creatorContainer}>
+              <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+              <Text style={styles.creatorName}>{recipe.user.name}</Text>
+            </View>
+            <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+            <View style={styles.titleContainer}>
+              <Text style={styles.recipeTitle}>{recipe.title}</Text>
+              <Text style={styles.categoryName}>{recipe.category.name}</Text>
+            </View>
+            <View style={styles.recipeDetails}>
+              <View>
+                <View style={styles.likesContainer}>
+                  <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
+                  <Text style={styles.likesText}>{recipe.totalLikes}</Text>
+                </View>
+              </View>
+              <View style={styles.ratingContainer}>
+                <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
+                <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
               </View>
             </View>
-            <View style={styles.ratingContainer}>
-              <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
-              <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-     ))
-    )}
+          </TouchableOpacity>
+        ))
+      )}
     </ScrollView>
   );
 };
@@ -89,8 +100,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   recipeItem: {
-   marginBottom: 15,
+    marginBottom: 15,
   },
   creatorContainer: {
     flexDirection: 'row',

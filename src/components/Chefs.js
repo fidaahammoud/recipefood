@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from './HttpService';
 import { useAuth } from './AuthProvider';
@@ -15,6 +15,7 @@ const Chefs = () => {
   const { userId } = getAuthData();
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollViewRef = useRef(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,14 +26,24 @@ const Chefs = () => {
         setChefs(filteredChefs);
       } catch (error) {
         setError(error);
+      } finally {
+        setLoading(false); 
       }
     };
   
     fetchData();
   }, [isFocused]);
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   if (error) {
-    return <Text>Error fetching chefs: {error.message}</Text>;
+    return <Text style={styles.errorText}>Error fetching chefs: {error.message}</Text>;
   }
 
   const handleChefPress = (chefId) => {
@@ -52,12 +63,6 @@ const Chefs = () => {
       setScrollPosition((prev) => prev + 100);
     }
   };
-
-  useLayoutEffect(() => {
-    if (isFocused && scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ x: scrollPosition, animated: false });
-    }
-  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -159,6 +164,15 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 7.5,
     marginLeft: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
   },
 });
 

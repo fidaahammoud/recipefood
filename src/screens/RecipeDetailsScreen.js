@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView,ActivityIndicator   } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -27,21 +27,9 @@ const RecipeDetails = ({ route }) => {
   const [avgRate, setAvgRate] = useState(0);
   const { getTimeDifference } = Utils();
   const [userRate, setUserRate] = useState(0);
+  const [loading, setLoading] = useState(true);
 
 
-  // const getStarIconName = (userRating, star) => {
-  //   console.log('isRated ' + isRated);
-  //   console.log('userRating ' +userRating + ' star '+ star);
-  //   if ( userRating > 1){
-  //     isRated = true;
-  //     return userRating >= star ? "star" : "star-o";
-  //   }
-  //   else if (star == 1  && isRated){
-  //     console.log('xxx');
-  //     return "star-o"
-  //   }
-
-  // };
   const getStarIconName = (userRating, star) => {
     // if (userRating === 1 && star === 1) {
     //   // If the user clicks the first star and the rating is already 1, set rating to 0
@@ -59,37 +47,37 @@ const RecipeDetails = ({ route }) => {
   useEffect(() => {
     const fetchRecipeDetails = async () => {
       try {
-        console.log(userId);
-        console.log(token);
         const httpService = new HttpService();
-        console.log(`${API_HOST}/api/${userId}/recipes/${recipeId}`);
-        const response = await httpService.get(`${API_HOST}/api/${userId}/recipes/${recipeId}`,token);
+        const response = await httpService.get(`${API_HOST}/api/${userId}/recipes/${recipeId}`, token);
         setRecipeDetails(response);
         setTotalLikes(response.totalLikes);
         setAvgRate(parseFloat(response.avrgRating));
-        console.log("recipe is favorite ? : "+response.isFavorite);
-        console.log("recipe is liked ? : "+response.isLiked);
-        console.log("user rate: "+ response.rating);
-        console.log(response);
         setUserRating(response.rating);
 
-        if(response.isFavorite){
+        if (response.isFavorite) {
           setIsFavorite(!isFavorite);
         }
 
-        if(response.isLiked){
+        if (response.isLiked) {
           setIsLiked(!isLiked);
         }
-
       } catch (error) {
-        console.error('Error fetching recipe details:', error.message);
         setError(error);
+      } finally {
+        setLoading(false); 
       }
     };
 
     fetchRecipeDetails();
   }, [recipeId, isFocused]);
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   
   
 
@@ -136,7 +124,7 @@ const RecipeDetails = ({ route }) => {
     return <Text>Error fetching recipe details: {error.message}</Text>;
   }
   if (!recipeDetails) {
-    return <Text>Loading...</Text>;
+    return <Text>No recipe details available</Text>;
   }
 
   const navigateToViewComments = () => {
@@ -490,7 +478,11 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     marginLeft: 5,
   },
-
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default RecipeDetails;

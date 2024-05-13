@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
@@ -16,6 +16,7 @@ const FetchSameCategoryRecipes = () => {
   const { getAuthData } = useAuth();
   const { token } = getAuthData();
   const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categoryName, setCategoryName] = useState('');
   const route = useRoute();
@@ -23,24 +24,35 @@ const FetchSameCategoryRecipes = () => {
   const { getTimeDifference } = Utils();
 
   const fetchRecipes = async () => {
+    setLoading(true);
     try {
       const httpService = new HttpService();
       const response = await httpService.get(`${API_HOST}/api/categories/${categoryId}`, null);
       setCategoryName(response.name);
       if (Array.isArray(response.recipes)) {
         setRecipes(response.recipes);
+        setLoading(false); 
       } else {
         setError('Invalid response format: recipes array not found');
       }
     } catch (error) {
       console.error('Error fetching recipes for this category:', error);
       setError(error);
+      setLoading(false); 
     }
   };
 
   useEffect(() => {
     fetchRecipes();
   }, [isFocused]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   if (error) {
     return <Text>Error fetching recipes for this category: {error.message}</Text>;
@@ -58,7 +70,7 @@ const FetchSameCategoryRecipes = () => {
     <ScrollView contentContainerStyle={styles.container}>
       {recipes.length === 0 ? (
         <View style={styles.noRecipes}>
-          <Text style={styles.noRecipesText}>There are no recipes in  {categoryName} !</Text>
+          <Text style={styles.noRecipesText}>There are no recipes in {categoryName}!</Text>
         </View>
       ) : (
         recipes.map((recipe) => (
@@ -81,7 +93,7 @@ const FetchSameCategoryRecipes = () => {
             <View style={styles.recipeDetails}>
               <View>
                 <View style={styles.likesContainer}>
-                  <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
+                  <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
                   <Text style={styles.likesText}>{recipe.totalLikes}</Text>
                 </View>
               </View>
@@ -101,6 +113,11 @@ const FetchSameCategoryRecipes = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   noRecipes: {
     flex: 1,

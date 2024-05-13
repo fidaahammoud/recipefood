@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused, useRoute } from '@react-navigation/native';
 import { API_HOST } from "@env";
@@ -8,7 +8,6 @@ import HttpService from '../components/HttpService';
 import { Utils } from '../components/Utils';
 import Footer from "../components/Footer"; 
 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const SearchResultScreen = () => {
   const navigation = useNavigation();
@@ -17,6 +16,7 @@ const SearchResultScreen = () => {
   const { userId} = getAuthData();
   const [error, setError] = useState(null);
   const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const route = useRoute();
   const { searchQuery } = route.params;
@@ -29,14 +29,24 @@ const SearchResultScreen = () => {
         const httpService = new HttpService();
         const response = await httpService.post(`${API_HOST}/api/recipes/search`, { query: searchQuery }, null);
         setRecipes(response.data);
+        setLoading(false); 
       } catch (error) {
+        console.error('Error fetching search recipes:', error);
         setError(error.message);
+        setLoading(false); 
       }
     };
-
+  
     fetchSearchRecipes();
   }, [isFocused]);
-
+  
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   const handleCreatorPress = (creatorId) => {
     if (creatorId === userId) {
       navigation.navigate('Profile');
@@ -92,7 +102,7 @@ const SearchResultScreen = () => {
             </View>
             <View style={styles.recipeDetails}>
               <View style={styles.likesContainer}>
-                <Icon name="thumbs-o-up" size={20} color="green" style={styles.likesIcon} />
+                <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
                 <Text style={styles.likesText}>{recipe.totalLikes}</Text>
               </View>
               <View style={styles.ratingContainer}>
@@ -224,6 +234,11 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 7.5,
     marginLeft: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

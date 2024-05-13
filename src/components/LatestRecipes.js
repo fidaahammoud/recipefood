@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
@@ -16,6 +16,7 @@ const LatestRecipes = ({ sortingOption }) => {
   const { getAuthData } = useAuth();
   const { token, userId } = getAuthData();
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const { getTimeDifference } = Utils();
 
@@ -46,12 +47,21 @@ const LatestRecipes = ({ sortingOption }) => {
         setRecipes(activeRecipes);
       } catch (error) {
         setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRecipes();
   }, [isFocused, sortingOption]);
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   const handleCreatorPress = (creatorId) => {
     if (creatorId === userId) {
       navigation.navigate('Profile');
@@ -187,6 +197,11 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 7.5,
     marginLeft: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   
 });

@@ -3,23 +3,21 @@ import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIn
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation ,useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
-//import { BASE_URL } from "@env";
 import { useRoute } from '@react-navigation/native';
-
-const BASE_URL = 'http://192.168.56.10:80/laravel';
-
 import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
+
 
 const RecipesWithSameDietary = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
-  const { token , userId} = getAuthData();
+  const { userId, token } = getAuthData();
   const [error, setError] = useState(null);
   const [dietaryName, setDietaryName] = useState('');
+  const [loading, setLoading] = useState(true); 
   const route = useRoute(); 
   const { dietaryId } = route.params;
 
@@ -35,15 +33,25 @@ const RecipesWithSameDietary = () => {
       } else {
         setError('Invalid response format: recipes array not found');
       }
+      setLoading(false); 
     } catch (error) {
       console.error('Error fetching recipes for this dietary:', error);
       setError(error);
+      setLoading(false); 
     } 
   };
 
   useEffect(() => {
     fetchRecipes();
   }, [isFocused]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   if (error) {
     return <Text>Error fetching recipes for this dietary: {error.message}</Text>;
@@ -65,41 +73,41 @@ const RecipesWithSameDietary = () => {
     <ScrollView contentContainerStyle={styles.container}>
       {recipes.length === 0 ? (
         <View style={styles.noRecipes}>
-          <Text style={styles.noRecipesText}>There are no recipes in  {dietaryName} !</Text>
+          <Text style={styles.noRecipesText}>There are no recipes in {dietaryName}!</Text>
         </View>
       ) : (
-      recipes.map((recipe) => (
-        <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
-          <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
-            <View style={styles.creatorContainer}>
-              <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
-              <Text style={styles.creatorName}>{recipe.user.name}</Text>
-              {recipe.user?.isVerified === 1 && (
-                <Image
-                  source={require("../../assets/Verification-Logo.png")}
-                  style={styles.verificationIcon}
-                />
-              )}
+        recipes.map((recipe) => (
+          <TouchableOpacity key={recipe.id} style={styles.recipeItem} onPress={() => handleRecipePress(recipe.id)}>
+            <TouchableOpacity onPress={() => handleCreatorPress(recipe.user.id)}>
+              <View style={styles.creatorContainer}>
+                <Image source={{ uri: `${API_HOST}/storage/${recipe.user.images.image}` }} style={styles.creatorImage} />
+                <Text style={styles.creatorName}>{recipe.user.name}</Text>
+                {recipe.user?.isVerified === 1 && (
+                  <Image
+                    source={require("../../assets/Verification-Logo.png")}
+                    style={styles.verificationIcon}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+            <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
+            <View style={styles.titleContainer}>
+              <Text style={styles.recipeTitle}>{recipe.title}</Text>
+              <Text style={styles.categoryName}>{recipe.category.name}</Text>
             </View>
+            <View style={styles.recipeDetails}>
+              <View style={styles.likesContainer}>
+                <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
+                <Text style={styles.likesText}>{recipe.totalLikes}</Text>
+              </View>
+              <View style={styles.ratingContainer}>
+                <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
+                <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
+              </View>
+            </View>
+            <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
           </TouchableOpacity>
-          <Image source={{ uri: `${API_HOST}/storage/${recipe.images.image}` }} style={styles.recipeImage} />
-          <View style={styles.titleContainer}>
-            <Text style={styles.recipeTitle}>{recipe.title}</Text>
-            <Text style={styles.categoryName}>{recipe.category.name}</Text>
-          </View>
-          <View style={styles.recipeDetails}>
-            <View style={styles.likesContainer}>
-              <Icon name="thumbs-o-up" size={20} color="grey" style={styles.likesIcon} />
-              <Text style={styles.likesText}>{recipe.totalLikes}</Text>
-            </View>
-            <View style={styles.ratingContainer}>
-              <Icon name="star" size={20} color="gold" style={styles.ratingIcon} />
-              <Text style={styles.ratingText}>{recipe.avrgRating}</Text>
-            </View>
-          </View>
-          <Text style={styles.createdAt}>{getTimeDifference(recipe.created_at)}</Text>
-        </TouchableOpacity>
-       ))
+        ))
       )}
     </ScrollView>
   );
@@ -109,6 +117,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   noRecipes: {
     flex: 1,
     justifyContent: 'center',
@@ -117,11 +130,6 @@ const styles = StyleSheet.create({
   noRecipesText: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   recipeItem: {
     marginBottom: 16,
