@@ -13,8 +13,6 @@ const RecipeDetails = ({ route }) => {
   const [recipeDetails, setRecipeDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  let isRated = false;
-
   const [showIngredients, setShowIngredients] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
   const [totalLikes, setTotalLikes] = useState(0);
@@ -26,24 +24,13 @@ const RecipeDetails = ({ route }) => {
   const [userRating, setUserRating] = useState(0);
   const [avgRate, setAvgRate] = useState(0);
   const { getTimeDifference } = Utils();
-  const [userRate, setUserRate] = useState(0);
   const [loading, setLoading] = useState(true);
 
 
   const getStarIconName = (userRating, star) => {
-    // if (userRating === 1 && star === 1) {
-    //   // If the user clicks the first star and the rating is already 1, set rating to 0
-    //   //handleRatingChange(1);
-    //   return "star-o";
-    // } else {
-    //   // Otherwise, handle the rating as usual
-    //   return userRating >= star ? "star" : "star-o";
-    // }
     return userRating >= star ? "star" : "star-o";
   };
   
-  
-
   useEffect(() => {
     const fetchRecipeDetails = async () => {
       try {

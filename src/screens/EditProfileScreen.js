@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useNavigation ,useIsFocused} from '@react-navigation/native';
-
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import ImagePickerComponent from '../components/ImageHandling';
@@ -17,7 +16,6 @@ const EditProfileScreen = () => {
   const [fullName, setFullName] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [imageId, setImageId] = useState('');
-  const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null); 
   const [loading, setLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(false); 

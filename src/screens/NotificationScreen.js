@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image,ActivityIndicator } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-
 import { API_HOST } from "@env";
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService'; 

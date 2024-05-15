@@ -4,17 +4,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import { useRoute } from '@react-navigation/native';
-import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils';
-
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const FetchSameCategoryRecipes = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const { getAuthData } = useAuth();
-  const { token } = getAuthData();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

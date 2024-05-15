@@ -5,7 +5,6 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import HttpService from './HttpService';
 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const ChefsRecipes = ({ chefId }) => {
   const navigation = useNavigation();

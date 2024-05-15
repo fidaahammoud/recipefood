@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { API_HOST } from "@env";
 import HttpService from './HttpService';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../components/AuthProvider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid } from 'react-native';
 
 
@@ -13,7 +12,6 @@ const ChefsProfileInfo = ({ chefId }) => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
   const isFocused = useIsFocused();
-  const navigation = useNavigation();
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
   const [followStatus, setFollowStatus] = useState('Follow');

@@ -7,7 +7,6 @@ import { useAuth } from './AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const RecipeOfUser = () => {
   const isFocused = useIsFocused();

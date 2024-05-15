@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image,TouchableOpacity, Modal,TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image,TouchableOpacity, Modal } from 'react-native';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import { API_HOST } from "@env";
@@ -10,7 +10,6 @@ import { FontAwesome } from '@expo/vector-icons';
 
 const EditRecipeForm = () => {
   const httpService = new HttpService();
-
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const route = useRoute();
@@ -23,23 +22,15 @@ const EditRecipeForm = () => {
   const [preparationTime, setPreparationTime] = useState('');
   const [comments, setComments] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
-
   const [categories, setCategories] = useState([]);
-
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [selectedDietary, setSelectedDietary] = useState(null);
   const [openDietaryModal, setOpenDietaryModal] = useState(false);
-  
-
-
   const [imageId, setImageId] = useState('');
   const [image, setImage] = useState(null);
-
   const [isFormValid, setIsFormValid] = useState(true);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false); 
-  const [loading, setLoading] = useState(false);
-
   const [imageUri, setImageUri] = useState(null); 
   
 

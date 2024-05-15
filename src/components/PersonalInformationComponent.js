@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-
 import { API_HOST } from "@env";
 import { useAuth } from './AuthProvider';
 import HttpService from './HttpService'; 
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-const BASE_URL = 'http://192.168.56.10:80/laravel';
 
 const PersonalInformationComponent = () => {
   const isFocused = useIsFocused();

@@ -8,7 +8,6 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
 
-
 const RecipesWithSameDietary = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();

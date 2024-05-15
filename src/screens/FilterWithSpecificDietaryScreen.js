@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 const FilterWithSpecificDietaryScreen = () => {
   const navigation = useNavigation(); 
   const route = useRoute();
-  const { name, dietaryId } = route.params;
+  const { name } = route.params;
   
   return (
     <View style={styles.container}>

@@ -13,7 +13,6 @@ const ViewComments = ({ route }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
   const { token, userId } = getAuthData();

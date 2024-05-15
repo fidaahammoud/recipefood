@@ -14,7 +14,6 @@ export default function CreateAccount() {
   const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(true); 
 
-  
   postData = async (data) => {
     try {
       const httpService = new HttpService();

@@ -24,7 +24,6 @@ const ChefsProfileDetails = ({ route }) => {
       <Text style={styles.recipesText}>Recipes</Text>
       <ChefsRecipes chefId={chefId}/>
       
-      {/* Move the Footer to the bottom using absolute positioning */}
       <View style={styles.footerContainer}>
         <Footer/>
       </View>

@@ -49,13 +49,11 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      {/* Image */}
       <Image
         source={require('../../assets/images/loginImg.jpg')} 
         style={styles.headerImage}
       />
 
-      {/* Top Container with Buttons */}
       <View style={styles.topContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>Back</Text>
@@ -65,7 +63,6 @@ export default function Login() {
         </TouchableOpacity>
       </View>
       <ScrollView>
-      {/* Form Section */}
       <View style={styles.formContainer}>
         <Text style={styles.instructionsText}>
           <Text style={{ fontWeight: 'bold', fontSize: 24, color: '#654321' }}>Welcome back to {'\n'}Yumster</Text>

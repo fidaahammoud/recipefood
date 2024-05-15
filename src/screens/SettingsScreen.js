@@ -4,7 +4,8 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import { API_HOST } from "@env";
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome5 } from '@expo/vector-icons'; // Import FontAwesome5
+import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import Footer from '../components/Footer';
 
 const SettingsScreen = () => {
@@ -64,14 +65,14 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
-        <FontAwesome5 name="arrow-left" size={24} color="black" />
+        <FontAwesome name="arrow-left" size={24} color="black" /> 
       </TouchableOpacity>
       <Text style={styles.title}>Settings</Text>
 
       <View style={styles.line} />
 
       <View style={styles.settingsContainer}>
-        <TouchableOpacity style={styles.settingsIcon} onPress={() => {/* Handle settings icon press */}}>
+        <TouchableOpacity style={styles.settingsIcon}>
           <FontAwesome5 name="cog" size={50} color="black" />
         </TouchableOpacity>
       </View>

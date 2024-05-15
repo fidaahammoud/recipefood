@@ -13,6 +13,7 @@ import { API_HOST } from "@env";
 import HttpService from '../components/HttpService';
 
 const HomeScreen = () => {
+  const httpService = new HttpService();
   const navigation = useNavigation();
   const { getAuthData } = useAuth();
   const { userId } = getAuthData();
@@ -20,9 +21,6 @@ const HomeScreen = () => {
   const [sortingOption, setSortingOption] = useState('latest');
   const [modalVisible, setModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-
-  const httpService = new HttpService();
-
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [selectedDietary, setSelectedDietary] = useState(null);
   const [openDietaryModal, setOpenDietaryModal] = useState(false);

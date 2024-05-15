@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React  from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -7,7 +7,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 export default function WelcomeScreen() {
-  const animation = useRef(null);
   const navigation = useNavigation();
 
   return (
@@ -17,7 +16,6 @@ export default function WelcomeScreen() {
         style={styles.backgroundImage}
       />
 
-      {/* Logo */}
       <View style={styles.logoContainer}>
         <Image
           style={styles.logoImage}
@@ -25,13 +23,11 @@ export default function WelcomeScreen() {
         />
       </View>
 
-      {/* Title and Subtitle */}
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Yumster</Text>
         <Text style={styles.subtitleText}>Deliciously simple</Text>
       </View>
 
-      {/* button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}

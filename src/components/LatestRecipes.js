@@ -7,14 +7,12 @@ import { useAuth } from '../components/AuthProvider';
 import HttpService from './HttpService';
 import { Utils } from './Utils'; 
 
-const BASE_URL = 'http://192.168.56.10:80/laravel';
-
 const LatestRecipes = ({ sortingOption }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const { getAuthData } = useAuth();
-  const { token, userId } = getAuthData();
+  const { userId } = getAuthData();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 

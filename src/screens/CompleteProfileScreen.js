@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Text, ImageBackground, TextInput, Button, View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { useNavigation ,useIsFocused} from '@react-navigation/native';
-
+import { ImageBackground, TextInput, Button, View, StyleSheet, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../components/AuthProvider';
 import HttpService from '../components/HttpService';
 import ImagePickerComponent from '../components/ImageHandling';
@@ -11,7 +10,6 @@ import { ToastAndroid } from 'react-native';
 const CompleteProfile = () => {
   const navigation = useNavigation();
   const httpService = new HttpService();
-  const isFocused = useIsFocused();
 
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
