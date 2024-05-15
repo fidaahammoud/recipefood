@@ -216,9 +216,9 @@ const RecipeDetails = ({ route }) => {
     </Text> 
 
     <Text style={styles.comment}>
-      <Text style={styles.title}>Chefs comment: </Text>
-      {recipeDetails.comment}
-    </Text> 
+    <Text style={styles.title}>Chefs comment: </Text>
+    {recipeDetails.comment !== null ? recipeDetails.comment : "No Comment"}
+  </Text>
 
       <View style={styles.sectionHeader}>
         <Text style={styles.title}>Ingredients</Text>
@@ -459,16 +459,23 @@ const styles = StyleSheet.create({
   ingredient: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10, 
+
   },
   ingredientText: {
-    fontSize:20,
+    fontSize:19,
+    textTransform: 'capitalize',
+    marginLeft:10,
   },
   step: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10, 
   },
   stepText: {
-    fontSize:20,
+    fontSize:19,
+    textTransform: 'capitalize',
+    marginLeft:10,
 
   },
  

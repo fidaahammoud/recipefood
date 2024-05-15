@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image,ActivityIndicator } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
 import { API_HOST } from "@env";
@@ -14,8 +14,10 @@ const NotificationScreen = ({ navigation }) => {
   const { userId, token, recieveNotification } = getAuthData();
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchNotifications = async () => {
+    setLoading(true);
     try {
       const httpService = new HttpService();
       const response = await httpService.get(`${API_HOST}/api/notifications/${userId}`, token);
@@ -24,8 +26,11 @@ const NotificationScreen = ({ navigation }) => {
         isRead: notification.isRead
       }));
       setNotifications(updatedNotifications);
+      setLoading(false); 
     } catch (error) {
       setError(error);
+    }  finally {
+      setLoading(false);
     }
   };
 
@@ -34,7 +39,9 @@ const NotificationScreen = ({ navigation }) => {
       fetchNotifications();
       const intervalId = setInterval(fetchNotifications, 10000);
       return () => clearInterval(intervalId);
-    }
+    } else {
+    setLoading(false); 
+  }
   }, [isFocused, recieveNotification]);
 
   const markNotificationAsRead = async (notificationId) => {
@@ -43,6 +50,14 @@ const NotificationScreen = ({ navigation }) => {
     console.log(response);
     fetchNotifications();
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   if (error) {
     return <Text>Error fetching notifications: {error.message}</Text>;
@@ -186,6 +201,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

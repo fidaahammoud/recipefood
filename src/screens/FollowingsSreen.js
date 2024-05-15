@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity,ActivityIndicator } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import HttpService from '../components/HttpService';
 import { useAuth } from '../components/AuthProvider';
@@ -14,20 +14,34 @@ const FollowingsScreen = () => {
   const [error, setError] = useState(null);
   const { getAuthData } = useAuth();
   const { userId, token } = getAuthData();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); 
       try {
         const httpService = new HttpService();
         const response = await httpService.get(`${API_HOST}/api/followings/${userId}`, token);
         setChefs(response);
+        setLoading(false); 
+
       } catch (error) {
         setError(error);
+        setLoading(false); 
+
       }
     };
 
     fetchData();
   }, [isFocused]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   if (error) {
     return <Text>Error fetching chefs: {error.message}</Text>;
@@ -158,6 +172,11 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 7.5,
     marginLeft: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

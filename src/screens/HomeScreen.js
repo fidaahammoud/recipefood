@@ -46,7 +46,7 @@ const HomeScreen = () => {
   const handleDietaryFilter = (item) => {
     setSelectedDietary(item.value);
     navigation.navigate('ViewRecipesByDietary', { dietaryId: item.value, name: item.label });
-    setFilterModalVisible(false); // Close filter modal after navigation
+    setFilterModalVisible(false); 
   };
 
   const handleSearch = async () => {
@@ -56,6 +56,7 @@ const HomeScreen = () => {
     }
 
     navigation.navigate('SearchResults', { searchQuery });
+    setSearchQuery('');
   };
 
   const openSortModal = () => {
@@ -85,7 +86,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
         <View style={styles.logoContainer}>
           <Image source={require('../../assets/images/logo.jpeg')} style={styles.logo} />
         </View>
@@ -109,6 +109,7 @@ const HomeScreen = () => {
           </View>
         </View>
 
+        <ScrollView style={styles.scrollView}>
         <View style={styles.categoriesAndChefsContainer}>
           <View style={styles.categoriesContainer}>
             <Text style={styles.boldText}>Categories</Text>
@@ -144,7 +145,7 @@ const HomeScreen = () => {
         <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Sort by:</Text>
+              <Text style={styles.modalTitle}>Sort Recipes By:</Text>
               <TouchableOpacity onPress={() => handleSortingOptionChange('latest')}>
                 <Text style={styles.sortOption}>Latest</Text>
               </TouchableOpacity>
@@ -156,9 +157,6 @@ const HomeScreen = () => {
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleSortingOptionChange('prepTime')}>
                 <Text style={styles.sortOption}>Preparation Time</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSortingOptionChange('newest')}>
-                <Text style={styles.sortOption}>Newest</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -200,6 +198,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 16,
+    marginTop:10,
   },
   logoContainer: {
     alignItems: 'center',
@@ -212,7 +211,9 @@ const styles = StyleSheet.create({
   iconsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: 10,
+    marginLeft:10,
+    marginRight:10,
   },
   searchContainer: {
     marginTop: 16,
@@ -225,12 +226,14 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 5,
     paddingHorizontal: 8,
+    marginLeft:10,
+    marginRight:10,
   },
   searchInput: {
     flex: 1,
   },
   categoriesAndChefsContainer: {
-    marginTop: 30,
+    marginTop: 5,
     paddingBottom: 20,
   },
   categoriesContainer: {
@@ -277,11 +280,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '80%',
-    maxHeight: '70%', // Set maximum height for the modal
-    justifyContent: 'flex-start', // Align content at the start
+    maxHeight: '70%', 
+    justifyContent: 'flex-start', 
   },
   dietaryOptionsContainer: {
-    flexGrow: 1, // Allow the container to grow to fill the available space
+    flexGrow: 1, 
   },
 
 });
