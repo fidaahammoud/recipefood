@@ -52,7 +52,7 @@ const ViewComments = ({ route }) => {
       const httpService = new HttpService();
       const response = await httpService.post(`${API_HOST}/api/recipes/${recipeId}/comments`, data, token);
       setComments(response.data.comments);
-
+      setComment('');
     } catch (error) {
       setError(error.message);
     }
